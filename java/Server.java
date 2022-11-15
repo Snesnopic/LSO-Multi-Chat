@@ -41,7 +41,7 @@ public class Server {
         for(ClientThread ct : clients)
         {
             if(BelongsToGroup(ct,groupNumber))
-                ct.pw.println(message);
+                ct.pw.println(groupNumber + ':' + ct.userId + ':' + message);
         }
     }
 
@@ -63,6 +63,7 @@ public class Server {
                 InputStreamReader isr = new InputStreamReader(s.getInputStream());
                 BufferedReader br = new BufferedReader(isr);
                 boolean success = false;
+                //loop di login
                 while(!success)
                 {
 
@@ -74,6 +75,7 @@ public class Server {
                     else
                         s.getOutputStream().write(0);
                 }
+                //prendi i gruppi di cui fa parte l'utente
                 ArrayList<Group> groups = GetGroupsOfUsers(userId);
                 s.getOutputStream().write(groups.size());
                 for(Group g: groups)
@@ -81,6 +83,7 @@ public class Server {
                     s.getOutputStream().write(g.group_id);
                     pw.println(g.group_name);
                 }
+                //prendi i gruppi di cui non fa parte l'utente
                 ArrayList<Group> outsideGroups = GetGroupsNotOfUsers(userId);
                 s.getOutputStream().write(outsideGroups.size());
                 for(Group g: outsideGroups)
@@ -89,12 +92,13 @@ public class Server {
                     pw.println(g.group_name);
                 }
                 //loop per ricevere messaggi
-                while(true)
+                while(s.isConnected())
                 {
                     String message = br.readLine();
                     int group = s.getInputStream().read();
                     BroadcastMessage(message,group);
                 }
+                s.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

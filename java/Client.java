@@ -86,27 +86,42 @@ public class Client {
 
             DownloadSocketThread dst = new DownloadSocketThread();
             dst.start();
-            while(true)
+            while(s.isConnected())
             {
                 //messaggio da inviare
-                pw.println(sc.next());
+                String msg = sc.next();
                 //gruppo a cui inviare
-                s.getOutputStream().write(sc.nextInt());
+                int group = sc.nextInt();
+
+                SendMessage(msg,group);
             }
+            s.close();
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
     }
+    public class Message
+    {
+        int user;
+        String message;
+        Message(int u, String m)
+        {
+            user = u;
+            message = m;
+        }
+    }
     public class Group
     {
         int group_id;
         String group_name;
+        ArrayList<Message> messages;
         Group(int g, String n)
         {
             group_id = g;
             group_name = n;
+            messages = new ArrayList<>();
         }
     }
     static int portNumber = 2560;
