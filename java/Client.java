@@ -8,14 +8,15 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Client {
+    InputStreamReader isr;
+    PrintWriter pw;
+    Scanner sc;
     Socket s;
     class DownloadSocketThread extends Thread
     {
         public void run()
         {
             try {
-                ServerSocket ss = new ServerSocket(2561);
-                Socket s = ss.accept();
                 InputStreamReader isr = new InputStreamReader(s.getInputStream());
                 BufferedReader br = new BufferedReader(isr);
                 while (true)
@@ -51,13 +52,13 @@ public class Client {
             groups = new ArrayList<>();
             outsideGroups = new ArrayList<>();
             s = new Socket("localhost",portNumber);
-            InputStreamReader isr = new InputStreamReader(s.getInputStream());
+            sc = new Scanner(System.in);
+            pw = new PrintWriter(s.getOutputStream(), true);
+            isr = new InputStreamReader(s.getInputStream());
             BufferedReader br = new BufferedReader(isr);
             boolean success = false;
             while(!success)
             {
-                Scanner sc = new Scanner(System.in);
-                PrintWriter pw = new PrintWriter(s.getOutputStream(), true);
                 //input id utente
                 s.getOutputStream().write(sc.nextInt());
                 //input password
@@ -85,7 +86,13 @@ public class Client {
 
             DownloadSocketThread dst = new DownloadSocketThread();
             dst.start();
-            s.close();
+            while(true)
+            {
+                //messaggio da inviare
+                pw.println(sc.next());
+                //gruppo a cui inviare
+                s.getOutputStream().write(sc.nextInt());
+            }
         }
         catch (IOException e)
         {

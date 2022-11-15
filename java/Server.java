@@ -31,16 +31,22 @@ public class Server {
         a.add(g);
         return a;
     }
-
-    public class UploadSocketThread extends Thread
+    public boolean BelongsToGroup(ClientThread ct, int group)
     {
-        //loop per mandare messaggi
-        public void run()
+        //codice che verifica se il client ct appartiene al gruppo, per determinare se può ricevere il messaggio
+        return true;
+    }
+    public void BroadcastMessage(String message, int groupNumber)
+    {
+        for(ClientThread ct : clients)
         {
-
+            if(BelongsToGroup(ct,groupNumber))
+                ct.pw.println(message);
         }
     }
+
     public class ClientThread extends Thread{
+        PrintWriter pw;
         int userId;
         Socket s;
         public boolean IsCorrect(int id, String password)
@@ -56,7 +62,6 @@ public class Server {
             try {
                 InputStreamReader isr = new InputStreamReader(s.getInputStream());
                 BufferedReader br = new BufferedReader(isr);
-                PrintWriter pw = new PrintWriter(s.getOutputStream(), true);
                 boolean success = false;
                 while(!success)
                 {
@@ -76,7 +81,7 @@ public class Server {
                     s.getOutputStream().write(g.group_id);
                     pw.println(g.group_name);
                 }
-                ArrayList<Group> outsideGroups = GetGroupsOfUsers(userId);
+                ArrayList<Group> outsideGroups = GetGroupsNotOfUsers(userId);
                 s.getOutputStream().write(outsideGroups.size());
                 for(Group g: outsideGroups)
                 {
@@ -86,18 +91,17 @@ public class Server {
                 //loop per ricevere messaggi
                 while(true)
                 {
-                    int group = s.getInputStream().read();
                     String message = br.readLine();
-
+                    int group = s.getInputStream().read();
+                    BroadcastMessage(message,group);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
     }
-    int portNumber = 2560;
     static ArrayList<ClientThread> clients;
-    public Server()
+    public Server(int portNumber)
     {
         clients = new ArrayList<>();
         try
@@ -107,7 +111,8 @@ public class Server {
             while (true)
             {
                 Socket s = ss.accept();
-                ClientThread ct = new ClientThread( s);
+                ClientThread ct = new ClientThread(s);
+                ct.pw = new PrintWriter(ct.s.getOutputStream(),true);
                 AddThread(ct);
                 ct.start();
             }
@@ -126,7 +131,7 @@ public class Server {
     }
     public static void main(String[] args)
     {
-        new Server();
+        new Server(2560);
     }
 
 }
