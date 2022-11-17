@@ -61,3 +61,35 @@ affermativo l'utente viene eliminato dalla tabella.
 
 
 --------------------------------------------------------------------------------------------
+
+
+```SQL
+CREATE OR REPLACE FUNCTION existsUser() RETURNS TRIGGER AS $existsUser$
+DECLARE
+useriid USERDATA.USERID%TYPE;
+roomid ROOM.ROOMID%TYPE;
+usernamee USERDATA.USERNAME%TYPE;
+BEGIN
+SELECT MESSAGEDATA.USERID, MESSAGEDATA.ROOMID INTO useriid, roomid
+FROM MESSAGEDATA
+WHERE MESSAGEDATA.USERID = NEW.USERID AND MESSAGEDATA.ROOMID = NEW.ROOMID;
+
+IF NOT EXISTS(SELECT* FROM ROOMUSERS WHERE ROOMUSERS.USERID = useriid AND ROOMUSERS.roomid = roomid) THEN
+SELECT USERNAME INTO usernamee FROM USERDATA WHERE USERID = useriid;
+RAISE EXCEPTION '% non è presente nella stanza!', usernamee;
+DELETE FROM MESSAGEDATA WHERE MESSAGEDATA.USERID = useriid AND MESSAGEDATA.ROOMID = NEW.ROOMID;
+END IF;
+
+RETURN NULL;
+END;	
+
+$existsUser$ LANGUAGE PLPGSQL;
+
+CREATE TRIGGER existsUser AFTER INSERT ON MESSAGEDATA
+FOR EACH ROW EXECUTE PROCEDURE existsUser();
+```
+
+Il trigger verifica se l'utente che viene inserito nella tabella MessageData appartiene effettivamente alla stanza.
+
+
+--------------------------------------------------------------------------------------------
