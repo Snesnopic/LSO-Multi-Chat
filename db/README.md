@@ -1,4 +1,4 @@
-ERMES DB
+ERMES DB (LSO)
 --------
 
 
@@ -58,4 +58,6 @@ FOR EACH ROW EXECUTE PROCEDURE verify_userinroom();
 
 Il trigger verifica se l'utente che viene inserito nella tabella Join Request è già presente nella stanza: in caso 
 affermativo l'utente viene eliminato dalla tabella.
+
+
 --------------------------------------------------------------------------------------------
