@@ -5,10 +5,9 @@
 #include <sys/socket.h> // Need 4 socket(), bind()
 #include <unistd.h>
 #include <pthread.h>
-#include <postgresql/libpq-fe.h>
 #include <stdlib.h>
 #include "group.h"
-
+#include "pgconnection.h"
 
 int areCredentialsTrue(int id, char* password)
 {
