@@ -1,7 +1,7 @@
 typedef struct Group
 {
     int groupId;
-    char[250] groupName;
+    char groupName[200];
     struct Group *next;
 }Group;
 
