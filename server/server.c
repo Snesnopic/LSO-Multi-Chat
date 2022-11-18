@@ -3,10 +3,9 @@
 #include <sys/types.h> // system defined identifiers.
 #include <netinet/in.h> // internet address structure.
 #include <sys/socket.h> // Need 4 socket(), bind()
-#include <semaphore.h>
 #include <unistd.h>
 #include <pthread.h>
-//#include <postgresql/libpq-fe.h>
+#include <postgresql/libpq-fe.h>
 #include <stdlib.h>
 #include "group.h"
 
@@ -30,6 +29,7 @@ void clientThread(int clientSocket)
         userID = atoi(buffer);
         read(clientSocket,buffer,32);
         success = areCredentialsTrue(userID,buffer);
+        write(clientSocket,&buffer,4);
     }
     Group* groups = getGroupsOfUsers(userID);
 
