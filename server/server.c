@@ -73,20 +73,8 @@ int main(int argc, char *argv[])
         // Estrae la prima richiesta dalla coda
         int newSocket = accept(serverSocket, NULL,NULL);
         int choice = 0;
-        pthread_create(&tid[i], NULL, (void *(*)(void *)) clientThread, newSocket);
+        pthread_create(&tid[i], NULL, (void *(*)(void *)) clientThread, &newSocket);
 
-
-        if (i >= 50)
-        {
-            i = 0;
-
-            while (i < 50)
-            {
-                pthread_join(writerthreads[i++], NULL);
-                pthread_join(readerthreads[i++], NULL);
-            }
-            i = 0;
-        }
     }
     return 0;
 }
