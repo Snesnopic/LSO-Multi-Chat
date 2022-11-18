@@ -6,7 +6,7 @@
 #include <semaphore.h>
 #include <unistd.h>
 #include <pthread.h>
-#include <postgresql/libpq-fe.h>
+//#include <postgresql/libpq-fe.h>
 #include <stdlib.h>
 #include "group.h"
 
