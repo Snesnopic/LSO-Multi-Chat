@@ -6,3 +6,7 @@ typedef struct Group
 }Group;
 
 Group* getGroupsOfUsers(int user);
+
+Group* getGroupsNotOfUsers(int user);
+
+int groupListSize(Group* head);
