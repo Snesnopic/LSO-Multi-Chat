@@ -5,7 +5,7 @@
 
 
 
-void dbConnection()
+PGconn* dbConnection()
 {
     //Attenzione: i dati del db non sono giusti
     conn = PQconnectdb("dbname= ermesChat host=localhost user=gheogvos password=nonloso");
@@ -14,6 +14,15 @@ void dbConnection()
         printf("Connessione al db non riuscita\n");
         exit(0);
     }
+    else{
+        printf("Connessione al db riuscita\n");
+        return conn;
+    }
+}
+
+void dbDeconnection(PGconn *connection)
+{
+    PQfinish(connection);
 }
 
 void update(char table [], char attribute [], char condition [])
@@ -34,7 +43,7 @@ void update(char table [], char attribute [], char condition [])
     res = PQexec(conn, sql);
 }
 
-char * selectdb(char attributes [], char table [], char condition [])
+char ** selectdb(char attributes [], char table [], char condition [])
 {
     if(conn == NULL)
     {
@@ -44,9 +53,9 @@ char * selectdb(char attributes [], char table [], char condition [])
     char sql[500];
     strcpy(sql, "");
     strcat(sql, "SELECT ");
-    strcat(sql, table);
+    strcat(sql, attributes);
     strcat(sql, " FROM ");
-    strcat(sql, attribute);
+    strcat(sql, table);
     strcat(sql, " WHERE ");
     strcat(sql, condition);
     res = PQexec(conn, sql);
@@ -62,9 +71,11 @@ char * selectdb(char attributes [], char table [], char condition [])
         selectResult[i] = (char*)malloc(100*sizeof(char ));
     for(int row = 0; row < res_count; row++)
     {
-        for(col = 0; col < 3; col++)
+        for(col = 0; col < 5; col++)
         {
-
+            strcpy(selectResult[row], PQgetvalue(res, row, col));
         }
     }
+    PQclear(res);
+    return selectResult;
 }
