@@ -11,3 +11,6 @@ include_directories(server)
 
 add_executable(LSO_Multi_Chat server/server.c server/group.c)
 target_link_libraries(LSO_Multi_Chat Threads::Threads)
+target_compile_options(${PROJECT_NAME} PRIVATE
+        -Wall -Wextra -Wpedantic
+        )
