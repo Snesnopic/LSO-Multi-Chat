@@ -38,6 +38,23 @@ void clientThread(int clientSocket)
 
 int main(int argc, char *argv[])
 {
+    //variabili per connessione al db o altre cose inerenti alla gestione dati da db:
+    PGconn *conn;
+    char **data = (char**)malloc(100 * sizeof(char*));
+    for(int i = 0; i < 50; i++)
+        data[i] = (char*)malloc(100*sizeof(char ));
+
+
+    conn = dbConnection(conn);
+    data = getAllGroups(conn);
+    for(int i = 0; i < 20; i++)
+    {
+        printf("prova:    %s\n", data[i]);
+    }
+
+
+
+
     int serverSocket;
     struct sockaddr_in serverAddr;
     struct sockaddr_storage serverStorage;
@@ -67,13 +84,15 @@ int main(int argc, char *argv[])
     pthread_t tid[60];
     int i = 0;
 
-    while (1)
+   /* while (1)
     {
         // Estrae la prima richiesta dalla coda
         int newSocket = accept(serverSocket, NULL,NULL);
         int choice = 0;
         pthread_create(&tid[i], NULL, (void *(*)(void *)) clientThread, &newSocket);
+    }*/
 
-    }
+
+    dbDeconnection(conn);
     return 0;
 }

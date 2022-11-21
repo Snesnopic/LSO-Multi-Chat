@@ -1,3 +1,5 @@
+#include <postgresql/libpq-fe.h>
+
 typedef struct Group
 {
     int groupId;
@@ -10,3 +12,5 @@ Group* getGroupsOfUsers(int user);
 Group* getGroupsNotOfUsers(int user);
 
 int groupListSize(Group* head);
+
+char** getAllGroups(PGconn *conn);
