@@ -1,10 +1,6 @@
 #include <postgresql/libpq-fe.h>
 
 
-PGconn *conn;
-PGresult *res;
-int res_count;
-
 
 PGconn* dbConnection();
 void dbDeconnection(PGconn *connection);

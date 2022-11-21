@@ -4,12 +4,17 @@
 #include "pgconnection.h"
 
 
+PGconn *conn;
+PGresult *res;
+int res_count;
+int col;
+int row;
 
 PGconn* dbConnection()
 {
     //Attenzione: i dati del db non sono giusti
     conn = PQconnectdb("dbname= ermesChat host=localhost user=gheogvos password=nonloso");
-    if(PQstatus(conn) = CONNECTION_BAD)
+    if(PQstatus(conn) == CONNECTION_BAD)
     {
         printf("Connessione al db non riuscita\n");
         exit(0);
@@ -80,7 +85,7 @@ char ** selectdb(char attributes [], char table [], char condition [])
     return selectResult;
 }
 
-void insert(char tableAndColumn [], char data [], )
+void insert(char tableAndColumn [], char data [])
 {
     // tableAndColumn = table_name(column_1, column_2, ..., column_n)
     // data = "X1, X2, X3, .... , Xn"
