@@ -5,7 +5,6 @@
 
 
 
-
 PGconn* dbConnection(PGconn *conn)
 {
     //ATTENZIONE: i dati del db sono relativi, modificateli in base al vostro pc
@@ -45,7 +44,7 @@ void update(char table [], char attribute [], char condition [], PGconn *conn)
     res = PQexec(conn, sql);
 }
 
-char ** selectdb(char attributes [], char table [], char condition [], PGconn *conn)
+char ** selectdb(char attributes [], char table [], char condition [], PGconn *conn, int *rowsRet)
 {
     if(conn == NULL)
     {
@@ -59,10 +58,11 @@ char ** selectdb(char attributes [], char table [], char condition [], PGconn *c
     strcat(sql, attributes);
     strcat(sql, " FROM ");
     strcat(sql, table);
-    /*
-    strcat(sql, " WHERE ");
-    strcat(sql, condition);
-     */
+    if(strcmp(condition, "") != 0)
+    {
+        strcat(sql, " WHERE ");
+        strcat(sql, condition);
+    }
     res = PQexec(conn, sql);
     if(PQresultStatus(res) != PGRES_TUPLES_OK)
     {
@@ -73,7 +73,7 @@ char ** selectdb(char attributes [], char table [], char condition [], PGconn *c
     int col;
     printf("Numero di record: %d\n", res_count);
     char **selectResult = (char**)malloc(1000 * sizeof(char*));
-    for(int i = 0; i < 50; i++)
+    for(int i = 0; i < 100; i++)
         selectResult[i] = (char*)malloc(1000 * sizeof(char));
     int cont = 0;
     for(int row = 0; row < res_count; row++)
@@ -83,9 +83,9 @@ char ** selectdb(char attributes [], char table [], char condition [], PGconn *c
             strcpy(selectResult[cont], PQgetvalue(res, row, col));
             cont++;
         }
-        strcpy(selectResult[cont + 1], "-"); //carattere separatore tra una riga della tabella a quella dopo
     }
     PQclear(res);
+    *rowsRet = res_count;
     return selectResult;
 }
 
