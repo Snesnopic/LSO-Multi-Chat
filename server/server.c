@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <strings.h>
+#include <string.h>
 #include <sys/types.h> // system defined identifiers.
 #include <netinet/in.h> // internet address structure.
 #include <sys/socket.h> // Need 4 socket(), bind()
@@ -8,6 +9,8 @@
 #include <stdlib.h>
 #include "group.h"
 #include "pgconnection.h"
+
+
 
 int areCredentialsTrue(int id, char* password)
 {
@@ -30,7 +33,7 @@ void clientThread(int clientSocket)
         success = areCredentialsTrue(userID,buffer);
         write(clientSocket,&buffer,4);
     }
-    Group* groups = getGroupsOfUsers(userID);
+    //Group* groups = getGroupsOfUsers(userID);
 
 
 
@@ -38,6 +41,20 @@ void clientThread(int clientSocket)
 
 int main(int argc, char *argv[])
 {
+    //variabili per connessione al db o altre cose inerenti alla gestione dati da db:
+    PGconn *conn;
+    Group *groups = (Group*)calloc(100, sizeof (Group));
+    int rows = 0;
+    conn = dbConnection(conn);
+    groups = getAllGroups(conn, &rows);
+    for(int i = 0; i < rows - 1; i++)
+    {
+        printf("prova:\n%d ", groups[i].groupId);
+        printf("%s\n", groups[i].groupName);
+    }
+
+
+
     int serverSocket;
     struct sockaddr_in serverAddr;
     struct sockaddr_storage serverStorage;
@@ -67,13 +84,15 @@ int main(int argc, char *argv[])
     pthread_t tid[60];
     int i = 0;
 
-    while (1)
+   /* while (1)
     {
         // Estrae la prima richiesta dalla coda
         int newSocket = accept(serverSocket, NULL,NULL);
         int choice = 0;
         pthread_create(&tid[i], NULL, (void *(*)(void *)) clientThread, &newSocket);
+    }*/
 
-    }
+    free(groups);
+    dbDeconnection(conn);
     return 0;
 }
