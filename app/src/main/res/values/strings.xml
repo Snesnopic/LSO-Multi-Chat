@@ -1,10 +1,17 @@
 <resources>
     <string name="app_name">Ermes</string>
-    <string name="keepMeSignedIn">Keep me signed in</string>
+    <string name="keep_me_signed_in">Keep me signed in</string>
     <string name="e_mail">E-mail</string>
     <string name="login">Login</string>
-    <string name="register_now">Not a user? Register now!</string>
+    <string name="register">Register</string>
+    <string name="user_exists_error">This user already exists!</string>
     <string name="app_logo_text">App Logo</string>
     <string name="password">Password</string>
-    <string name="fieldsError">Check your input and retry!</string>
+    <string name="fields_error">Check your input and retry!</string>
+    <string name="your_groups">Your groups</string>
+    <string name="other_groups">Other groups</string>
+    <string name="requests">Requests</string>
+    <string name="insert_group_name">Group name</string>
+    <string name="group_name_hint">e.g. Gaming group</string>
+
 </resources>
