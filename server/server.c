@@ -43,14 +43,17 @@ int main(int argc, char *argv[])
 {
     //variabili per connessione al db o altre cose inerenti alla gestione dati da db:
     PGconn *conn;
-    Group *groups = (Group*)calloc(100, sizeof (Group));
-    int rows = 0;
+    Group *groups = NULL;
+    groups = (Group*)malloc(100 * sizeof (Group));
+    int rows;
     conn = dbConnection(conn);
-    groups = getAllGroups(conn, &rows);
-    for(int i = 0; i < rows - 1; i++)
+    groups = getGroupsNotOfUsers(0, conn, &rows);
+    for(int i = 0; i < rows; i++)
     {
-        printf("prova:\n%d ", groups[i].groupId);
-        printf("%s\n", groups[i].groupName);
+        printf("Riga %d:\n Group ID: %d\n", i, groups[i].groupId);
+        printf("Group name: %s\n", groups[i].groupName);
+        printf("Creator User ID: %d\n", groups[i].creatorUserId);
+        printf("--------\n");
     }
 
 
@@ -92,7 +95,7 @@ int main(int argc, char *argv[])
         pthread_create(&tid[i], NULL, (void *(*)(void *)) clientThread, &newSocket);
     }*/
 
-    free(groups);
+    //free(groups);
     dbDeconnection(conn);
     return 0;
 }

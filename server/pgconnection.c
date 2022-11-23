@@ -44,7 +44,7 @@ void update(char table [], char attribute [], char condition [], PGconn *conn)
     res = PQexec(conn, sql);
 }
 
-char ** selectdb(char attributes [], char table [], char condition [], PGconn *conn, int *rowsRet)
+char ** selectdb(char attributes [], char table [], char condition [], PGconn *conn, int *rowsRet, int numberOfTableColumns)
 {
     if(conn == NULL)
     {
@@ -63,6 +63,7 @@ char ** selectdb(char attributes [], char table [], char condition [], PGconn *c
         strcat(sql, " WHERE ");
         strcat(sql, condition);
     }
+    printf("COMANDO SQL: %s\n", sql);
     res = PQexec(conn, sql);
     if(PQresultStatus(res) != PGRES_TUPLES_OK)
     {
@@ -78,7 +79,7 @@ char ** selectdb(char attributes [], char table [], char condition [], PGconn *c
     int cont = 0;
     for(int row = 0; row < res_count; row++)
     {
-        for(col = 1; col < 3; col++)
+        for(col = 0; col <= numberOfTableColumns - 1; col++)
         {
             strcpy(selectResult[cont], PQgetvalue(res, row, col));
             cont++;
