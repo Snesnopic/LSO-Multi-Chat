@@ -2,6 +2,7 @@ package com.snesnopic.ermes;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,8 +37,8 @@ public class LoginActivity extends AppCompatActivity {
             {
                 if(AreCredentialsRight(email,password))
                 {
-                    MainActivity ma = new MainActivity(savedInstanceState,this);
-                    setContentView(R.layout.activity_main);
+                    Intent mainIntent = new Intent(this,MainActivity.class);
+                    startActivity(mainIntent);
                 }
             }
 
@@ -64,8 +65,8 @@ public class LoginActivity extends AppCompatActivity {
                 if(AreCredentialsDontExist(email))
                 {
                     //crea utente e poi fa il login
-                    MainActivity ma = new MainActivity(savedInstanceState,this);
-                    setContentView(R.layout.activity_main);
+                    Intent mainIntent = new Intent(this,MainActivity.class);
+                    startActivity(mainIntent);
                 }
                 else
                 {
