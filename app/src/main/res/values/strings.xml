@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Ermes</string>
+    <string name="keepMeSignedIn">Keep me signed in</string>
+    <string name="e_mail">E-mail</string>
+    <string name="login">Login</string>
+    <string name="register_now">Not a user? Register now!</string>
+    <string name="app_logo_text">App Logo</string>
+    <string name="password">Password</string>
+    <string name="fieldsError">Check your input and retry!</string>
 </resources>
