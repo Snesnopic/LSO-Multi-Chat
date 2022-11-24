@@ -1,21 +1,55 @@
 package com.snesnopic.ermes;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.content.Context;
+import android.widget.TextView;
+
+import java.io.FileInputStream;
+import java.lang.Thread;
+
+import com.google.android.material.snackbar.Snackbar;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class LoginActivity extends AppCompatActivity {
+    Context context = this;
     Button loginButton;
     Button registerButton;
     String email;
     String password;
+    File file;                                                 //file che contiene alcune informazioni dell'utente
+    File path;                                                 //path dove viene creato il file
+    FileInputStream fis;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
+        TextView testo = (TextView) findViewById(R.id.textTest);
+
+        //Crea un file all'apertura dell'app
+        try {
+            FileInputStream fis = context.openFileInput("resources");
+            testo.setVisibility(View.VISIBLE);
+            testo.setText("file esistente");
+        } catch (FileNotFoundException e) {
+            testo.setVisibility(View.VISIBLE);
+            testo.setText("file inesistente");
+            path = getFilesDir();
+            file = new File(path, "resources");
+        }
+
 
         //pulsante Login
         loginButton = findViewById(R.id.loginButton);
