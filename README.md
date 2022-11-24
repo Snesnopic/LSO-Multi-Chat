@@ -1,3 +1,6 @@
+![Ermes Logo](https://user-images.githubusercontent.com/72210745/203768868-e7708786-37b3-4443-a221-0169eada4513.png)
+
+
 # Progetto LSO: Multi-chat
 
 - n utenti (client) possono accedere ad un sistema di chat
