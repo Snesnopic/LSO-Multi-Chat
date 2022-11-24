@@ -66,7 +66,8 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/ic_launcher_round" />
+        app:srcCompat="@drawable/ermes_logo"
+        tools:ignore="ImageContrastCheck" />
 
     <Button
         android:id="@+id/registerButton"
