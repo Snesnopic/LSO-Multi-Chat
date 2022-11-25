@@ -40,7 +40,7 @@ void clientThread(int clientSocket)
 }
 
 int main(int argc, char *argv[])
-{
+{   /*
     //variabili per connessione al db o altre cose inerenti alla gestione dati da db:
     PGconn *conn;
     Group *groups = NULL;
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
         printf("Creator User ID: %d\n", groups[i].creatorUserId);
         printf("--------\n");
     }
-
+    */
 
 
     int serverSocket;
@@ -69,33 +69,47 @@ int main(int argc, char *argv[])
     serverAddr.sin_addr.s_addr = INADDR_ANY;
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(8989);
-
+    printf("giorgio\n");
     // Bind della socket
     if(bind(serverSocket,(struct sockaddr*)&serverAddr,sizeof(serverAddr)) == -1)
     {
-        perror("Errore nel binding\n");
+        printf("Errore nel binding\n");
         return 1;
     }
+    else
+    {
+        printf("OK binding\n");
+    }
+    printf("giorgio\n");
     // Listening socket con max 40 richieste in coda
     if (listen(serverSocket, 50) == -1)
     {
-        perror("Errore nell'ascolto\n");
+        printf("Errore nell'ascolto\n");
         return 1;
     }
-
+    else
+    {
+        printf("OK listen");
+    }
+    printf("giorgio\n");
     // Array di thread
     pthread_t tid[60];
     int i = 0;
-
-   /* while (1)
+    printf("giorgio\n");
+    fflush(stdout);
+   while (1)
     {
+        fflush(stdout);
+        printf("Attendo...");
+        fflush(stdout);
         // Estrae la prima richiesta dalla coda
         int newSocket = accept(serverSocket, NULL,NULL);
         int choice = 0;
         pthread_create(&tid[i], NULL, (void *(*)(void *)) clientThread, &newSocket);
-    }*/
-
+        i++;
+        printf("Connesso\n");
+    }
     //free(groups);
-    dbDeconnection(conn);
+    //dbDeconnection(conn);
     return 0;
 }
