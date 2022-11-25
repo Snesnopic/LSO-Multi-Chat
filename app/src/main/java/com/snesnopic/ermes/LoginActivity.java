@@ -31,7 +31,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.login_activity);
         TextView testo = (TextView) findViewById(R.id.textTest);
         connection = Connessione.getInstance("192.168.41.155", 8989);
-        connection.start();
         if(connection.isAlive()) {
             testo.setVisibility(View.VISIBLE);
             testo.setText("thread vivo");
