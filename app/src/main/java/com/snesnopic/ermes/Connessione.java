@@ -12,9 +12,7 @@ public class Connessione extends Thread {
         if(instance == null) {
             statichostname = hostname;
             staticport = port;
-            Connessione c = new Connessione();
-            c.start();
-            return c;
+            return new Connessione();
 
         }
         else
