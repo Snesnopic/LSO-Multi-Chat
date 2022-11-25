@@ -23,21 +23,28 @@ public class LoginActivity extends AppCompatActivity {
     File file;                                                 //file che contiene alcune informazioni dell'utente
     File path;                                                 //path dove viene creato il file
     FileInputStream fis;
+    Connessione connection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
         TextView testo = (TextView) findViewById(R.id.textTest);
+        connection = Connessione.getInstance("192.168.41.155", 8989);
+        connection.start();
+        if(connection.isAlive()) {
+            testo.setVisibility(View.VISIBLE);
+            testo.setText("thread vivo");
+        }
 
         //Crea un file all'apertura dell'app
         try {
             FileInputStream fis = context.openFileInput("resources");
             testo.setVisibility(View.VISIBLE);
-            testo.setText("file esistente");
+            //testo.setText("file esistente");
         } catch (FileNotFoundException e) {
             testo.setVisibility(View.VISIBLE);
-            testo.setText("file inesistente");
+            //testo.setText("file inesistente");
             path = getFilesDir();
             file = new File(path, "resources");
         }
