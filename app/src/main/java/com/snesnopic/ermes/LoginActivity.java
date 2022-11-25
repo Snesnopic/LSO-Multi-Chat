@@ -68,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
             }
             else
             {
-                if(AreCredentialsRight(email,password))
+                if(connection.provaLogin(email, password,false))
                 {
                     Intent mainIntent = new Intent(this,MainActivity.class);
                     startActivity(mainIntent);
@@ -95,9 +95,9 @@ public class LoginActivity extends AppCompatActivity {
             }
             else
             {
-                if(AreCredentialsDontExist(email))
+                if(connection.provaLogin(email, password,true))
                 {
-                    //crea utente e poi fa il login
+                    //crea utente e poi fai il login
                     Intent mainIntent = new Intent(this,MainActivity.class);
                     startActivity(mainIntent);
                 }
