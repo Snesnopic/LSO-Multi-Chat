@@ -8,8 +8,10 @@ public class Connessione extends Thread {
     static PrintWriter pw;
     static String statichostname;
     static int staticport;
+    private static boolean isConnected;
     Socket s;
     private static Connessione instance;
+
     public static Connessione getInstance(String hostname, int port){
         if(instance == null) {
             statichostname = hostname;
@@ -25,8 +27,10 @@ public class Connessione extends Thread {
     public void run() {
         try {
             s = new Socket(statichostname, staticport);
+            isConnected = true;
             pw = new PrintWriter(s.getOutputStream(), true);
         } catch (IOException e) {
+            isConnected = false;
             e.printStackTrace();
         }
     }
@@ -68,5 +72,10 @@ public class Connessione extends Thread {
             e.printStackTrace();
             return false;
         }
+    }
+
+    //Metodo che controlla se la connessione è stata stabilita.
+    public boolean isConnected() {
+        return isConnected;
     }
 }
