@@ -93,3 +93,120 @@ Il trigger verifica se l'utente che viene inserito nella tabella MessageData app
 
 
 --------------------------------------------------------------------------------------------
+
+
+```SQL
+CREATE OR REPLACE FUNCTION checkEmptyStringUser() RETURNS TRIGGER AS $checkEmptyStringUser$
+DECLARE
+checkusername USERDATA.USERNAME%TYPE;
+checkpassword USERDATA.USERPASSWORD%TYPE;
+cont INTEGER := 0;
+substr TEXT;
+BEGIN
+SELECT USERDATA.USERNAME, USERDATA.USERPASSWORD INTO checkusername, checkpassword
+FROM USERDATA
+WHERE USERDATA.USERNAME = NEW.USERNAME AND USERDATA.USERPASSWORD = NEW.USERPASSWORD;
+
+IF(LENGTH(checkusername) = 0) THEN RAISE EXCEPTION 'Username non può essere vuoto!'; END IF;
+IF(LENGTH(checkpassword) = 0) THEN RAISE EXCEPTION 'La password non può essere vuota!'; END IF;
+
+FOR i IN 0 .. LENGTH(checkusername) LOOP
+substr = right(checkusername, length(checkusername)-i);
+IF (ascii(substr) = 32 OR ascii(substr) = 9) THEN cont = cont + 1; END IF;
+END LOOP;
+
+IF(cont = LENGTH(checkusername)) THEN RAISE EXCEPTION 'Username non può essere vuoto!'; END IF;
+cont = 0;
+
+FOR i IN 0 .. LENGTH(checkpassword) LOOP
+substr = right(checkpassword, length(checkpassword)-i);
+IF (ascii(substr) = 32 OR ascii(substr) = 9) THEN cont = cont + 1; END IF;
+END LOOP;
+
+IF(cont = LENGTH(checkusername)) THEN RAISE EXCEPTION 'La password non può essere vuota!'; END IF;
+
+
+RETURN NULL;
+END;	
+
+$checkEmptyStringUser$ LANGUAGE PLPGSQL;
+
+CREATE TRIGGER checkEmptyStringUser AFTER INSERT ON USERDATA
+FOR EACH ROW EXECUTE PROCEDURE checkEmptyStringUser();
+```
+
+Il trigger verifica se vengano inserite password e username di soli spazi o tab; alza un'eccezione in caso affermativo.
+
+
+--------------------------------------------------------------------------------------------
+
+
+```SQL
+CREATE OR REPLACE FUNCTION checkEmptyStringMessage() RETURNS TRIGGER AS $checkEmptyStringMessage$
+DECLARE
+checkmessage MESSAGEDATA.MESSAGETEXT%TYPE;
+cont INTEGER := 0;
+substr TEXT;
+BEGIN
+SELECT MESSAGEDATA.MESSAGETEXT INTO checkmessage
+FROM MESSAGEDATA
+WHERE MESSAGEDATA.MESSAGETEXT = NEW.MESSAGETEXT;
+
+IF(LENGTH(checkmessage) = 0) THEN RAISE EXCEPTION 'Il messaggio non può essere vuoto!'; END IF;
+
+FOR i IN 0 .. LENGTH(checkmessage) LOOP
+substr = right(checkmessage, length(checkmessage)-i);
+IF (ascii(substr) = 32 OR ascii(substr) = 9) THEN cont = cont + 1; END IF;
+END LOOP;
+
+IF(cont = LENGTH(checkmessage)) THEN RAISE EXCEPTION 'Il messaggio non può essere vuoto!'; END IF;
+cont = 0;
+
+RETURN NULL;
+END;	
+
+$checkEmptyStringMessage$ LANGUAGE PLPGSQL;
+
+CREATE TRIGGER checkEmptyStringMessage AFTER INSERT ON MESSAGEDATA
+FOR EACH ROW EXECUTE PROCEDURE checkEmptyStringMessage();
+```
+
+Il trigger verifica se vengano inseriti messaggi vuoti (spazi e tab); alza un'eccezione in caso affermativo.
+
+
+--------------------------------------------------------------------------------------------
+
+
+```SQL
+CREATE OR REPLACE FUNCTION checkEmptyStringRoom() RETURNS TRIGGER AS $checkEmptyStringRoom$
+DECLARE
+checkroom ROOM.ROOMNAME%TYPE;
+cont INTEGER := 0;
+substr TEXT;
+BEGIN
+SELECT ROOM.ROOMNAME INTO checkroom
+FROM ROOM
+WHERE ROOM.ROOMNAME = NEW.ROOMNAME;
+
+IF(LENGTH(checkroom) = 0) THEN RAISE EXCEPTION 'Il nome della stanza non può essere vuota!'; END IF;
+
+FOR i IN 0 .. LENGTH(checkroom) LOOP
+substr = right(checkroom, length(checkroom)-i);
+IF (ascii(substr) = 32 OR ascii(substr) = 9) THEN cont = cont + 1; END IF;
+END LOOP;
+
+IF(cont = LENGTH(checkroom)) THEN RAISE EXCEPTION 'Il nome della stanza non può essere vuota!'; END IF;
+
+RETURN NULL;
+END;	
+
+$checkEmptyStringRoom$ LANGUAGE PLPGSQL;
+
+CREATE TRIGGER checkEmptyStringRoom AFTER INSERT ON ROOM
+FOR EACH ROW EXECUTE PROCEDURE checkEmptyStringRoom();
+```
+
+Il trigger verifica se vengano inseriti nomi di stanze vuote (spazi e tab); alza un'eccezione in caso affermativo.
+
+
+--------------------------------------------------------------------------------------------
