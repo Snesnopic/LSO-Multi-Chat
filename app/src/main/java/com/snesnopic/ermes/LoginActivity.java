@@ -12,14 +12,17 @@ import android.widget.EditText;
 import android.content.Context;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.window.SplashScreen;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import org.w3c.dom.Text;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
@@ -34,14 +37,14 @@ public class LoginActivity extends AppCompatActivity {
     FileInputStream fis;
     Connessione connection;
     CheckBox checkbox;
-    boolean save;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();     //nasconde il nome sopra l'app
         setContentView(R.layout.login_activity);
 
-        connection = Connessione.getInstance("192.168.41.155", 8989);
+        connection = Connessione.getInstance("192.168.160.37", 8989);
         connection.start();
         if(!connection.isConnected()) {
             ImageView image = (ImageView) findViewById(R.id.logoImage);    //serve così può uscire la notifica in basso
@@ -56,8 +59,7 @@ public class LoginActivity extends AppCompatActivity {
             EditText pw = findViewById(R.id.editTextTextPassword);
             email = em.getText().toString();
             password = pw.getText().toString();
-            if(email.isEmpty() || password.isEmpty())
-            {
+            if(email.isEmpty() || password.isEmpty()) {
                 new AlertDialog.Builder(this)
                         .setMessage(R.string.fields_error)
                         // A null listener allows the button to dismiss the dialog and take no further action.
@@ -65,21 +67,22 @@ public class LoginActivity extends AppCompatActivity {
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
             }
-            else
-            {
+            else {
                 if(connection.isConnected()) {
-                    if(connection.provaLogin(email, password,false))
-                    {
+                    if(connection.provaLogin(email, password,false)) {
                         if(checkbox.isChecked()) {
+                            path = getFilesDir();
+                            file = new File(path, "resources");
+
                             try {
-                                FileInputStream fis = context.openFileInput("resources");
-                                OutputStreamWriter write = new OutputStreamWriter(context.openFileOutput("resources", Context.MODE_PRIVATE));
-                                write.write(email+" || "+password);
+                                FileInputStream fis = context.openFileInput("resources");       //Tenta di trovare il file resources (se non c'è entra nel primo catch)
+                                OutputStreamWriter write = new OutputStreamWriter(context.openFileOutput("resources", Context.MODE_PRIVATE));     //apre il file resources om scrittura
+                                BufferedReader br = new BufferedReader(new FileReader(file));
+                                write.write(email+" || "+password+" 1");
                                 write.close();
 
+
                             } catch (FileNotFoundException e) {
-                                path = getFilesDir();
-                                file = new File(path, "resources");
                                 OutputStreamWriter write = null;
                                 try {
                                     write = new OutputStreamWriter(context.openFileOutput("resources", Context.MODE_PRIVATE));
@@ -120,8 +123,7 @@ public class LoginActivity extends AppCompatActivity {
             EditText pw = findViewById(R.id.editTextTextPassword);
             email = em.getText().toString();
             password = pw.getText().toString();
-            if(email.isEmpty() || password.isEmpty())
-            {
+            if(email.isEmpty() || password.isEmpty()) {
                 new AlertDialog.Builder(this)
                         .setMessage(R.string.fields_error)
                         // A null listener allows the button to dismiss the dialog and take no further action.
@@ -129,27 +131,24 @@ public class LoginActivity extends AppCompatActivity {
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
             }
-            else
-            {
-                if(connection.provaLogin(email, password,true))
-                {
-                    //crea utente e poi fai il login
-                    Intent mainIntent = new Intent(this,MainActivity.class);
-                    startActivity(mainIntent);
-                }
-                else
-                {
-                    new AlertDialog.Builder(this)
-                            .setMessage(R.string.user_exists_error)
-                            // A null listener allows the button to dismiss the dialog and take no further action.
-                            .setNegativeButton(android.R.string.ok, null)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
+            else {
+                if(connection.isConnected()) {
+                    if(connection.provaLogin(email, password,true)) {  //aggiungere condizione che controlla se le credenziali non siano già state usate
+                        //crea utente e poi fai il login
+                        Intent mainIntent = new Intent(this,MainActivity.class);
+                        startActivity(mainIntent);
+                    }
+                    else {
+                        new AlertDialog.Builder(this)
+                                .setMessage(R.string.user_exists_error)
+                                // A null listener allows the button to dismiss the dialog and take no further action.
+                                .setNegativeButton(android.R.string.ok, null)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+                    }
                 }
             }
-
         });
-
     }
     //verifica che l'utente che si vuole creare non esiste già
     private boolean AreCredentialsDontExist(String email) {
