@@ -1,3 +1,4 @@
+#include "pgconnection.h"
 
 typedef struct User
 {
@@ -6,3 +7,7 @@ typedef struct User
     char userpassword[1000];
 }User;
 
+
+int usernameAndPasswordCheck(char username[], char password[], PGconn* conn);
+
+int userRegistration(char username[], char password[], PGconn* conn);

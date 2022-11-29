@@ -67,9 +67,11 @@ char ** selectdb(char attributes [], char table [], char condition [], PGconn *c
     res = PQexec(conn, sql);
     if(PQresultStatus(res) != PGRES_TUPLES_OK)
     {
-        printf("Nessun dato preso\n");
+        printf("Errore, Nessun dato preso\n");
         exit(0);
     }
+    if(PQresultStatus(res) == PGRES_EMPTY_QUERY)
+        return NULL;
     int res_count = PQntuples(res);
     int col;
     printf("Numero di record: %d\n", res_count);
@@ -90,7 +92,7 @@ char ** selectdb(char attributes [], char table [], char condition [], PGconn *c
     return selectResult;
 }
 
-void insert(char tableAndColumn [], char data [], PGconn *conn)
+int insert(char tableAndColumn [], char data [], PGconn *conn)
 {
     // tableAndColumn = table_name(column_1, column_2, ..., column_n)
     // data = "X1, X2, X3, .... , Xn"
@@ -107,7 +109,18 @@ void insert(char tableAndColumn [], char data [], PGconn *conn)
     strcat(sql, " VALUES (");
     strcat(sql, data);
     strcat(sql, ");");
+    printf("COMANDO SQL: %s\n", sql);
     res = PQexec(conn, sql);
+    if(PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        printf("INSERT non andata a buon fine\n");
+        return 0;
+    }
+    else
+    {
+        printf("INSERT eseguita con successo\n");
+        return 1;
+    }
 }
 
 void delete(char table_name [], char condition [], PGconn *conn)
