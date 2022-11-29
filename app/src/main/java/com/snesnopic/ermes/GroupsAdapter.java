@@ -12,6 +12,7 @@ import java.util.List;
 
 public class GroupsAdapter extends BaseAdapter {
     private final List<Group> groups;
+
     private final Context context;
     public GroupsAdapter(Context context, List<Group> groups)
     {

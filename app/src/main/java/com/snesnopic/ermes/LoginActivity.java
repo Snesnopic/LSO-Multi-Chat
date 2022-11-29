@@ -48,20 +48,21 @@ public class LoginActivity extends AppCompatActivity {
 
         connection = Connessione.getInstance("192.168.160.37", 8989);
         connection.start();
-        if(false) { //!connection.isConnected()
+        if(!connection.isConnected()) {
             ImageView image = (ImageView) findViewById(R.id.logoImage);    //serve così può uscire la notifica in basso
             Snackbar.make(image, "ATTENZIONE! Connessione non stabilita!", Snackbar.LENGTH_LONG).show();
         }
-        else if(true) {
+        else {
             try {                   //tenta di leggere il file risorse
 
                 BufferedReader br = new BufferedReader(new FileReader(file));
                 if(br.readLine().equals("1")) {
                     email = br.readLine();
                     password = br.readLine();
+                    br.close();
                     Intent mainIntent = new Intent(this,MainActivity.class);
                     startActivity(mainIntent);
-                    System.out.println("email: "+email+" password: "+password);
+                    finish();
                 }
                 else initialize();
             } catch (FileNotFoundException e) {
@@ -93,11 +94,12 @@ public class LoginActivity extends AppCompatActivity {
                         .show();
             }
             else {
-                if(true) { //connection.isConnected()
-                    if(true) { //connection.provaLogin(email, password,false)
+                if(connection.isConnected()) {
+                    if(connection.provaLogin(email, password,false)) {
                         if(checkbox.isChecked()) writeResources(email, password);
                         Intent mainIntent = new Intent(this,MainActivity.class);
                         startActivity(mainIntent);
+                        finish();
 
                     }
                 }
