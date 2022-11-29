@@ -32,8 +32,8 @@ public class LoginActivity extends AppCompatActivity {
     Button registerButton;
     String email;
     String password;
-    File file;                                                 //file che contiene alcune informazioni dell'utente
     File path;                                                 //path dove viene creato il file
+    File file;                                                 //file che contiene alcune informazioni dell'utente
     FileInputStream fis;
     Connessione connection;
     CheckBox checkbox;
@@ -41,16 +41,40 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide();     //nasconde il nome sopra l'app
+        getSupportActionBar().hide();                       //nasconde il nome sopra l'app
         setContentView(R.layout.login_activity);
+        path = getFilesDir();
+        file = new File(path, "resources");
 
         connection = Connessione.getInstance("192.168.160.37", 8989);
         connection.start();
-        if(!connection.isConnected()) {
+        if(false) { //!connection.isConnected()
             ImageView image = (ImageView) findViewById(R.id.logoImage);    //serve così può uscire la notifica in basso
             Snackbar.make(image, "ATTENZIONE! Connessione non stabilita!", Snackbar.LENGTH_LONG).show();
         }
+        else if(true) {
+            try {                   //tenta di leggere il file risorse
 
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                if(br.readLine().equals("1")) {
+                    email = br.readLine();
+                    password = br.readLine();
+                    Intent mainIntent = new Intent(this,MainActivity.class);
+                    startActivity(mainIntent);
+                    System.out.println("email: "+email+" password: "+password);
+                }
+                else initialize();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        initialize();
+    }
+
+    private void initialize() {
         checkbox = (CheckBox) findViewById(R.id.keepMeSignedInBox);
         //pulsante Login
         loginButton = findViewById(R.id.loginButton);
@@ -59,6 +83,7 @@ public class LoginActivity extends AppCompatActivity {
             EditText pw = findViewById(R.id.editTextTextPassword);
             email = em.getText().toString();
             password = pw.getText().toString();
+
             if(email.isEmpty() || password.isEmpty()) {
                 new AlertDialog.Builder(this)
                         .setMessage(R.string.fields_error)
@@ -68,50 +93,15 @@ public class LoginActivity extends AppCompatActivity {
                         .show();
             }
             else {
-                if(connection.isConnected()) {
-                    if(connection.provaLogin(email, password,false)) {
-                        if(checkbox.isChecked()) {
-                            path = getFilesDir();
-                            file = new File(path, "resources");
-
-                            try {
-                                FileInputStream fis = context.openFileInput("resources");       //Tenta di trovare il file resources (se non c'è entra nel primo catch)
-                                OutputStreamWriter write = new OutputStreamWriter(context.openFileOutput("resources", Context.MODE_PRIVATE));     //apre il file resources om scrittura
-                                BufferedReader br = new BufferedReader(new FileReader(file));
-                                write.write(email+" || "+password+" 1");
-                                write.close();
-
-
-                            } catch (FileNotFoundException e) {
-                                OutputStreamWriter write = null;
-                                try {
-                                    write = new OutputStreamWriter(context.openFileOutput("resources", Context.MODE_PRIVATE));
-                                } catch (FileNotFoundException ex) {
-                                    ex.printStackTrace();
-                                }
-                                try {
-                                    write.write(email+" || "+password);
-                                } catch (IOException ex) {
-                                    ex.printStackTrace();
-                                }
-                                try {
-                                    write.close();
-                                } catch (IOException ex) {
-                                    ex.printStackTrace();
-                                }
-
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
+                if(true) { //connection.isConnected()
+                    if(true) { //connection.provaLogin(email, password,false)
+                        if(checkbox.isChecked()) writeResources(email, password);
                         Intent mainIntent = new Intent(this,MainActivity.class);
                         startActivity(mainIntent);
 
                     }
                 }
-                else {
-                    Snackbar.make(view, "Non è stato possibile stabilire la connessione. Riprovare.", Snackbar.LENGTH_LONG).show();
-                }
+                else Snackbar.make(view, "Non è stato possibile stabilire la connessione. Riprovare.", Snackbar.LENGTH_LONG).show();
             }
 
         });
@@ -135,6 +125,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(connection.isConnected()) {
                     if(connection.provaLogin(email, password,true)) {  //aggiungere condizione che controlla se le credenziali non siano già state usate
                         //crea utente e poi fai il login
+                        if(checkbox.isChecked()) writeResources(email, password);
                         Intent mainIntent = new Intent(this,MainActivity.class);
                         startActivity(mainIntent);
                     }
@@ -156,4 +147,41 @@ public class LoginActivity extends AppCompatActivity {
     }
     //verifica che l'utente che vuole fare il login esista davvero
     private boolean AreCredentialsRight(String email, String password) { return true;}
+
+    private void writeResources(String email, String password) {
+        try {
+            OutputStreamWriter write = new OutputStreamWriter(context.openFileOutput("resources", Context.MODE_PRIVATE));     //apre il file resources om scrittura
+            write.write("1");
+            write.write(10);
+            write.write(password);
+            write.write(10);
+            write.write(email);
+            write.close();
+
+
+        } catch (FileNotFoundException e) {
+            OutputStreamWriter write = null;
+            File writePath = getFilesDir();
+            File writeFile = new File(writePath, "resources");
+
+            try {
+                write = new OutputStreamWriter(context.openFileOutput("resources", Context.MODE_PRIVATE));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+            try {
+                write.write(email+" || "+password);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            try {
+                write.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
