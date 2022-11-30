@@ -30,17 +30,14 @@ void clientThread(int clientSocket)
      */
 }
 
-
-
+void *connection_handler(void *);
 
 
 int main(int argc, char *argv[])
 {
     //variabili per connessione al db o altre cose inerenti alla gestione dati da db:
-    PGconn *conn;
+    PGconn *conn = NULL;
     conn = dbConnection(conn);
-    Group *groups = NULL;
-    groups = (Group*)malloc(100 * sizeof (Group));
 
     int serverSocket;
     struct sockaddr_in serverAddr;
@@ -80,12 +77,42 @@ int main(int argc, char *argv[])
         fflush(stdout);
         // Estrae la prima richiesta dalla coda
         int newSocket = accept(serverSocket, NULL,NULL);
-        int choice = 0;
-        pthread_create(&tid[i], NULL, (void *(*)(void *)) clientThread, &newSocket);
+        pthread_create(&tid[i], NULL, connection_handler, &newSocket);
+        printf("%d Connesso!\n", tid[i]);
         i++;
-        printf("Connesso!\n");
     }
-    //free(groups);
-    //dbDeconnection(conn);
+}
+
+void *connection_handler(void *socket_desc)
+{
+    int sock = *(int*)socket_desc;
+    int read_size;
+    char *message , client_message[2000];
+
+    message = "Giorgio sei un piscione\n";
+    write(sock , message , strlen(message));
+
+    while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 )
+    {
+        //end of string marker
+        client_message[read_size] = '\0';
+
+        //Send the message back to client
+        write(sock , client_message , strlen(client_message));
+
+        //clear the message buffer
+        memset(client_message, 0, 2000);
+    }
+
+    if(read_size == 0)
+    {
+        puts("Client disconnected");
+        fflush(stdout);
+    }
+    else if(read_size == -1)
+    {
+        perror("recv failed");
+    }
+
     return 0;
 }
