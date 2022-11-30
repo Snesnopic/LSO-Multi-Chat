@@ -25,13 +25,15 @@ public class Connessione extends Thread {
 
     }
     public void run() {
-        try {
-            s = new Socket(statichostname, staticport);
-            isConnected = true;
-            pw = new PrintWriter(s.getOutputStream(), true);
-        } catch (IOException e) {
-            isConnected = false;
-            e.printStackTrace();
+        while(!isConnected) {
+            try {
+                s = new Socket(statichostname, staticport);
+                isConnected = true;
+                pw = new PrintWriter(s.getOutputStream(), true);
+            } catch (IOException e) {
+                isConnected = false;
+                e.printStackTrace();
+            }
         }
     }
     boolean login(String email, String password, boolean register)
