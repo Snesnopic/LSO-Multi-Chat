@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.snesnopic.ermes.datapkg.Group;
+import com.snesnopic.ermes.datapkg.Message;
+
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 

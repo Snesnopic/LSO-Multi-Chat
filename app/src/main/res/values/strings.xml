@@ -14,5 +14,7 @@
     <string name="insert_group_name">Group name</string>
     <string name="group_name_hint">e.g. Gaming group</string>
     <string name="title_activity_main2">MainActivity2</string>
+    <string name="todo">TODO</string>
+    <string name="todog">TODO</string>
 
 </resources>

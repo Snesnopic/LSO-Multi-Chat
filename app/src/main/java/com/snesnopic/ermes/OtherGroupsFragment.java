@@ -10,6 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.snesnopic.ermes.datapkg.Group;
+import com.snesnopic.ermes.datapkg.Message;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

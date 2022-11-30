@@ -8,7 +8,7 @@ public class Connessione extends Thread {
     static PrintWriter pw;
     static String statichostname;
     static int staticport;
-    private static boolean isConnected;
+    private static boolean isConnected = false;
     Socket s;
     private static Connessione instance;
 

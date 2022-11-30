@@ -1,4 +1,4 @@
-package datapkg;
+package com.snesnopic.ermes.datapkg;
 
 public class User {
     private String username;

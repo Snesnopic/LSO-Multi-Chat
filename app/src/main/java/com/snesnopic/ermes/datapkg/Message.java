@@ -1,4 +1,4 @@
-package com.snesnopic.ermes;
+package com.snesnopic.ermes.datapkg;
 
 import java.time.LocalDateTime;
 

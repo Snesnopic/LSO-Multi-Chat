@@ -46,9 +46,9 @@ public class LoginActivity extends AppCompatActivity {
         path = getFilesDir();
         file = new File(path, "resources");
 
-        connection = Connessione.getInstance("192.168.160.37", 8989);
+        connection = Connessione.getInstance("172.27.236.113", 8989);
         connection.start();
-        if(!connection.isConnected()) {
+        if(false) { //!connection.isConnected()
             ImageView image = (ImageView) findViewById(R.id.logoImage);    //serve così può uscire la notifica in basso
             Snackbar.make(image, "ATTENZIONE! Connessione non stabilita!", Snackbar.LENGTH_LONG).show();
         }

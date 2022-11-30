@@ -1,4 +1,6 @@
-package com.snesnopic.ermes;
+package com.snesnopic.ermes.datapkg;
+
+import com.snesnopic.ermes.datapkg.Message;
 
 import java.util.List;
 
