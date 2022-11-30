@@ -34,7 +34,7 @@ public class Connessione extends Thread {
             e.printStackTrace();
         }
     }
-    boolean provaLogin(String email, String password, boolean register)
+    boolean login(String email, String password, boolean register)
     {
         try {
             pw.println(email);
@@ -78,4 +78,5 @@ public class Connessione extends Thread {
     public boolean isConnected() {
         return isConnected;
     }
+
 }

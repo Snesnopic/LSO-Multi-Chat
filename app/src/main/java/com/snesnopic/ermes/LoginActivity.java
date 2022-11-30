@@ -25,6 +25,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.Socket;
+import java.util.concurrent.TimeUnit;
 
 public class LoginActivity extends AppCompatActivity {
     Context context = this;
@@ -46,9 +48,18 @@ public class LoginActivity extends AppCompatActivity {
         path = getFilesDir();
         file = new File(path, "resources");
 
-        connection = Connessione.getInstance("172.27.236.113", 8989);
+        connection = Connessione.getInstance("192.168.152.155", 8989);
         connection.start();
-        if(false) { //!connection.isConnected()
+
+
+        for(int i = 0; i < 3 && !connection.isConnected();i++) {
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        if(!connection.isConnected()) {
             ImageView image = (ImageView) findViewById(R.id.logoImage);    //serve così può uscire la notifica in basso
             Snackbar.make(image, "ATTENZIONE! Connessione non stabilita!", Snackbar.LENGTH_LONG).show();
         }
@@ -95,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
             }
             else {
                 if(connection.isConnected()) {
-                    if(connection.provaLogin(email, password,false)) {
+                    if(connection.login(email, password,false)) {
                         if(checkbox.isChecked()) writeResources(email, password);
                         Intent mainIntent = new Intent(this,MainActivity.class);
                         startActivity(mainIntent);
@@ -125,7 +136,7 @@ public class LoginActivity extends AppCompatActivity {
             }
             else {
                 if(connection.isConnected()) {
-                    if(connection.provaLogin(email, password,true)) {  //aggiungere condizione che controlla se le credenziali non siano già state usate
+                    if(connection.login(email, password,true)) {  //aggiungere condizione che controlla se le credenziali non siano già state usate
                         //crea utente e poi fai il login
                         if(checkbox.isChecked()) writeResources(email, password);
                         Intent mainIntent = new Intent(this,MainActivity.class);
