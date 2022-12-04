@@ -47,9 +47,12 @@ public class LoginActivity extends AppCompatActivity {
         path = getFilesDir();
         file = new File(path, "resources");
 
-        connection = Connessione.getInstance("192.168.152.155", 8989);
+        connection = Connessione.getInstance("192.168.1.20", 8989);
         connection.start();
 
+
+        //aspetta per tre volte (circa 5 secondi) la connessione, altrimenti va avanti. Aggiunto perche' c'era l'alto rischio che la main activity si avviasse prima di stabilire la connessione
+        // e risultava sempre offline nonostante non lo fosse.
 
         for(int i = 0; i < 3 && !connection.isConnected();i++) {
             try {

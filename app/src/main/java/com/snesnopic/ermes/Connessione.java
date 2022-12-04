@@ -1,6 +1,9 @@
 package com.snesnopic.ermes;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -9,6 +12,7 @@ public class Connessione extends Thread {
     static String statichostname;
     static int staticport;
     private static boolean isConnected = false;
+    BufferedReader input = null;
     Socket s;
     private static Connessione instance;
 
@@ -35,12 +39,36 @@ public class Connessione extends Thread {
                 e.printStackTrace();
             }
         }
+
+        /* ESEMPIO DI SEND FROM SOCKET
+        try {
+            DataOutputStream output = new DataOutputStream(s.getOutputStream());
+            output.writeBytes("Claudio sei un piscione");
+            output.flush();
+            output.writeBytes("Claudio sei un piscione x2");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+         ESEMPIO DI RECEIVE FROM SOCKET
+        try {
+            input = new BufferedReader(new InputStreamReader(s.getInputStream()));
+        } catch (IOException e) {
+            System.out.println("Non ci sono riuscito");
+            e.printStackTrace();
+        }
+        try {
+            System.out.println("++++++Sono buffered: "+input.readLine());
+        } catch (IOException e) {
+            System.out.println("Non ci sono riuscito");
+            e.printStackTrace();
+        }*/
     }
-    boolean login(String email, String password, boolean register)
-    {
+    boolean login(String email, String password, boolean register) {
         try {
             pw.println(email);
             pw.println(password);
+            pw.flush();
             //ritorna vero se riceve 1 (login success) altrimenti 0
             int response = s.getInputStream().read();
             switch(response) {
