@@ -43,7 +43,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide();                       //nasconde il nome sopra l'app
         setContentView(R.layout.login_activity);
         path = getFilesDir();
         file = new File(path, "resources");
