@@ -1,7 +1,7 @@
 package com.snesnopic.ermes.datapkg;
 
 public class User {
-    private String username;
-    private String password;
-    private int userid;
+    public String username;
+    public String password;
+    public int userid;
 }
