@@ -16,5 +16,7 @@
     <string name="title_activity_main2">MainActivity2</string>
     <string name="todo">TODO</string>
     <string name="todog">TODO</string>
+    <string name="newGroupButton">Create new group</string>
+    <string name="logout">Logout</string>
 
 </resources>
