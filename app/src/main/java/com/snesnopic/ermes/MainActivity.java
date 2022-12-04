@@ -3,26 +3,31 @@ package com.snesnopic.ermes;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
-
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPager2 viewPager;
     TabAdapter tabAdapter;
-    FloatingActionButton options;
-    FloatingActionButton createGroup;
-    FloatingActionButton exit;
-    int count = 0;
+
+    Animation rotateOpen;
+    Animation rotateClose;
+    Animation fromBottom;
+    Animation toBottom;
+
+    FloatingActionButton expandButton;
+    FloatingActionButton newGroupButton;
+    FloatingActionButton logoutButton;
+
+    boolean actionButtonClicked = false;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,51 +57,59 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //il pulsante in basso a destra ti porta a creare un nuovo gruppo
-        options = findViewById(R.id.floatingActionButton);
-        exit = findViewById(R.id.floatingActionButton3);
-        createGroup = findViewById(R.id.floatingActionButton2);
+        //animazioni dei floating action button
+        rotateOpen = AnimationUtils.loadAnimation(this,R.anim.rotate_open_anim);
+        rotateClose = AnimationUtils.loadAnimation(this,R.anim.rotate_close_anim);
+        fromBottom = AnimationUtils.loadAnimation(this,R.anim.from_bottom_anim);
+        toBottom = AnimationUtils.loadAnimation(this,R.anim.to_bottom_anim);
+        //trovo i floating action button
+        newGroupButton = findViewById(R.id.newGroupActionButton);
+        logoutButton = findViewById(R.id.logoutActionButton);
+        expandButton = findViewById(R.id.expandableActionButton);
+        //pulsante col +, premendolo si espande o ritrae
+        expandButton.setOnClickListener(view -> {
+            if(!actionButtonClicked)
+            {
+                newGroupButton.setVisibility(View.VISIBLE);
+                logoutButton.setVisibility(View.VISIBLE);
 
-        options.setOnClickListener(view -> {
-            if(count == 0) {
-                count++;
-                exit.setVisibility(View.VISIBLE);
-                createGroup.setVisibility(View.VISIBLE);
-                exit.setOnClickListener(view2 -> {
-                    File path = getFilesDir();
-                    File resources = new File(path, "resources");
-                    count--;
-
-                    BufferedReader br = null;
-                    try {
-                        br = new BufferedReader(new FileReader(resources));
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        if(br.readLine().equals("1")) {
-                            //bisogna sovrascrivere quell'1 con 0
-                            Intent exitIntent = new Intent(this,LoginActivity.class);
-                            startActivity(exitIntent);
-                            finish();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-                createGroup.setOnClickListener(view1 -> {
-                    count--;
-                    createGroup.setVisibility(View.INVISIBLE);
-                    exit.setVisibility(View.INVISIBLE);
-                    Intent groupIntent = new Intent(this,CreateGroupActivity.class);
-                    startActivity(groupIntent); });
+                newGroupButton.startAnimation(fromBottom);
+                logoutButton.startAnimation(fromBottom);
+                expandButton.startAnimation(rotateOpen);
             }
-            else {
-                count--;
-                createGroup.setVisibility(View.INVISIBLE);
-                exit.setVisibility(View.GONE);
+            else
+            {
+                newGroupButton.startAnimation(toBottom);
+                logoutButton.startAnimation(toBottom);
+                expandButton.startAnimation(rotateClose);
+
+                newGroupButton.setVisibility(View.GONE);
+                logoutButton.setVisibility(View.GONE);
+            }
+            actionButtonClicked = !actionButtonClicked;
+        });
+        //pulsante di nuovo gruppo
+        newGroupButton.setOnClickListener(view -> {
+            Intent createGroupIntent = new Intent(this,CreateGroupActivity.class);
+            startActivity(createGroupIntent);
+        });
+        //pulsante di logout
+        logoutButton.setOnClickListener(view -> {
+            File resources = new File(getFilesDir(), "resources");
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(resources));
+                if(br.readLine().equals("1")) {
+                    //bisogna sovrascrivere quell'1 con 0
+                    //o magari eliminiamo il file direttamente
+                    Intent exitIntent = new Intent(this,LoginActivity.class);
+                    startActivity(exitIntent);
+                    finish();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
+
     }
 }
 

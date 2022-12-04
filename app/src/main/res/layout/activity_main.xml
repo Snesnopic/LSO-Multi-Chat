@@ -6,33 +6,19 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton3"
-        android:layout_width="41dp"
-        android:layout_height="43dp"
-        android:layout_marginEnd="22dp"
-        android:layout_marginBottom="11dp"
+        android:id="@+id/newGroupActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
         android:clickable="true"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/floatingActionButton2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_delete"
-        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+        android:contentDescription="@string/newGroupButton"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/expandableActionButton"
+        app:layout_constraintEnd_toEndOf="@+id/expandableActionButton"
+        app:srcCompat="@android:drawable/ic_menu_edit" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton2"
-        android:layout_width="41dp"
-        android:layout_height="43dp"
-        android:layout_marginEnd="22dp"
-        android:layout_marginBottom="11dp"
-        android:clickable="true"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/floatingActionButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_input_add"
-        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/expandableActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="15dp"
@@ -43,6 +29,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_input_add"
         tools:ignore="ImageContrastCheck" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/logoutActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:clickable="true"
+        android:contentDescription="@string/logout"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/newGroupActionButton"
+        app:layout_constraintEnd_toEndOf="@+id/newGroupActionButton"
+        app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
@@ -56,7 +54,9 @@
             android:id="@+id/myGroupsTabItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/my_groups" />
+            android:text="@string/my_groups"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="-2dp" />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/otherGroupsTabItem"
@@ -81,6 +81,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout" >
+
+    </androidx.viewpager2.widget.ViewPager2>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
