@@ -100,13 +100,16 @@ public class MainActivity extends AppCompatActivity {
                 BufferedReader br = new BufferedReader(new FileReader(resources));
                 if(br.readLine().equals("1")) {
                     //bisogna sovrascrivere quell'1 con 0
-                    //o magari eliminiamo il file direttamente
+                    //o magari eliminiamo il file direttamente || bravo mi piace come scelta, ora lo implemento
+                    resources.delete();
                     Intent exitIntent = new Intent(this,LoginActivity.class);
                     startActivity(exitIntent);
                     finish();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Intent exitIntent = new Intent(this,LoginActivity.class);
+                startActivity(exitIntent);
+                finish();
             }
         });
 

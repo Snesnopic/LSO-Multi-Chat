@@ -47,8 +47,12 @@ public class LoginActivity extends AppCompatActivity {
         path = getFilesDir();
         file = new File(path, "resources");
 
-        connection = Connessione.getInstance("192.168.1.20", 8989);
-        connection.start();
+        try {
+            connection = Connessione.getInstance("192.168.1.20", 8989);
+            connection.start();
+        } catch (IllegalThreadStateException e) {
+            e.printStackTrace();
+        }
 
 
         //aspetta per tre volte (circa 5 secondi) la connessione, altrimenti va avanti. Aggiunto perche' c'era l'alto rischio che la main activity si avviasse prima di stabilire la connessione
@@ -108,7 +112,7 @@ public class LoginActivity extends AppCompatActivity {
             }
             else {
                 if(connection.isConnected()) {
-                    if(connection.login(email, password,false)) {
+                    if(true) { //connection.login(email, password,false
                         if(checkbox.isChecked()) writeResources(email, password);
                         Intent mainIntent = new Intent(this,MainActivity.class);
                         startActivity(mainIntent);

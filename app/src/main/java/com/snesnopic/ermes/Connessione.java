@@ -6,13 +6,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class Connessione extends Thread {
-    static PrintWriter pw;
+    static PrintWriter send;
     static String statichostname;
     static int staticport;
     private static boolean isConnected = false;
-    BufferedReader input = null;
+    private BufferedReader recv = null;
     Socket s;
     private static Connessione instance;
 
@@ -25,31 +26,23 @@ public class Connessione extends Thread {
         return instance;
     }
 
-    private Connessione() {
+    private Connessione() {}
 
-    }
+
     public void run() {
         while(!isConnected) {
             try {
                 s = new Socket(statichostname, staticport);
                 isConnected = true;
-                pw = new PrintWriter(s.getOutputStream(), true);
+                send = new PrintWriter(s.getOutputStream(), true);
+                recv = new BufferedReader(new InputStreamReader(s.getInputStream()));
             } catch (IOException e) {
                 isConnected = false;
                 e.printStackTrace();
             }
         }
 
-        /* ESEMPIO DI SEND FROM SOCKET
-        try {
-            DataOutputStream output = new DataOutputStream(s.getOutputStream());
-            output.writeBytes("Claudio sei un piscione");
-            output.flush();
-            output.writeBytes("Claudio sei un piscione x2");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        /*
          ESEMPIO DI RECEIVE FROM SOCKET
         try {
             input = new BufferedReader(new InputStreamReader(s.getInputStream()));
@@ -65,10 +58,11 @@ public class Connessione extends Thread {
         }*/
     }
     boolean login(String email, String password, boolean register) {
+
         try {
-            pw.println(email);
-            pw.println(password);
-            pw.flush();
+            send.println(email);
+            send.println(password);
+
             //ritorna vero se riceve 1 (login success) altrimenti 0
             int response = s.getInputStream().read();
             switch(response) {
