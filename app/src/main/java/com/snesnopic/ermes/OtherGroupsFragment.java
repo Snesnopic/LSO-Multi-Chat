@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.snesnopic.ermes.datapkg.Group;
 import com.snesnopic.ermes.datapkg.Message;
@@ -44,5 +45,6 @@ public class OtherGroupsFragment extends Fragment {
         List<Group> otherGroups = GetOtherGroups();
         GroupsAdapter adapter = new GroupsAdapter(view.getContext(),otherGroups.size(),otherGroups);
         list.setAdapter(adapter);
+        list.setLayoutManager(new LinearLayoutManager(view.getContext()));
     }
 }
