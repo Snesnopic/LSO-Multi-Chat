@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -32,115 +33,25 @@ public class LoginActivity extends AppCompatActivity {
     FileInputStream fis;
     Connessione connection;
     CheckBox checkbox;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.login_activity);
-        path = getFilesDir();
-        file = new File(path, "resources");
-
-        try {
-            connection = Connessione.getInstance("192.168.1.20", 8989);
-            connection.start();
-        } catch (IllegalThreadStateException e) {
-            e.printStackTrace();
-        }
-
-
-        //aspetta per tre volte (circa 5 secondi) la connessione, altrimenti va avanti. Aggiunto perche' c'era l'alto rischio che la main activity si avviasse prima di stabilire la connessione
-        // e risultava sempre offline nonostante non lo fosse.
-
-        for(int i = 0; i < 3 && !connection.isConnected();i++) {
-            try {
-                Thread.sleep(1500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        if(!connection.isConnected()) {
-            ImageView image = (ImageView) findViewById(R.id.logoImage);    //serve così può uscire la notifica in basso
-            Snackbar.make(image, "ATTENZIONE! Connessione non stabilita!", Snackbar.LENGTH_LONG).show();
-        }
-        else {
-            try {                   //tenta di leggere il file risorse
-                BufferedReader br = new BufferedReader(new FileReader(file));
-                if(br.readLine().equals("1")) {
-                    username = br.readLine();
-                    password = br.readLine();
-                    br.close();
-                    Intent mainIntent = new Intent(this,MainActivity.class);
-                    startActivity(mainIntent);
-                    finish();
-                }
-                else initialize();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        initialize();
-    }
-
-    private void initialize() {
-        checkbox = (CheckBox) findViewById(R.id.keepMeSignedInBox);
-        //pulsante Login
-        loginButton = findViewById(R.id.loginButton);
-        loginButton.setOnClickListener(view -> {
-            EditText em = findViewById(R.id.editTextTextEmailAddress);
-            EditText pw = findViewById(R.id.editTextTextPassword);
-            username = em.getText().toString();
-            password = pw.getText().toString();
-
-            if(username.isEmpty() || password.isEmpty()) {
+    protected void tryLogin(String username,String password,boolean isRegister)
+    {
+        {
+            if (username.isEmpty() || password.isEmpty()) {
                 new AlertDialog.Builder(this)
                         .setMessage(R.string.fields_error)
                         // A null listener allows the button to dismiss the dialog and take no further action.
                         .setNegativeButton(android.R.string.ok, null)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
-            }
-            else {
-                if(connection.isConnected()) {
-                    if(true) { //connection.login(username, password,false
-                        if(checkbox.isChecked()) writeResources(username, password);
-                        Intent mainIntent = new Intent(this,MainActivity.class);
+            } else {
+                if (connection.isConnected()) {
+                    if (connection.login(username, password, true)) {  //aggiungere condizione che controlla se le credenziali non siano già state usate
+                        //crea utente e poi fai il login
+                        if (checkbox.isChecked()) writeResources(username, password);
+                        Intent mainIntent = new Intent(this, MainActivity.class);
                         startActivity(mainIntent);
                         finish();
-
-                    }
-                }
-                else Snackbar.make(view, "Non è stato possibile stabilire la connessione. Riprovare.", Snackbar.LENGTH_LONG).show();
-            }
-
-        });
-
-        //pulsante Register
-        registerButton = findViewById(R.id.registerButton);
-        registerButton.setOnClickListener(view -> {
-            EditText em = findViewById(R.id.editTextTextEmailAddress);
-            EditText pw = findViewById(R.id.editTextTextPassword);
-            username = em.getText().toString();
-            password = pw.getText().toString();
-            if(username.isEmpty() || password.isEmpty()) {
-                new AlertDialog.Builder(this)
-                        .setMessage(R.string.fields_error)
-                        // A null listener allows the button to dismiss the dialog and take no further action.
-                        .setNegativeButton(android.R.string.ok, null)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }
-            else {
-                if(connection.isConnected()) {
-                    if(connection.login(username, password,true)) {  //aggiungere condizione che controlla se le credenziali non siano già state usate
-                        //crea utente e poi fai il login
-                        if(checkbox.isChecked()) writeResources(username, password);
-                        Intent mainIntent = new Intent(this,MainActivity.class);
-                        startActivity(mainIntent);
-                    }
-                    else {
+                    } else {
                         new AlertDialog.Builder(this)
                                 .setMessage(R.string.user_exists_error)
                                 // A null listener allows the button to dismiss the dialog and take no further action.
@@ -150,47 +61,74 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
             }
-        });
+        }
     }
-    //verifica che l'utente che si vuole creare non esiste già
-    private boolean AreCredentialsDontExist(String username) {
-        return true;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.login_activity);
+        path = getFilesDir();
+        file = new File(path, "resources");
+
+        try {
+            connection = Connessione.getInstance("192.168.154.155", 8989);
+            connection.start();
+        } catch (IllegalThreadStateException e) {
+            e.printStackTrace();
+        }
+
+
+        //aspetta per tre volte (circa 5 secondi) la connessione, altrimenti va avanti. Aggiunto perche' c'era l'alto rischio che la main activity si avviasse prima di stabilire la connessione
+        // e risultava sempre offline nonostante non lo fosse.
+
+        for (int i = 0; i < 3 && !connection.isConnected(); i++) {
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        if (!connection.isConnected()) {
+            ImageView image = (ImageView) findViewById(R.id.logoImage);    //serve così può uscire la notifica in basso
+            Snackbar.make(image, "ATTENZIONE! Connessione non stabilita!", Snackbar.LENGTH_LONG).show();
+        }
+        else {
+            try {                   //tenta di leggere il file risorse
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                username = br.readLine();
+                password = br.readLine();
+                br.close();
+                tryLogin(username,password,false);
+            }
+             catch (IOException e) {
+                e.printStackTrace();
+             }
+            initialize();
+        }
+
     }
-    //verifica che l'utente che vuole fare il login esista davvero
-    private boolean AreCredentialsRight(String username, String password) { return true;}
+
+    private void initialize() {
+        EditText em = findViewById(R.id.editTextTextEmailAddress);
+        EditText pw = findViewById(R.id.editTextTextPassword);
+        checkbox = (CheckBox) findViewById(R.id.keepMeSignedInBox);
+        //pulsante Login
+        loginButton = findViewById(R.id.loginButton);
+        loginButton.setOnClickListener(view -> tryLogin(em.getText().toString(),pw.getText().toString(),false));
+
+        //pulsante Register
+        registerButton = findViewById(R.id.registerButton);
+        registerButton.setOnClickListener(view -> tryLogin(em.getText().toString(),pw.getText().toString(),true));
+    }
 
     private void writeResources(String username, String password) {
+
         try {
             OutputStreamWriter write = new OutputStreamWriter(context.openFileOutput("resources", Context.MODE_PRIVATE));     //apre il file resources om scrittura
-            write.write("1");
-            write.write(10);
             write.write(password);
             write.write(10);
             write.write(username);
             write.close();
-
-
-        } catch (FileNotFoundException e) {
-            OutputStreamWriter write = null;
-            File writePath = getFilesDir();
-            File writeFile = new File(writePath, "resources");
-
-            try {
-                write = new OutputStreamWriter(context.openFileOutput("resources", Context.MODE_PRIVATE));
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
-            try {
-                write.write(username+" || "+password);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-            try {
-                write.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
