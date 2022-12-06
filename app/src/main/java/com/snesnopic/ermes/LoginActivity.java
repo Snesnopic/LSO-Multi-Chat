@@ -61,12 +61,16 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
             }
+
         }
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
+        Intent mainIntent = new Intent(this, MainActivity.class);
+        startActivity(mainIntent);
+        finish();
         path = getFilesDir();
         file = new File(path, "resources");
 
@@ -109,9 +113,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initialize() {
-        EditText em = findViewById(R.id.editTextTextEmailAddress);
-        EditText pw = findViewById(R.id.editTextTextPassword);
-        checkbox = (CheckBox) findViewById(R.id.keepMeSignedInBox);
+        EditText em = findViewById(R.id.editTextUsername);
+        EditText pw = findViewById(R.id.editTextPassword);
+        checkbox = findViewById(R.id.keepMeSignedInBox);
         //pulsante Login
         loginButton = findViewById(R.id.loginButton);
         loginButton.setOnClickListener(view -> tryLogin(em.getText().toString(),pw.getText().toString(),false));
