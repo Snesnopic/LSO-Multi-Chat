@@ -1,16 +1,14 @@
 package com.snesnopic.ermes;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.snesnopic.ermes.datapkg.Group;
 import com.snesnopic.ermes.datapkg.Message;
-
 import java.time.format.DateTimeFormatter;
 
 public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -38,8 +36,9 @@ public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClick
     @Override
     public void onClick(View v) {
         if (this.g != null) {
-
             Toast.makeText(this.context, "Clicked on " + this.g.name, Toast.LENGTH_SHORT ).show();
+            Intent mainIntent = new Intent(context, ChatActivity.class);
+            context.startActivity(mainIntent);
         }
     }
 }
