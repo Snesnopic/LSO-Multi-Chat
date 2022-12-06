@@ -60,37 +60,15 @@ public class Connessione extends Thread {
     boolean login(String email, String password, boolean register) {
 
         try {
+            if(register)
+                send.println(1);
+            else
+                send.println(0);
             send.println(email);
             send.println(password);
 
-            //ritorna vero se riceve 1 (login success) altrimenti 0
             int response = s.getInputStream().read();
-            switch(response) {
-                default:
-                case 0:
-                    return false;
-                case 1:
-                    if(register) {
-                        s.getOutputStream().write(1);
-                        return false;
-                    }
-                    else
-                    {
-                        s.getOutputStream().write(0);
-                        return true;
-                    }
-                case 2:
-                    if(register) {
-                        s.getOutputStream().write(1);
-                        return true;
-                    }
-                    else
-                    {
-                        s.getOutputStream().write(0);
-                        return false;
-                    }
-
-            }
+            return response == 1;
 
         } catch (IOException e) {
             e.printStackTrace();
