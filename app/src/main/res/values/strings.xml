@@ -18,5 +18,7 @@
     <string name="todog">TODO</string>
     <string name="newGroupButton">Create new group</string>
     <string name="logout">Logout</string>
+    <string name="sendMessage">Send</string>
+    <string name="enter_message_hint">Enter Message</string>
 
 </resources>
