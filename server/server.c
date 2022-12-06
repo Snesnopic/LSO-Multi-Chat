@@ -12,31 +12,18 @@
 #include "user.h"
 
 
-void clientThread(int clientSocket)
-{
-    /*
-    int success = 0;
-    int userID;
-    while(success == 0) //login
-    {
-        char buffer[80];
-        read(clientSocket,buffer,4);
-        userID = atoi(buffer);
-        read(clientSocket,buffer,32);
-        //success = areCredentialsTrue(userID,buffer);
-        write(clientSocket,&buffer,4);
-    }
-    //Group* groups = getGroupsOfUsers(userID);
-     */
-}
-
 void *connection_handler(void *);
 
+int networkMessageHandler(char scelta, char str_1[], char str_2[], PGconn *conn);
+
+void writeOnSocket(int socket, char message[], int messageLenght);
+
+PGconn *conn = NULL;
 
 int main(int argc, char *argv[])
 {
     //variabili per connessione al db o altre cose inerenti alla gestione dati da db:
-    PGconn *conn = NULL;
+
     conn = dbConnection(conn);
 
     int serverSocket;
@@ -83,23 +70,63 @@ int main(int argc, char *argv[])
     }
 }
 
+int networkMessageHandler(char scelta, char str_1[], char str_2[], PGconn *conn)
+{
+    //str1 e str2 = username e password, non li ho chiamati in questo modo poiché si potrebbe scegliere anche la creazione o eliminazione di un gruppo
+    switch(scelta)
+    {
+        case '0': //login
+            return usernameAndPasswordCheck(str_1, str_2, conn); //0 se login OK, 1 altrimenti
+        case '1': //registrazione
+            return userRegistration(str_1, str_2, conn);
+        default:
+            printf("Errore network message hanlder: valore di scelta non valido\n");
+    }
+}
+
+
 void *connection_handler(void *socket_desc)
 {
     int sock = *(int*)socket_desc;
     int read_size;
     char *message , client_message[2000];
 
-    message = "Giorgio sei un piscione\n";
-    write(sock , message , strlen(message));
-
-    while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 )
+    while(read_size = recv(sock , client_message , 2000 , 0) > 0)
     {
+        read_size = recv(sock , client_message , 2000 , 0);
         //end of string marker
+        char choice = client_message[0];
+        client_message[read_size] = '\0';
+        printf("debug: %s\n", client_message);
+        strcpy(client_message, "");
+        read_size = recv(sock, client_message, 2000, 0);
+
+
+
+        printf("debug: %s\n", client_message);
+        client_message[read_size] = '\0';
+        char *buff = (char*)malloc(sizeof(char) * read_size);
+        strcpy(buff, client_message);
+        strcpy(client_message, "");
+
+        read_size = recv(sock, client_message, 2000, 0);
+
+
+        printf("debug: %s\n", client_message);
         client_message[read_size] = '\0';
 
-        //Send the message back to client
-        write(sock , client_message , strlen(client_message));
+        char *buff2 = (char*)malloc(sizeof(char) * read_size);
+        strcpy(buff2, client_message);
+        strcpy(client_message, "");
 
+        int msg = networkMessageHandler(choice, buff, buff2, conn);
+        char mess[33];
+        itoa(msg, mess);
+        fflush(stdout);
+        printf("messaggio della send: %s\n", mess);
+        send(sock, "", strlen(""), 0);
+        sleep(3);
+        send(sock , mess , strlen(mess), 0);
         //clear the message buffer
         memset(client_message, 0, 2000);
     }

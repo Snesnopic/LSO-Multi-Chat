@@ -11,3 +11,4 @@ typedef struct User
 int usernameAndPasswordCheck(char username[], char password[], PGconn* conn);
 
 int userRegistration(char username[], char password[], PGconn* conn);
+

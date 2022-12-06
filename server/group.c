@@ -116,3 +116,31 @@ Group* getAllGroups(PGconn* conn, int *row)
     }
     return gruppi;
 }
+
+GroupMessage* getGroupMessages(int group_id, PGconn *conn, int *row)
+{
+    if (conn == NULL)
+    {
+        printf("Connessione con DB persa o assente\n");
+        exit(0);
+    }
+    char **queryResult = (char**)malloc(100 * sizeof(char*));
+    for(int i = 0; i < 100; i++)
+        queryResult[i] = (char*)malloc(100*sizeof(char));
+    char whereCondition[250] = " roomid = ";
+    char buffer[33];
+    itoa(group_id, buffer);
+    strcpy(whereCondition, buffer);
+    queryResult = selectdb("messagetext, timestampdata, userid", "MessageData", whereCondition, conn, row, 3);
+    GroupMessage *messaggi = (GroupMessage *) malloc(*row * sizeof(GroupMessage));
+    int j = 0;
+    for(int i = 0; i < *row; i = i + 1)
+    {
+        strcpy(messaggi[i].message, queryResult[j]);
+        strcpy(messaggi[i].timestamp, queryResult[j+1]);
+        messaggi[i].groupId = group_id;
+        messaggi[i].userId = atoi(queryResult[j+2]);
+        j = j + 3;
+    }
+    return messaggi;
+}
