@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.snesnopic.ermes.NonScrollListView
-        android:id="@+id/requestsListView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/requestsRecyclerView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:divider="@color/background"
