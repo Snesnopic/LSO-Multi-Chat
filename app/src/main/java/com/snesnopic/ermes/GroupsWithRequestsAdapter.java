@@ -23,7 +23,7 @@ public class GroupsWithRequestsAdapter extends RecyclerView.Adapter<GroupWithReq
     @NonNull
     @Override
     public GroupWithRequestHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(this.itemResource,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.listactivity_row_groupwithrequests,parent,false);
         return new GroupWithRequestHolder(this.context,view);
     }
 
