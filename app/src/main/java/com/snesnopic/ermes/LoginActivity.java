@@ -5,18 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.content.Context;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.window.SplashScreen;
 
 import com.google.android.material.snackbar.Snackbar;
-
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -25,14 +20,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.net.Socket;
-import java.util.concurrent.TimeUnit;
 
 public class LoginActivity extends AppCompatActivity {
     Context context = this;
     Button loginButton;
     Button registerButton;
-    String email;
+    String username;
     String password;
     File path;                                                 //path dove viene creato il file
     File file;                                                 //file che contiene alcune informazioni dell'utente
@@ -71,10 +64,9 @@ public class LoginActivity extends AppCompatActivity {
         }
         else {
             try {                   //tenta di leggere il file risorse
-
                 BufferedReader br = new BufferedReader(new FileReader(file));
                 if(br.readLine().equals("1")) {
-                    email = br.readLine();
+                    username = br.readLine();
                     password = br.readLine();
                     br.close();
                     Intent mainIntent = new Intent(this,MainActivity.class);
@@ -99,10 +91,10 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(view -> {
             EditText em = findViewById(R.id.editTextTextEmailAddress);
             EditText pw = findViewById(R.id.editTextTextPassword);
-            email = em.getText().toString();
+            username = em.getText().toString();
             password = pw.getText().toString();
 
-            if(email.isEmpty() || password.isEmpty()) {
+            if(username.isEmpty() || password.isEmpty()) {
                 new AlertDialog.Builder(this)
                         .setMessage(R.string.fields_error)
                         // A null listener allows the button to dismiss the dialog and take no further action.
@@ -112,8 +104,8 @@ public class LoginActivity extends AppCompatActivity {
             }
             else {
                 if(connection.isConnected()) {
-                    if(true) { //connection.login(email, password,false
-                        if(checkbox.isChecked()) writeResources(email, password);
+                    if(true) { //connection.login(username, password,false
+                        if(checkbox.isChecked()) writeResources(username, password);
                         Intent mainIntent = new Intent(this,MainActivity.class);
                         startActivity(mainIntent);
                         finish();
@@ -130,9 +122,9 @@ public class LoginActivity extends AppCompatActivity {
         registerButton.setOnClickListener(view -> {
             EditText em = findViewById(R.id.editTextTextEmailAddress);
             EditText pw = findViewById(R.id.editTextTextPassword);
-            email = em.getText().toString();
+            username = em.getText().toString();
             password = pw.getText().toString();
-            if(email.isEmpty() || password.isEmpty()) {
+            if(username.isEmpty() || password.isEmpty()) {
                 new AlertDialog.Builder(this)
                         .setMessage(R.string.fields_error)
                         // A null listener allows the button to dismiss the dialog and take no further action.
@@ -142,9 +134,9 @@ public class LoginActivity extends AppCompatActivity {
             }
             else {
                 if(connection.isConnected()) {
-                    if(connection.login(email, password,true)) {  //aggiungere condizione che controlla se le credenziali non siano già state usate
+                    if(connection.login(username, password,true)) {  //aggiungere condizione che controlla se le credenziali non siano già state usate
                         //crea utente e poi fai il login
-                        if(checkbox.isChecked()) writeResources(email, password);
+                        if(checkbox.isChecked()) writeResources(username, password);
                         Intent mainIntent = new Intent(this,MainActivity.class);
                         startActivity(mainIntent);
                     }
@@ -161,20 +153,20 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
     //verifica che l'utente che si vuole creare non esiste già
-    private boolean AreCredentialsDontExist(String email) {
+    private boolean AreCredentialsDontExist(String username) {
         return true;
     }
     //verifica che l'utente che vuole fare il login esista davvero
-    private boolean AreCredentialsRight(String email, String password) { return true;}
+    private boolean AreCredentialsRight(String username, String password) { return true;}
 
-    private void writeResources(String email, String password) {
+    private void writeResources(String username, String password) {
         try {
             OutputStreamWriter write = new OutputStreamWriter(context.openFileOutput("resources", Context.MODE_PRIVATE));     //apre il file resources om scrittura
             write.write("1");
             write.write(10);
             write.write(password);
             write.write(10);
-            write.write(email);
+            write.write(username);
             write.close();
 
 
@@ -189,7 +181,7 @@ public class LoginActivity extends AppCompatActivity {
                 ex.printStackTrace();
             }
             try {
-                write.write(email+" || "+password);
+                write.write(username+" || "+password);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
