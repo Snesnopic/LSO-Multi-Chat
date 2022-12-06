@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class ChatActivity extends AppCompatActivity {
-    ArrayList<Message> GetMessages()
+    ArrayList<Message> GetMessagesFromGroup(String groupName)
     {
         ArrayList<Message> messages = new ArrayList<>();
         for(int i = 0; i < 5; ++i)
@@ -28,7 +28,8 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_activity);
         list = findViewById(R.id.recycler_gchat);
-        ArrayList<Message> messages = GetMessages();
+        String groupName = getIntent().getExtras().getString("groupName");
+        ArrayList<Message> messages = GetMessagesFromGroup(groupName);
         MessageAdapter adapter = new MessageAdapter(this, messages.size(),messages);
         list.setLayoutManager(new LinearLayoutManager(this));
         list.setAdapter(adapter);
