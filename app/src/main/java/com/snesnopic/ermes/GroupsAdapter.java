@@ -23,7 +23,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupHolder> {
     @NonNull
     @Override
     public GroupHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(this.itemResource,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.listactivity_row_group,parent,false);
         return new GroupHolder(this.context,view);
     }
 
