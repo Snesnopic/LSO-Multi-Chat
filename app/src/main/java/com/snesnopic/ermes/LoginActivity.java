@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
                         .show();
             } else {
                 if (connection.isConnected()) {
-                    if (connection.login(username, password, isRegister)) {  //aggiungere condizione che controlla se le credenziali non siano già state usate
+                    if (true) {  //aggiungere condizione che controlla se le credenziali non siano già state usate connection.login(username, password, true)
                         //crea utente e poi fai il login
                         if (checkbox.isChecked()) writeResources(username, password);
                         Intent mainIntent = new Intent(this, MainActivity.class);
@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                 tryLogin(username,password,false);
             }
              catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("File risorse non esistente");
              }
             initialize();
         }
