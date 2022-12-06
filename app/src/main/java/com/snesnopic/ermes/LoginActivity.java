@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
                         .show();
             } else {
                 if (connection.isConnected()) {
-                    if (connection.login(username, password, true)) {  //aggiungere condizione che controlla se le credenziali non siano già state usate
+                    if (connection.login(username, password, isRegister)) {  //aggiungere condizione che controlla se le credenziali non siano già state usate
                         //crea utente e poi fai il login
                         if (checkbox.isChecked()) writeResources(username, password);
                         Intent mainIntent = new Intent(this, MainActivity.class);
