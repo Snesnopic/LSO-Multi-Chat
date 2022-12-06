@@ -4,46 +4,33 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import com.snesnopic.ermes.datapkg.Group;
-import com.snesnopic.ermes.datapkg.Request;
-import com.snesnopic.ermes.datapkg.User;
-
-import java.util.ArrayList;
 import java.util.List;
 
-public class GroupsWithRequestsAdapter extends BaseAdapter {
+public class GroupsWithRequestsAdapter extends RecyclerView.Adapter<GroupWithRequestHolder>  {
     private final List<Group> groups;
-
+    private final int itemResource;
     private final Context context;
-    public GroupsWithRequestsAdapter(Context context, List<Group> groups)
+    public GroupsWithRequestsAdapter(Context context,int itemResource, List<Group> groups)
     {
         this.context = context;
         this.groups = groups;
+        this.itemResource = itemResource;
     }
-    public ArrayList<Request> RequestsOfGroup(Group g)
-    {
-        ArrayList<Request> requestsOfGroup = new ArrayList<>();
-        for(int i = 0; i < 5; ++i)
-        {
-            Request r = new Request();
-            User a = new User();
-            a.username = "Utente " + i + "(" + g.name + ")";
-            r.user = a;
-            requestsOfGroup.add(r);
-        }
-        return requestsOfGroup;
-    }
+
+    @NonNull
     @Override
-    public int getCount() {
-        return groups.size();
+    public GroupWithRequestHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(this.itemResource,parent,false);
+        return new GroupWithRequestHolder(this.context,view);
     }
 
     @Override
-    public Object getItem(int i) {
-        return groups.get(i);
+    public void onBindViewHolder(@NonNull GroupWithRequestHolder holder, int position) {
+        Group g = this.groups.get(position);
+        holder.bindGroupWithRequest(g);
     }
 
     @Override
@@ -52,18 +39,8 @@ public class GroupsWithRequestsAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View v, ViewGroup viewGroup) {
-        if (v == null)
-        {
-            v = LayoutInflater.from(context).inflate(R.layout.listactivity_row_groupwithrequests, null);
-        }
-        Group g = (Group) getItem(position);
-        TextView txt = v.findViewById(R.id.txt_groupwithrequestname);
-        txt.setText(g.name);
-        ListView lv = v.findViewById(R.id.requestsListView);
-        RequestsOfGroupAdapter rofga = new RequestsOfGroupAdapter(context,RequestsOfGroup((Group) getItem(position)));
-        lv.setAdapter(rofga);
-
-        return v;
+    public int getItemCount() {
+        return groups.size();
     }
+
 }

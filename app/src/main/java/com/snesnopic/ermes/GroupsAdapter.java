@@ -4,53 +4,41 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
-
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import com.snesnopic.ermes.datapkg.Group;
-import com.snesnopic.ermes.datapkg.Message;
-
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class GroupsAdapter extends BaseAdapter {
+public class GroupsAdapter extends RecyclerView.Adapter<GroupHolder> {
     private final List<Group> groups;
-
     private final Context context;
-    public GroupsAdapter(Context context, List<Group> groups)
+    private final int itemResource;
+    public GroupsAdapter(Context context,int itemResource, List<Group> groups)
     {
         this.context = context;
         this.groups = groups;
+        this.itemResource = itemResource;
     }
+
+    @NonNull
     @Override
-    public int getCount() {
-        return groups.size();
+    public GroupHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(this.itemResource,parent,false);
+        return new GroupHolder(this.context,view);
     }
 
     @Override
-    public Object getItem(int i) {
-        return groups.get(i);
+    public void onBindViewHolder(@NonNull GroupHolder holder, int position) {
+        Group g = this.groups.get(position);
+        holder.bindGroup(g);
     }
 
     @Override
     public long getItemId(int i) {
         return i;
     }
-
     @Override
-    public View getView(int position, View v, ViewGroup viewGroup) {
-        if (v == null)
-        {
-            v = LayoutInflater.from(context).inflate(R.layout.listactivity_row_group, null);
-        }
-        Group g = (Group) getItem(position);
-        TextView txt = v.findViewById(R.id.txt_group_name);
-        txt.setText(g.name);
-        txt = v.findViewById(R.id.txt_group_lastmessage);
-        Message lastMessage = g.messages.get(g.messages.size() - 1);
-        txt.setText(lastMessage.message);
-        txt = v.findViewById(R.id.txt_group_datetime);
-        txt.setText(lastMessage.time.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-        return v;
+    public int getItemCount() {
+        return groups.size();
     }
 }

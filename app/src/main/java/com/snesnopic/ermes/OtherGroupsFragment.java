@@ -4,15 +4,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
+import androidx.recyclerview.widget.RecyclerView;
 import com.snesnopic.ermes.datapkg.Group;
 import com.snesnopic.ermes.datapkg.Message;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +40,9 @@ public class OtherGroupsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ListView list = view.findViewById(R.id.otherGroupsListView);
-        GroupsAdapter adapter = new GroupsAdapter(view.getContext(),GetOtherGroups());
+        RecyclerView list = view.findViewById(R.id.otherGroupsRecyclerView);
+        List<Group> otherGroups = GetOtherGroups();
+        GroupsAdapter adapter = new GroupsAdapter(view.getContext(),otherGroups.size(),otherGroups);
         list.setAdapter(adapter);
     }
 }

@@ -4,10 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 import com.snesnopic.ermes.datapkg.Group;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +35,9 @@ public class RequestsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ListView list = view.findViewById(R.id.groupsWithRequestListView);
-        GroupsWithRequestsAdapter adapter = new GroupsWithRequestsAdapter(view.getContext(),GetGroupsWithRequests());
+        RecyclerView list = view.findViewById(R.id.groupsWithRequestRecyclerView);
+        List<Group> groupsWithRequests = GetGroupsWithRequests();
+        GroupsWithRequestsAdapter adapter = new GroupsWithRequestsAdapter(view.getContext(),groupsWithRequests.size(),groupsWithRequests);
         list.setAdapter(adapter);
     }
 }
