@@ -107,12 +107,6 @@ public class Connessione extends Thread {
     }
 
     private String recv()  {
-        DataInputStream data = null;
-        try {
-            data = new DataInputStream(s.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         String result = "null";
         if (isConnected()) {
             try {
