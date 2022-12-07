@@ -20,5 +20,6 @@
     <string name="logout">Logout</string>
     <string name="sendMessage">Send</string>
     <string name="enter_message_hint">Enter Message</string>
+    <string name="no_connection">Connection to server failed. Retry again</string>>
 
 </resources>

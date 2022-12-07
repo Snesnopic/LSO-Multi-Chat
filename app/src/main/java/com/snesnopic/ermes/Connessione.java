@@ -39,7 +39,6 @@ public class Connessione extends Thread {
                 System.out.println("Connessione non trovata, riprovo..");
             }
         }
-        login("Claudio", "sei un piscione", false);
     }
 
     boolean login(String username, String password, boolean register) {

@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -28,39 +27,35 @@ public class LoginActivity extends AppCompatActivity {
     String password;
     File path;                                                 //path dove viene creato il file
     File file;                                                 //file che contiene alcune informazioni dell'utente
-    FileInputStream fis;
     Connessione connection;
     CheckBox checkbox;
-    protected void tryLogin(String username,String password, boolean isRegister)
-    {
-        {
-            if (username.isEmpty() || password.isEmpty()) {
-                new AlertDialog.Builder(this)
-                        .setMessage(R.string.fields_error)
-                        // A null listener allows the button to dismiss the dialog and take no further action.
-                        .setNegativeButton(android.R.string.ok, null)
+
+    protected void tryLogin(String username, String password, boolean isRegister) {
+
+        if (username.isEmpty() || password.isEmpty())
+            new AlertDialog.Builder(this).setMessage(R.string.fields_error).setNegativeButton(android.R.string.ok, null)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
-            } else {
-                if (connection.isConnected()) {
-                    if (true) {  //aggiungere condizione che controlla se le credenziali non siano già state usate connection.login(username, password, true)
-                        //crea utente e poi fai il login
-                        if (checkbox.isChecked()) writeResources(username, password);
-                        Intent mainIntent = new Intent(this, MainActivity.class);
-                        startActivity(mainIntent);
-                        finish();
-                    } else {
-                        new AlertDialog.Builder(this)
-                                .setMessage(R.string.user_exists_error)
-                                // A null listener allows the button to dismiss the dialog and take no further action.
-                                .setNegativeButton(android.R.string.ok, null)
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .show();
-                    }
+        else {
+            if (connection.isConnected()) {
+                if (connection.login(username, password, isRegister)) {
+                    //crea utente e poi fai il login
+                    //istanzia utente
+                    if (checkbox.isChecked()) writeResources(username, password);
+                    Intent mainIntent = new Intent(this, MainActivity.class);
+                    startActivity(mainIntent);
+                    finish();
                 }
+                else
+                    new AlertDialog.Builder(this).setMessage(R.string.user_exists_error).setNegativeButton(android.R.string.ok, null)
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
             }
-
-        }
+            else
+                new AlertDialog.Builder(this).setMessage(R.string.no_connection).setNegativeButton(android.R.string.ok, null)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
             connection = Connessione.getInstance("192.168.158.32", 8989);
             connection.start();
         } catch (IllegalThreadStateException e) {
-            e.printStackTrace();
+            System.out.println("[ERRORE in onCreate() || LoginActivity.java 72] Errore nella creazione del Thread connessione (probabilmente gia' esistente)");
         }
 
 
@@ -85,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
 
         for (int i = 0; i < 3 && !connection.isConnected(); i++) {
             try {
+                //noinspection BusyWait
                 Thread.sleep(1500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -124,7 +120,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void writeResources(String username, String password) {
-
         try {
             OutputStreamWriter write = new OutputStreamWriter(context.openFileOutput("resources", Context.MODE_PRIVATE));     //apre il file resources om scrittura
             write.write(password);
