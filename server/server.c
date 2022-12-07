@@ -14,14 +14,13 @@
 #define MAXCLIENTS 50
 void *connection_handler(void *);
 
-int networkMessageHandler(char scelta, char str_1[],char str_2[],PGconn *conn);
+int networkMessageHandler(char scelta, PGconn *conn, int socket);
 long writeSock(int socket, char *str);
 
-extern PGconn* conn=NULL;
+PGconn* conn = NULL;
 
 int main()
 {
-    //variabili per connessione al db o altre cose inerenti alla gestione dati da db:
 
     conn = dbConnection(conn);
     struct sockaddr_in serverAddr;
@@ -50,8 +49,7 @@ int main()
     pthread_t tid[MAXCLIENTS];
     int i = 0;
     fflush(stdout);
-    int credentialsStatus;
-   while (1)
+    while (1)
     {
         fflush(stdout);
         printf("Attendo...\n");
@@ -64,15 +62,58 @@ int main()
     }
 }
 
-int networkMessageHandler(char scelta, char str_1[],char str_2[],PGconn *conn)
+int networkMessageHandler(char scelta, PGconn *conn, int socket)
 {
-    //str1 e str2 = username e password, non li ho chiamati in questo modo poiché si potrebbe scegliere anche la creazione o eliminazione di un gruppo
+    char client_message[2000];
+    int read_size;
+    char *buff;
+    char *buff2;
     switch(scelta)
     {
         case '0': //login
-            return usernameAndPasswordCheck(str_1, str_2, conn); //0 se login OK, 1 altrimenti
+
+
+            //read per username
+            read_size = recv(socket, client_message, 2000, 0);
+            printf("Username da parte del client: %s\n", client_message);
+            client_message[read_size] = '\0';
+            buff = (char *) malloc(sizeof(char) * read_size);
+            strcpy(buff, client_message);
+            strcpy(client_message, "");
+            fflush(stdout);
+
+
+            //read per password
+            read_size = recv(socket, client_message, 2000, 0);
+            printf("Password da parte del client: %s\n", client_message);
+            client_message[read_size] = '\0';
+            buff2 = (char *) malloc(sizeof(char) * read_size);
+            strcpy(buff2, client_message);
+            strcpy(client_message, "");
+            fflush(stdout);
+
+
+            return usernameAndPasswordCheck(buff, buff2, conn); //1 se login OK, 0 altrimenti
         case '1': //registrazione
-            return userRegistration(str_1, str_2, conn);
+            //read per username
+            read_size = recv(socket, client_message, 2000, 0);
+            printf("Username da parte del client: %s\n", client_message);
+            client_message[read_size] = '\0';
+            buff = (char *) malloc(sizeof(char) * read_size);
+            strcpy(buff, client_message);
+            strcpy(client_message, "");
+            fflush(stdout);
+
+
+            //read per password
+            read_size = recv(socket, client_message, 2000, 0);
+            printf("Password da parte del client: %s\n", client_message);
+            client_message[read_size] = '\0';
+            buff2 = (char *) malloc(sizeof(char) * read_size);
+            strcpy(buff2, client_message);
+            strcpy(client_message, "");
+            fflush(stdout);
+            return userRegistration(buff, buff2, conn); //1 se registrazione OK, 0 altrimenti
         default:
             printf("Errore network message hanlder: valore di scelta non valido\n");
     }
@@ -81,6 +122,7 @@ int networkMessageHandler(char scelta, char str_1[],char str_2[],PGconn *conn)
 
 void *connection_handler(void *socket_desc)
 {
+    /*
     int sock = *(int*)socket_desc;
     char buff[2048];
     recv(sock,buff,2048,0);
@@ -91,53 +133,39 @@ void *connection_handler(void *socket_desc)
     recv(sock,buff,2048,0);
     printf("Password: %s\n",buff);
     writeSock(sock,"Prova 1");
+    */
 
 
-    fflush(stdout);
-//    int sock = *(int*)socket_desc;
-//    int read_size;
-//    char *message , client_message[2000];
-//        read_size = recv(sock , client_message , 2000 , 0);
-//        //end of string marker
-//        char choice = client_message[0];
-//        client_message[read_size] = '\0';
-//        printf("debug: %s\n", client_message);
-//        strcpy(client_message, "");
-//        read_size = recv(sock, client_message, 2000, 0);
-//        printf("debug: %s\n", client_message);
-//        client_message[read_size] = '\0';
-//        char *buff = (char*)malloc(sizeof(char) * read_size);
-//        strcpy(buff, client_message);
-//        strcpy(client_message, "");
-//
-//        read_size = recv(sock, client_message, 2000, 0);
-//        printf("debug: %s\n", client_message);
-//        client_message[read_size] = '\0';
-//
-//        char *buff2 = (char*)malloc(sizeof(char) * read_size);
-//        strcpy(buff2, client_message);
-//        strcpy(client_message, "");
-//
-////        int msg = networkMessageHandler(choice, buff, buff2, conn);
-//        char mess[33];
-////        itoa(msg, mess);
-//        fflush(stdout);
-////        printf("messaggio della send: %s\n", mess);
-//        int flag = 1;
-//        setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char *) &flag, sizeof(int));
-//        long bytes = send(sock, "test1", strlen("test1"), 0);
-//        printf("Ho mandato %ld byte",bytes);
-//        setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char *) &flag, sizeof(int));
-//        sleep(3);
-//        bytes = send(sock , "test2" , strlen("test2"), 0);
-//        printf("Ho mandato %ld byte",bytes);
-//        setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char *) &flag, sizeof(int));
-//        //clear the message buffer
-//        memset(client_message, 0, 2000);
+    int sock = *(int*)socket_desc;
+    int read_size;
+    char client_message[2000];
+    while((read_size = recv(sock , client_message , 2000 , 0)) > 0)
+    {
+        //read per intero che stabilirà cosa fare
+        char choice = client_message[0];
+        client_message[read_size] = '\0';
+        printf("Intero da parte del client: %s\n", client_message);
+        strcpy(client_message, "");
 
+        int msg = networkMessageHandler(choice, conn, sock);
+        char mess[33];
+        itoa(msg, mess);
+        fflush(stdout);
+        printf("messaggio della send: %s\n", mess);
+        writeSock(sock, mess);
 
-
-    return 0;
+        if(read_size == 0)
+        {
+            puts("Client disconnected");
+            fflush(stdout);
+        }
+        else if(read_size == -1)
+        {
+            perror("recv failed");
+        }
+    }
+    //clear the message buffer
+    memset(client_message, 0, 2000);
 }
 
 long writeSock(int socket, char *str)

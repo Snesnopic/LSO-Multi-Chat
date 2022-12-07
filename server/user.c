@@ -39,5 +39,8 @@ int userRegistration(char username[], char password[], PGconn* conn)
         return 0;
     }
     else
+    {
+        printf("Registrazione effettuata!\n");
         return 1;
+    }
 }
