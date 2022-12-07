@@ -1,15 +1,10 @@
 package com.snesnopic.ermes;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
 
 public class Connessione extends Thread {
     static PrintWriter pw = null;
@@ -29,7 +24,8 @@ public class Connessione extends Thread {
         return instance;
     }
 
-    private Connessione() {}
+    private Connessione() { }
+
     public void run() {
         while (!isConnected) {
             try {
@@ -40,55 +36,47 @@ public class Connessione extends Thread {
 
             } catch (IOException e) {
                 isConnected = false;
-                e.printStackTrace();
+                System.out.println("Connessione non trovata, riprovo..");
             }
         }
-
-        try {
-            boolean eliminami = login("Claudio", "sei un piscione", false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        login("Claudio", "sei un piscione", false);
     }
 
-    boolean login(String email, String password, boolean register) throws IOException {
+    boolean login(String username, String password, boolean register) {
         if (register) send(1);
         else send(0);
 
-        send(email);
+        send(username);
         send(password);
+
         String response = recv();
-        System.out.println("2++++++++++++++++++++++");
-        System.out.println(response);
 
         //ritorna vero se riceve 1 (login success) altrimenti 0
 
-        if (response.equals("0")) return false;
-        if (response.equals("1")) {
-            if (register) {
-                return false;
-            } else {
-                return true;
-            }
+        try {
+            if (response.equals("0")) return false;
+
+            if (response.equals("1")) return !register;
+
+            if (response.equals("2")) return register;
+
+            return false;
+        } catch (NullPointerException e) {
+            System.out.println("[ERRORE in boolean login || Connessione.java 56] \n Stringa ricevuta uguale a null");
+            return false;
         }
-        if (response.equals("2")) {
-            if (register) return true;
-            else return false;
-        }
-        return false;
+
     }
 
 
     //Metodo che controlla se la connessione è stata stabilita.
-    public boolean isConnected() {
-        return isConnected;
-    }
+    public boolean isConnected() {return isConnected;}
 
     private void send(String str) {
-        if (isConnected()) {
+        if (isConnected) {
             try {
                 pw.println(str);
-                Thread.sleep(500);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -96,7 +84,7 @@ public class Connessione extends Thread {
     }
 
     private void send(int n) {
-        if (isConnected()) {
+        if (isConnected) {
             try {
                 pw.println(n);
                 Thread.sleep(500);
@@ -106,21 +94,18 @@ public class Connessione extends Thread {
         }
     }
 
-    private String recv()  {
-        String result = "null";
-        if (isConnected()) {
+    private String recv() {
+        String result = "non ho ricevuto niente";
+        if (isConnected) {
             try {
-                Thread.sleep(104);
-                result = data.readUTF();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+                result = bf.readLine();
+                Thread.sleep(500);
+                return result;
             }
-            return result;
+            catch (InterruptedException | IOException e) {return result;}
         }
+
         return result;
     }
-
 }
 

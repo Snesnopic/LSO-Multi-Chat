@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -17,7 +16,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -33,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     FileInputStream fis;
     Connessione connection;
     CheckBox checkbox;
-    protected void tryLogin(String username,String password,boolean isRegister)
+    protected void tryLogin(String username,String password, boolean isRegister)
     {
         {
             if (username.isEmpty() || password.isEmpty()) {
@@ -75,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
         file = new File(path, "resources");
 
         try {
-            connection = Connessione.getInstance("192.168.154.155", 8989);
+            connection = Connessione.getInstance("192.168.158.32", 8989);
             connection.start();
         } catch (IllegalThreadStateException e) {
             e.printStackTrace();
