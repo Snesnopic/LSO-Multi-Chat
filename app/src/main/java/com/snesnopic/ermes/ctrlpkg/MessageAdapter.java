@@ -1,4 +1,4 @@
-package com.snesnopic.ermes;
+package com.snesnopic.ermes.ctrlpkg;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.snesnopic.ermes.datapkg.Group;
+import com.snesnopic.ermes.R;
 import com.snesnopic.ermes.datapkg.Message;
 
 import java.util.List;

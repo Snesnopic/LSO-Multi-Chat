@@ -4,7 +4,6 @@
     <string name="username">Username</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
-    <string name="user_exists_error">This user already exists!</string>
     <string name="app_logo_text">App Logo</string>
     <string name="password">Password</string>
     <string name="fields_error">Check your input and retry!</string>
@@ -20,6 +19,6 @@
     <string name="logout">Logout</string>
     <string name="sendMessage">Send</string>
     <string name="enter_message_hint">Enter Message</string>
-    <string name="no_connection">Connection to server failed. Retry again</string>>
+    <string name="login_failed">Login failed, try again</string>>
 
 </resources>

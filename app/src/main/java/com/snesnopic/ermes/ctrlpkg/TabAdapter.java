@@ -1,9 +1,13 @@
-package com.snesnopic.ermes;
+package com.snesnopic.ermes.ctrlpkg;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+
+import com.snesnopic.ermes.activitypkg.MyGroupsFragment;
+import com.snesnopic.ermes.activitypkg.OtherGroupsFragment;
+import com.snesnopic.ermes.activitypkg.RequestsFragment;
 
 public class TabAdapter extends FragmentStateAdapter {
 

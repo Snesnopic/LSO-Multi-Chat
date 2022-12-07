@@ -1,4 +1,4 @@
-package com.snesnopic.ermes;
+package com.snesnopic.ermes.ctrlpkg;
 
 import android.content.Context;
 import android.view.View;
@@ -7,6 +7,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.snesnopic.ermes.R;
 import com.snesnopic.ermes.datapkg.Request;
 
 public class RequestHolder extends RecyclerView.ViewHolder{

@@ -1,4 +1,4 @@
-package com.snesnopic.ermes;
+package com.snesnopic.ermes.activitypkg;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+import com.snesnopic.ermes.R;
+import com.snesnopic.ermes.ctrlpkg.TabAdapter;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;

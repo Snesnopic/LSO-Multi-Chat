@@ -1,4 +1,4 @@
-package com.snesnopic.ermes;
+package com.snesnopic.ermes.activitypkg;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,6 +12,8 @@ import android.content.Context;
 import android.widget.ImageView;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.snesnopic.ermes.R;
+import com.snesnopic.ermes.ctrlpkg.Connessione;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,22 +39,17 @@ public class LoginActivity extends AppCompatActivity {
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
         else {
-            if (connection.isConnected()) {
-                if (connection.login(username, password, isRegister)) {
-                    //crea utente e poi fai il login
-                    //istanzia utente
-                    if (checkbox.isChecked()) writeResources(username, password);
-                    Intent mainIntent = new Intent(this, MainActivity.class);
-                    startActivity(mainIntent);
-                    finish();
-                }
-                else
-                    new AlertDialog.Builder(this).setMessage(R.string.user_exists_error).setNegativeButton(android.R.string.ok, null)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
+            if (connection.isConnected() && connection.login(username, password, isRegister))
+            {
+                //crea utente e poi fai il login
+                //istanzia utente
+                if (checkbox.isChecked())
+                    writeResources(username, password);
+                Intent mainIntent = new Intent(this, MainActivity.class);
+                startActivity(mainIntent);finish();
             }
             else
-                new AlertDialog.Builder(this).setMessage(R.string.no_connection).setNegativeButton(android.R.string.ok, null)
+                new AlertDialog.Builder(this).setMessage(R.string.login_failed).setNegativeButton(android.R.string.ok, null)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
             }

@@ -1,10 +1,13 @@
-package com.snesnopic.ermes;
+package com.snesnopic.ermes.activitypkg;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.snesnopic.ermes.R;
+import com.snesnopic.ermes.ctrlpkg.MessageAdapter;
 import com.snesnopic.ermes.datapkg.Message;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.snesnopic.ermes;
+package com.snesnopic.ermes.ctrlpkg;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +7,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.snesnopic.ermes.activitypkg.ChatActivity;
+import com.snesnopic.ermes.R;
 import com.snesnopic.ermes.datapkg.Group;
 import com.snesnopic.ermes.datapkg.Message;
 import java.time.format.DateTimeFormatter;
