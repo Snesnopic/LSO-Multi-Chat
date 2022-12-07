@@ -51,8 +51,7 @@ public class MainActivity extends AppCompatActivity {
         //se fai swipe a destra o sinistra passa a quel tab (MADDAI?? O sce ij nun o sapev)
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            public void onPageSelected(int position) {
                 tabLayout.selectTab(tabLayout.getTabAt(position));
             }
         });

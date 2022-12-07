@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Ermes</string>
     <string name="keep_me_signed_in">Remember me</string>
-    <string name="e_mail">E-mail</string>
+    <string name="username">Username</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
     <string name="user_exists_error">This user already exists!</string>
