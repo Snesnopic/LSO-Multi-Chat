@@ -14,10 +14,10 @@
 #define MAXCLIENTS 50
 void *connection_handler(void *);
 
-int networkMessageHandler(char scelta, PGconn *conn, int socket);
+int networkMessageHandler(char scelta, char str_1[],char str_2[],PGconn *conn);
 long writeSock(int socket, char *str);
 
-PGconn* conn;
+extern PGconn* conn=NULL;
 
 int main()
 {
@@ -64,7 +64,7 @@ int main()
     }
 }
 
-int networkMessageHandler(char scelta, PGconn *conn, int socket)
+int networkMessageHandler(char scelta, char str_1[],char str_2[],PGconn *conn)
 {
     //str1 e str2 = username e password, non li ho chiamati in questo modo poiché si potrebbe scegliere anche la creazione o eliminazione di un gruppo
     switch(scelta)
