@@ -1,4 +1,4 @@
-package com.snesnopic.ermes;
+package com.snesnopic.ermes.ctrlpkg;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,7 +41,7 @@ public class Connessione extends Thread {
         }
     }
 
-    boolean login(String username, String password, boolean register) {
+    public boolean login(String username, String password, boolean register) {
         if (register) send(1);
         else send(0);
 
