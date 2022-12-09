@@ -78,7 +78,7 @@ public class Connessione extends Thread {
                 sendFlag = false;
                 pw.println(str);
                 try {
-                    Thread.sleep(100); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
+                    Thread.sleep(200); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
                 } catch (InterruptedException e) {e.printStackTrace(); return;}
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+str);
                 sendFlag = true;
@@ -97,7 +97,7 @@ public class Connessione extends Thread {
                 sendFlag = false;
                 pw.println(n);
                 try {
-                    Thread.sleep(100); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
+                    Thread.sleep(200); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
                 } catch (InterruptedException e) {e.printStackTrace();}
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+n);
                 sendFlag = true;
@@ -110,21 +110,26 @@ public class Connessione extends Thread {
     }
 
     private String recv() {
+        result = "null";
         Thread t = new Thread(() -> {
             if (isConnected) {
                 try {
-                    while(!recvFlag); //blocca il Thread se la lettura della socket e' occupata da un'altra recv
-                    recvFlag = false;
                     Thread.sleep(100); //una wait per far elaborare la lettura della socket
                     result = bf.readLine();
                     System.out.println("++++++++MESSAGGIO LETTO++++++++++\n"+result);
+                    Thread.sleep(100); //una wait per far elaborare la lettura della socket
                 }
                 catch (InterruptedException | IOException e) {System.out.println("Errore nella recv");}
             }
             return;
         });
         t.start();
-        while(t.isAlive());
+        try {
+            while(t.isAlive());
+        } catch (Exception e) {
+            System.out.println("--------------------------------------\nErrore nell'attesa del Thread di lettura");
+            return result;
+        }
         return result;
     }
 
