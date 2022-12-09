@@ -13,13 +13,14 @@ import android.widget.ImageView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.snesnopic.ermes.R;
-import com.snesnopic.ermes.ctrlpkg.Connessione;
+import com.snesnopic.ermes.control.Connessione;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.concurrent.Executor;
 
 public class LoginActivity extends AppCompatActivity {
     Context context = this;
@@ -46,7 +47,8 @@ public class LoginActivity extends AppCompatActivity {
                 if (checkbox.isChecked())
                     writeResources(username, password);
                 Intent mainIntent = new Intent(this, MainActivity.class);
-                startActivity(mainIntent);finish();
+                startActivity(mainIntent);
+                finish();
             }
             else
                 new AlertDialog.Builder(this).setMessage(R.string.login_failed).setNegativeButton(android.R.string.ok, null)
@@ -58,15 +60,12 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
-        Intent mainIntent = new Intent(this, MainActivity.class);
-        startActivity(mainIntent);
-        finish();
         path = getFilesDir();
         file = new File(path, "resources");
 
         try {
-            connection = Connessione.getInstance("192.168.158.32", 8989);
-            connection.start();
+                connection = Connessione.getInstance("192.168.1.20", 8989);
+                connection.start();
         } catch (IllegalThreadStateException e) {
             System.out.println("[ERRORE in onCreate() || LoginActivity.java 72] Errore nella creazione del Thread connessione (probabilmente gia' esistente)");
         }

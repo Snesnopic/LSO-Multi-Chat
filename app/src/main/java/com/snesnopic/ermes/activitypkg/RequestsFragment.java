@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.snesnopic.ermes.R;
-import com.snesnopic.ermes.ctrlpkg.GroupsWithRequestsAdapter;
+import com.snesnopic.ermes.control.GroupsWithRequestsAdapter;
 import com.snesnopic.ermes.datapkg.Group;
 import java.util.ArrayList;
 import java.util.List;

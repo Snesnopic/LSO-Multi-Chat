@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.snesnopic.ermes.R;
-import com.snesnopic.ermes.ctrlpkg.GroupsAdapter;
+import com.snesnopic.ermes.control.GroupsAdapter;
 import com.snesnopic.ermes.datapkg.Group;
 import com.snesnopic.ermes.datapkg.Message;
 import java.time.LocalDateTime;

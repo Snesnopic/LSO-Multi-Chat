@@ -1,4 +1,4 @@
-package com.snesnopic.ermes.ctrlpkg;
+package com.snesnopic.ermes.control;
 
 import android.content.Context;
 import android.content.Intent;

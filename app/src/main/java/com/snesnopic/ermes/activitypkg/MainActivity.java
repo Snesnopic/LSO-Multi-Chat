@@ -10,7 +10,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.snesnopic.ermes.R;
-import com.snesnopic.ermes.ctrlpkg.TabAdapter;
+import com.snesnopic.ermes.control.TabAdapter;
 
 import java.io.BufferedReader;
 import java.io.File;

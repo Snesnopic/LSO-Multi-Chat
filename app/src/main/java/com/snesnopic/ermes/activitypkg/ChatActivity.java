@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.snesnopic.ermes.R;
-import com.snesnopic.ermes.ctrlpkg.MessageAdapter;
+import com.snesnopic.ermes.control.MessageAdapter;
 import com.snesnopic.ermes.datapkg.Message;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
