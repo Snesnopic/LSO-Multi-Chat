@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton expandButton;
     FloatingActionButton newGroupButton;
     FloatingActionButton logoutButton;
+    FloatingActionButton settingsButton;
 
     boolean actionButtonClicked = false;
 
@@ -68,23 +69,28 @@ public class MainActivity extends AppCompatActivity {
         newGroupButton = findViewById(R.id.newGroupActionButton);
         logoutButton = findViewById(R.id.logoutActionButton);
         expandButton = findViewById(R.id.expandableActionButton);
+        settingsButton = findViewById(R.id.settingsButton);
         //pulsante col +, premendolo si espande o ritrae
         expandButton.setOnClickListener(view -> {
             if(!actionButtonClicked)
             {
                 newGroupButton.setVisibility(View.VISIBLE);
                 logoutButton.setVisibility(View.VISIBLE);
+                settingsButton.setVisibility(View.VISIBLE);
 
+                settingsButton.startAnimation(fromBottom);
                 newGroupButton.startAnimation(fromBottom);
                 logoutButton.startAnimation(fromBottom);
                 expandButton.startAnimation(rotateOpen);
             }
             else
             {
+                settingsButton.startAnimation(toBottom);
                 newGroupButton.startAnimation(toBottom);
                 logoutButton.startAnimation(toBottom);
                 expandButton.startAnimation(rotateClose);
 
+                settingsButton.setVisibility(View.GONE);
                 newGroupButton.setVisibility(View.GONE);
                 logoutButton.setVisibility(View.GONE);
             }
@@ -113,6 +119,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(exitIntent);
                 finish();
             }
+        });
+        settingsButton.setOnClickListener(view -> {
+            //code here
         });
 
     }

@@ -134,5 +134,7 @@ public class Connessione extends Thread {
         }
     }
 
+    public void getRoomJoined(){}
+
 }
 
