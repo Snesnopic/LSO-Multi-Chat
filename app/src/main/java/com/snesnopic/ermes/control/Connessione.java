@@ -1,10 +1,11 @@
 package com.snesnopic.ermes.control;
+import com.snesnopic.ermes.datapkg.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Stack;
 
 public class Connessione extends Thread {
     static PrintWriter pw = null;
@@ -12,12 +13,13 @@ public class Connessione extends Thread {
     static int staticport;
     private static boolean isConnected = false;
     private BufferedReader bf = null;
-    Socket s;
+    private Socket s;
     private static Connessione instance;
-    private String result = "non ho ricevuto niente";
-    private boolean sendFlag = true;
-    private boolean recvFlag = true;
-
+    private String result = "null";
+    static User utente;
+    static Group room;
+    static Message messaggio;
+    static Request richiesta;
 
     public static Connessione getInstance(String hostname, int port) {
         if (instance == null) {
@@ -57,7 +59,12 @@ public class Connessione extends Thread {
         String response = recv();
         //ritorna vero se riceve 1 (login success) altrimenti 0
         try {
-            if(response.equals("1")) return true;
+            if(response.equals("1")) {
+                utente = new User();
+                utente.username = username;
+                utente.password = password;
+                return true;
+            }
             else if (response.equals("0")) return false;
         } catch (NullPointerException e) {
             System.out.println("[ERRORE in boolean login || Connessione.java 56] \n Stringa ricevuta uguale a null");
@@ -74,14 +81,11 @@ public class Connessione extends Thread {
     private void send(String str) {
         Thread t = new Thread(() -> {
             if (isConnected) {
-                while(!sendFlag);   //blocca il thread se la scrittura sulla socket e' occupata da un'altra send
-                sendFlag = false;
                 pw.println(str);
                 try {
                     Thread.sleep(200); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
                 } catch (InterruptedException e) {e.printStackTrace(); return;}
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+str);
-                sendFlag = true;
             }
             return;
         });
@@ -93,14 +97,12 @@ public class Connessione extends Thread {
     private void send(int n) {
         Thread t = new Thread(() -> {
             if (isConnected) {
-                while(!sendFlag);   //blocca il thread se la scrittura sulla socket e' occupata da un'altra send
-                sendFlag = false;
+
                 pw.println(n);
                 try {
                     Thread.sleep(200); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
                 } catch (InterruptedException e) {e.printStackTrace();}
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+n);
-                sendFlag = true;
             }
             return;
         });
@@ -110,7 +112,6 @@ public class Connessione extends Thread {
     }
 
     private String recv() {
-        result = "null";
         Thread t = new Thread(() -> {
             if (isConnected) {
                 try {
@@ -126,11 +127,11 @@ public class Connessione extends Thread {
         t.start();
         try {
             while(t.isAlive());
+            return result;
         } catch (Exception e) {
             System.out.println("--------------------------------------\nErrore nell'attesa del Thread di lettura");
             return result;
         }
-        return result;
     }
 
 }

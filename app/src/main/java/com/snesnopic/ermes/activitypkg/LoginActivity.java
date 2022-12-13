@@ -33,29 +33,6 @@ public class LoginActivity extends AppCompatActivity {
     Connessione connection;
     CheckBox checkbox;
 
-    protected void tryLogin(String username, String password, boolean isRegister) {
-
-        if (username.isEmpty() || password.isEmpty())
-            new AlertDialog.Builder(this).setMessage(R.string.fields_error).setNegativeButton(android.R.string.ok, null)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-        else {
-            if (connection.isConnected() && connection.login(username, password, isRegister))
-            {
-                //crea utente e poi fai il login
-                //istanzia utente
-                if (checkbox.isChecked())
-                    writeResources(username, password);
-                Intent mainIntent = new Intent(this, MainActivity.class);
-                startActivity(mainIntent);
-                finish();
-            }
-            else
-                new AlertDialog.Builder(this).setMessage(R.string.login_failed).setNegativeButton(android.R.string.ok, null)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         file = new File(path, "resources");
 
         try {
-                connection = Connessione.getInstance("192.168.1.20", 8989);
+                connection = Connessione.getInstance("192.168.191.32", 8989);
                 connection.start();
         } catch (IllegalThreadStateException e) {
             System.out.println("[ERRORE in onCreate() || LoginActivity.java 72] Errore nella creazione del Thread connessione (probabilmente gia' esistente)");
@@ -124,6 +101,30 @@ public class LoginActivity extends AppCompatActivity {
             write.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    protected void tryLogin(String username, String password, boolean isRegister) {
+
+        if (username.isEmpty() || password.isEmpty())
+            new AlertDialog.Builder(this).setMessage(R.string.fields_error).setNegativeButton(android.R.string.ok, null)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        else {
+            if (connection.isConnected() && connection.login(username, password, isRegister))
+            {
+                //crea utente e poi fai il login
+                //istanzia utente
+                if (checkbox.isChecked())   // <-- Potrebbe causare errore in runtime, da verificare eventualmente
+                    writeResources(username, password);
+                Intent mainIntent = new Intent(this, MainActivity.class);
+                startActivity(mainIntent);
+                finish();
+            }
+            else
+                new AlertDialog.Builder(this).setMessage(R.string.login_failed).setNegativeButton(android.R.string.ok, null)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
         }
     }
 }
