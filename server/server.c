@@ -16,6 +16,7 @@ void *connection_handler(void *);
 
 int networkMessageHandler(char scelta, PGconn *conn, int socket);
 long writeSock(int socket, char *str);
+int readSock(int socket, char *str);
 
 PGconn* conn = NULL;
 
@@ -74,9 +75,8 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
 
 
             //read per username
-            read_size = recv(socket, client_message, 2000, 0);
+            read_size = readSock(socket, client_message);
             printf("Username da parte del client: %s\n", client_message);
-            client_message[read_size] = '\0';
             buff = (char *) malloc(sizeof(char) * read_size);
             strcpy(buff, client_message);
             strcpy(client_message, "");
@@ -84,9 +84,8 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
 
 
             //read per password
-            read_size = recv(socket, client_message, 2000, 0);
+            read_size = readSock(socket, client_message);
             printf("Password da parte del client: %s\n", client_message);
-            client_message[read_size] = '\0';
             buff2 = (char *) malloc(sizeof(char) * read_size);
             strcpy(buff2, client_message);
             strcpy(client_message, "");
@@ -96,9 +95,8 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             return usernameAndPasswordCheck(buff, buff2, conn); //1 se login OK, 0 altrimenti
         case '1': //registrazione
             //read per username
-            read_size = recv(socket, client_message, 2000, 0);
+            read_size = readSock(socket, client_message);
             printf("Username da parte del client: %s\n", client_message);
-            client_message[read_size] = '\0';
             buff = (char *) malloc(sizeof(char) * read_size);
             strcpy(buff, client_message);
             strcpy(client_message, "");
@@ -106,13 +104,14 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
 
 
             //read per password
-            read_size = recv(socket, client_message, 2000, 0);
+            read_size = readSock(socket, client_message);
             printf("Password da parte del client: %s\n", client_message);
-            client_message[read_size] = '\0';
             buff2 = (char *) malloc(sizeof(char) * read_size);
             strcpy(buff2, client_message);
             strcpy(client_message, "");
             fflush(stdout);
+
+
             return userRegistration(buff, buff2, conn); //1 se registrazione OK, 0 altrimenti
         default:
             printf("Errore network message hanlder: valore di scelta non valido\n");
@@ -122,20 +121,6 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
 
 void *connection_handler(void *socket_desc)
 {
-    /*
-    int sock = *(int*)socket_desc;
-    char buff[2048];
-    recv(sock,buff,2048,0);
-
-    printf("User sent: %s\n",buff);
-    recv(sock,buff,2048,0);
-    printf("Username: %s\n",buff);
-    recv(sock,buff,2048,0);
-    printf("Password: %s\n",buff);
-    writeSock(sock,"Prova 1");
-    */
-
-
     int sock = *(int*)socket_desc;
     int read_size;
     char client_message[2000];
@@ -187,4 +172,26 @@ long writeSock(int socket, char *str)
     free(cpy),
     free(newstr);
     return bytes;
+}
+
+int readSock(int socket, char *str)
+{
+    int read_size = recv(socket, str, 2000, 0);
+    char *newstr = malloc(strlen(str) + 2);
+    char *cpy = malloc(strlen(str)+2);
+    int c = 0;
+    strcpy(newstr, str);
+    for(size_t i = 0; i < strlen(newstr); ++i)
+    {
+        if(newstr[i] != '\n')
+        {
+            cpy[c] = newstr[i];
+            c++;
+        }
+    }
+    strcat(cpy, "\0");
+    strcpy(str, cpy);
+    free(cpy),
+            free(newstr);
+    return read_size;
 }
