@@ -57,21 +57,20 @@ public class Connessione extends Thread {
         send(password);
 
         String response = recv();
-        //ritorna vero se riceve 1 (login success) altrimenti 0
+        //ritorna vero se riceve un userID diverso da 0 (login success) altrimenti falso
         try {
-            if(response.equals("1")) {
+            if(!response.equals("0")) {
                 utente = new User();
+                utente.userid = Integer.parseInt(response);
                 utente.username = username;
                 utente.password = password;
                 return true;
             }
-            else if (response.equals("0")) return false;
+            else return false;
         } catch (NullPointerException e) {
             System.out.println("[ERRORE in boolean login || Connessione.java 56] \n Stringa ricevuta uguale a null");
             return false;
         }
-
-        return false;
 
     }
 

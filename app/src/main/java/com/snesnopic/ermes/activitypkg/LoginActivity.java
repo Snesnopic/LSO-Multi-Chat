@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         file = new File(path, "resources");
 
         try {
-                connection = Connessione.getInstance("192.168.191.32", 8989);
+                connection = Connessione.getInstance("192.168.1.20", 8989);
                 connection.start();
         } catch (IllegalThreadStateException e) {
             System.out.println("[ERRORE in onCreate() || LoginActivity.java 72] Errore nella creazione del Thread connessione (probabilmente gia' esistente)");
@@ -95,9 +95,9 @@ public class LoginActivity extends AppCompatActivity {
     private void writeResources(String username, String password) {
         try {
             OutputStreamWriter write = new OutputStreamWriter(context.openFileOutput("resources", Context.MODE_PRIVATE));     //apre il file resources om scrittura
-            write.write(password);
-            write.write(10);
             write.write(username);
+            write.write(10);
+            write.write(password);
             write.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -113,10 +113,12 @@ public class LoginActivity extends AppCompatActivity {
         else {
             if (connection.isConnected() && connection.login(username, password, isRegister))
             {
+                try {
+                    if (checkbox.isChecked())   // <-- Potrebbe causare errore in runtime, da verificare eventualmente || Risolto
+                        writeResources(username, password);
+                } catch (NullPointerException e) {} //non c'e' bisogno di fare nulla di particolare. Il try catch serve eventualmente per il login da file
                 //crea utente e poi fai il login
                 //istanzia utente
-                if (checkbox.isChecked())   // <-- Potrebbe causare errore in runtime, da verificare eventualmente
-                    writeResources(username, password);
                 Intent mainIntent = new Intent(this, MainActivity.class);
                 startActivity(mainIntent);
                 finish();
