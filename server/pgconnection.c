@@ -52,8 +52,6 @@ char ** selectdb(char attributes [], char table [], char condition [], PGconn *c
         exit(0);
     }
     PGresult *res;
-        printf("SONO ALL'INTERNO DI SELECT Valori ottenuti: \n");
-        puts(condition);
     char sql[500];
     strcpy(sql, "");
     strcat(sql, "SELECT ");

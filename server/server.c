@@ -65,6 +65,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
 {
     char* client_message = (char*)malloc(sizeof(char)*2000);
     int read_size;
+    int msg;
     char *buff;
     char *buff2;
     switch(scelta)
@@ -80,7 +81,10 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             printf("Password da parte del client: %s|\n", buff2);
             fflush(stdout);
 
-            return usernameAndPasswordCheck(buff, buff2, conn); //1 se login OK, 0 altrimenti
+            msg = usernameAndPasswordCheck(buff, buff2, conn);
+            memset(buff, 0, strlen(buff));
+            memset(buff2, 0, strlen(buff2));
+            return msg;
         case '1': //registrazione
             //read per username
             buff = readSock(socket, client_message);
@@ -113,9 +117,7 @@ void *connection_handler(void *socket_desc)
         char choice = client_message[0];
         client_message[read_size] = '\0';
         printf("Intero da parte del client: %s\n", client_message);
-
-        clearBuffer(client_message);
-
+        memset(client_message, 0, 200);
         int msg = networkMessageHandler(choice, conn, sock);
         char mess[33];
         itoa(msg, mess);
@@ -183,19 +185,13 @@ int readSock(int socket, char *str)
 char* readSock2(int socket, char *str) {
 
     int read_size = read(socket, str, 2000);
-    int len = strlen(str);
-    char* newstr = (char*)malloc(sizeof(char)*len);
+    printf("grandezza strlen: %d\n", strlen(str));
+    char* newstr = (char*)malloc(sizeof(char)*strlen(str));
     
-    for(int i = 0; str[i] != '\0'; i++) {newstr[i] = str[i];}
+    for(int i = 0; str[i] != '\0' && i < strlen(str); i++) {newstr[i] = str[i];}
     
-    printf("fatto: %s|\n", newstr);
     fflush(stdout);
-    clearBuffer(str);
+    memset(str, 0, strlen(str));
     return newstr;
 }
 
-
-void clearBuffer(char *str) { 
-    for(int i = 0; i < strlen(str); i++) 
-        str[i] = ""; 
-}
