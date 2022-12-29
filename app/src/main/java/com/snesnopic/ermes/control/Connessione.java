@@ -70,6 +70,8 @@ public class Connessione extends Thread {
         } catch (NullPointerException e) {
             System.out.println("[ERRORE in boolean login || Connessione.java 56] \n Stringa ricevuta uguale a null");
             return false;
+        } catch(NumberFormatException e) {
+            return false;
         }
 
     }
@@ -80,9 +82,10 @@ public class Connessione extends Thread {
     private void send(String str) {
         Thread t = new Thread(() -> {
             if (isConnected) {
-                pw.println(str);
+                pw.write(str+"\0");
+                pw.flush();
                 try {
-                    Thread.sleep(200); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
+                    Thread.sleep(250); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
                 } catch (InterruptedException e) {e.printStackTrace(); return;}
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+str);
             }
