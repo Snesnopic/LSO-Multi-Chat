@@ -210,3 +210,49 @@ Il trigger verifica se vengano inseriti nomi di stanze vuote (spazi e tab); alza
 
 
 --------------------------------------------------------------------------------------------
+
+
+```
+CREATE OR REPLACE FUNCTION checkUserdataLength() RETURNS TRIGGER AS $checkUserdataLength$
+DECLARE
+usernamee USERDATA.USERNAME%TYPE;
+userpass USERDATA.USERPASSWORD%TYPE;
+BEGIN
+IF(LENGTH(NEW.USERNAME) < 5) THEN
+RAISE EXCEPTION 'Username inserito non valido.';
+END IF;
+IF(LENGTH(NEW.USERPASSWORD) < 5) THEN
+RAISE EXCEPTION 'Password inserita non valida.';
+END IF;
+RETURN NULL;
+END;	
+
+$checkUserdataLength$ LANGUAGE PLPGSQL;
+
+CREATE TRIGGER checkUserdataLength AFTER INSERT ON USERDATA
+FOR EACH ROW EXECUTE PROCEDURE checkUserdataLength();
+```
+
+Trigger che controlla la lunghezza minima delle credenziali di un utente.
+
+--------------------------------------------------------------------------------------------
+
+
+```
+CREATE OR REPLACE FUNCTION checkRoomNameLength() RETURNS TRIGGER AS $checkRoomNameLength$
+BEGIN
+IF(LENGTH(NEW.ROOMNAME) < 5) THEN
+RAISE EXCEPTION 'Nome della stanza inserita non valida.';
+END IF;
+
+RETURN NULL;
+END;	
+
+$checkRoomNameLength$ LANGUAGE PLPGSQL;
+
+CREATE TRIGGER checkRoomNameLength AFTER INSERT ON ROOM
+FOR EACH ROW EXECUTE PROCEDURE checkRoomNameLength();
+```
+
+
+Trigger che controlla la lunghezza minima del nome di un gruppo.
