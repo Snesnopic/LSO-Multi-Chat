@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class Connessione extends Thread {
     static PrintWriter pw = null;
@@ -117,10 +119,10 @@ public class Connessione extends Thread {
         Thread t = new Thread(() -> {
             if (isConnected) {
                 try {
-                    Thread.sleep(100); //una wait per far elaborare la lettura della socket
+                    Thread.sleep(200); //una wait per far elaborare la lettura della socket
                     result = bf.readLine();
                     System.out.println("++++++++MESSAGGIO LETTO++++++++++\n"+result);
-                    Thread.sleep(100); //una wait per far elaborare la lettura della socket
+                    Thread.sleep(200); //una wait per far elaborare la lettura della socket
                 }
                 catch (InterruptedException | IOException e) {System.out.println("Errore nella recv");}
             }
@@ -136,7 +138,29 @@ public class Connessione extends Thread {
         }
     }
 
-    public void getRoomJoined(){}
+    public ArrayList<Group> getRoomJoined(){
+        ArrayList<Group> myRooms = new ArrayList<>();
+        send(2);
+        send(utente.userid);
+        String response = recv();
+        Integer len = new Integer(response);
+
+        for(int i = 0; i < len; i++ ) {
+            Group a = new Group();
+            a.id = Integer.parseInt(recv());
+            a.userid = Integer.parseInt(recv());
+            a.name = recv();
+
+            Message msg = new Message();
+            msg.message = "Ultimo messaggio gruppo " + i;
+            msg.time = LocalDateTime.now();
+            a.messages = new ArrayList<>();
+            a.messages.add(msg);
+            myRooms.add(a);
+        }
+
+        return myRooms;
+    }
 
 }
 

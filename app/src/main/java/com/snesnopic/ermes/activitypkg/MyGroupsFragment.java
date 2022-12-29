@@ -1,5 +1,7 @@
 package com.snesnopic.ermes.activitypkg;
 
+import static com.snesnopic.ermes.activitypkg.LoginActivity.connection;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,23 +20,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 public class MyGroupsFragment extends Fragment {
     public List<Group> GetMyGroups()
     {
-        ArrayList<Group> myGroups = new ArrayList<>();
-        for(int i = 0; i < 5; ++i)
-        {
-            Group a = new Group();
-            a.name = "Gruppo " + i;
-            Message msg = new Message();
-            msg.message = "Ultimo messaggio gruppo " + i;
-            msg.time = LocalDateTime.now();
-            a.messages = new ArrayList<>();
-            a.messages.add(msg);
-            myGroups.add(a);
-        }
+        ArrayList<Group> myGroups = connection.getRoomJoined();
+
         return myGroups;
     }
 
