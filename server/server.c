@@ -99,6 +99,38 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
 
 
             return userRegistration(buff, buff2, conn); //1 se registrazione OK, 0 altrimenti
+            
+        case '2': //ottieni tutti i gruppi di un utente
+              read_size = recv(socket, client_message, 200 , 0);     //legge l'userid che ha effettuato la richiesta
+              if(read_size < 0) return -1;
+              
+              printf("User id del client: %s|", client_message);
+              fflush(stdout);
+              
+              Group* gruppi;
+              int row = 0;
+              char* groupid = (char*)malloc(sizeof(char)*200);
+              char* creatorUserId = (char*)malloc(sizeof(char)*200);
+              
+              gruppi = getGroupsOfUsers(atoi(client_message), conn, &row); //ottiene tutti i gruppi dell'utente 
+
+              buff = (char*)malloc(sizeof(char)*500);
+
+              itoa(row, buff);
+
+              writeSock(socket, buff);
+
+              for(int i = 0; i < row; i++) {
+                  itoa(gruppi[i].groupId, groupid);
+                  writeSock(socket, groupid); //scrive il groupid
+                  itoa(gruppi[i].creatorUserId, creatorUserId); //scrive l'userid del creatore
+                  writeSock(socket, creatorUserId);
+                  writeSock(socket, gruppi[i].groupName);
+                  memset(groupid, 0, 200);
+                  memset(creatorUserId, 0, 200);
+              }
+              
+              return 1; 
         default:
             printf("Errore network message hanlder: valore di scelta non valido\n");
     }

@@ -75,9 +75,12 @@ char ** selectdb(char attributes [], char table [], char condition [], PGconn *c
     int res_count = PQntuples(res);
     int col;
     printf("Numero di record: %d\n", res_count);
+
     char **selectResult = (char**)malloc(1000 * sizeof(char*));
+
     for(int i = 0; i < 100; i++)
         selectResult[i] = (char*)malloc(1000 * sizeof(char));
+
     int cont = 0;
     for(int row = 0; row < res_count; row++)
     {
