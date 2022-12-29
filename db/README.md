@@ -212,7 +212,7 @@ Il trigger verifica se vengano inseriti nomi di stanze vuote (spazi e tab); alza
 --------------------------------------------------------------------------------------------
 
 
-```
+```SQL
 CREATE OR REPLACE FUNCTION checkUserdataLength() RETURNS TRIGGER AS $checkUserdataLength$
 DECLARE
 usernamee USERDATA.USERNAME%TYPE;
@@ -238,7 +238,7 @@ Trigger che controlla la lunghezza minima delle credenziali di un utente.
 --------------------------------------------------------------------------------------------
 
 
-```
+```SQL
 CREATE OR REPLACE FUNCTION checkRoomNameLength() RETURNS TRIGGER AS $checkRoomNameLength$
 BEGIN
 IF(LENGTH(NEW.ROOMNAME) < 5) THEN
