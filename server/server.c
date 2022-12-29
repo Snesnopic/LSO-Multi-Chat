@@ -87,13 +87,13 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             return msg;
         case '1': //registrazione
             //read per username
-            buff = readSock(socket, client_message);
+            buff = readSock2(socket, client_message);
             printf("Username da parte del client: %s\n", buff);
             fflush(stdout);
 
 
             //read per password
-            buff2 = readSock(socket, client_message);
+            buff2 = readSock2(socket, client_message);
             printf("Password da parte del client: %s\n", buff2);
             fflush(stdout);
 
@@ -160,6 +160,19 @@ long writeSock(int socket, char *str)
     return bytes;
 }
 
+char* readSock2(int socket, char *str) {
+
+    int read_size = read(socket, str, 2000);
+    char* newstr = (char*)malloc(sizeof(char)*strlen(str));
+    
+    for(int i = 0; str[i] != '\0' && i < strlen(str); i++) {newstr[i] = str[i];}
+    
+    fflush(stdout);
+    memset(str, 0, strlen(str));
+    return newstr;
+}
+
+/*
 int readSock(int socket, char *str)
 {
     int read_size = read(socket, str, sizeof(str)-1);
@@ -181,17 +194,5 @@ int readSock(int socket, char *str)
             free(newstr);
     return read_size;
 }
-
-char* readSock2(int socket, char *str) {
-
-    int read_size = read(socket, str, 2000);
-    printf("grandezza strlen: %d\n", strlen(str));
-    char* newstr = (char*)malloc(sizeof(char)*strlen(str));
-    
-    for(int i = 0; str[i] != '\0' && i < strlen(str); i++) {newstr[i] = str[i];}
-    
-    fflush(stdout);
-    memset(str, 0, strlen(str));
-    return newstr;
-}
+*/
 
