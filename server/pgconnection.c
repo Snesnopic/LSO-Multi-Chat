@@ -8,7 +8,7 @@
 PGconn* dbConnection(PGconn *conn)
 {
     //ATTENZIONE: i dati del db sono relativi, modificateli in base al vostro pc
-    conn = PQconnectdb("dbname= Ermes host=localhost user=postgres password=admin");
+    conn = PQconnectdb("dbname=ErmesDB host=localhost user=postgres password=gheovgos");
     if(PQstatus(conn) == CONNECTION_BAD)
     {
         printf("Connessione al db non riuscita\n");
@@ -52,6 +52,8 @@ char ** selectdb(char attributes [], char table [], char condition [], PGconn *c
         exit(0);
     }
     PGresult *res;
+        printf("SONO ALL'INTERNO DI SELECT Valori ottenuti: \n");
+        puts(condition);
     char sql[500];
     strcpy(sql, "");
     strcat(sql, "SELECT ");

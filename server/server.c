@@ -17,6 +17,7 @@ void *connection_handler(void *);
 int networkMessageHandler(char scelta, PGconn *conn, int socket);
 long writeSock(int socket, char *str);
 int readSock(int socket, char *str);
+char* readSock2(int socket, char *str);
 
 PGconn* conn = NULL;
 
@@ -36,16 +37,13 @@ int main()
         printf("Errore nel binding\n");
         return 1;
     }
-    else
-        printf("OK binding\n");
     // Listening socket con max 40 richieste in coda
     if (listen(serverSocket, MAXCLIENTS) == -1)
     {
         printf("Errore nell'ascolto\n");
         return 1;
     }
-    else
-        printf("OK listen\n");
+
     // Array di thread
     pthread_t tid[MAXCLIENTS];
     int i = 0;
@@ -65,50 +63,34 @@ int main()
 
 int networkMessageHandler(char scelta, PGconn *conn, int socket)
 {
-    char client_message[2000];
+    char* client_message = (char*)malloc(sizeof(char)*2000);
     int read_size;
     char *buff;
     char *buff2;
     switch(scelta)
     {
-        case '0': //login
-
-
+        case '0': //login          
             //read per username
-            read_size = readSock(socket, client_message);
-            printf("Username da parte del client: %s\n", client_message);
-            buff = (char *) malloc(sizeof(char) * read_size);
-            strcpy(buff, client_message);
-            strcpy(client_message, "");
+            buff = readSock2(socket, client_message);
+            printf("Username da parte del client: %s|\n", buff);
             fflush(stdout);
-
 
             //read per password
-            read_size = readSock(socket, client_message);
-            printf("Password da parte del client: %s\n", client_message);
-            buff2 = (char *) malloc(sizeof(char) * read_size);
-            strcpy(buff2, client_message);
-            strcpy(client_message, "");
+            buff2 = readSock2(socket, client_message);         
+            printf("Password da parte del client: %s|\n", buff2);
             fflush(stdout);
-
 
             return usernameAndPasswordCheck(buff, buff2, conn); //1 se login OK, 0 altrimenti
         case '1': //registrazione
             //read per username
-            read_size = readSock(socket, client_message);
-            printf("Username da parte del client: %s\n", client_message);
-            buff = (char *) malloc(sizeof(char) * read_size);
-            strcpy(buff, client_message);
-            strcpy(client_message, "");
+            buff = readSock(socket, client_message);
+            printf("Username da parte del client: %s\n", buff);
             fflush(stdout);
 
 
             //read per password
-            read_size = readSock(socket, client_message);
-            printf("Password da parte del client: %s\n", client_message);
-            buff2 = (char *) malloc(sizeof(char) * read_size);
-            strcpy(buff2, client_message);
-            strcpy(client_message, "");
+            buff2 = readSock(socket, client_message);
+            printf("Password da parte del client: %s\n", buff2);
             fflush(stdout);
 
 
@@ -123,14 +105,16 @@ void *connection_handler(void *socket_desc)
 {
     int sock = *(int*)socket_desc;
     int read_size;
-    char client_message[2000];
-    while((read_size = recv(sock , client_message , 2000 , 0)) > 0)
+    char* client_message = (char*) malloc(sizeof(char)*200);
+    
+    while((read_size = recv(sock , client_message , 200 , 0)) > 0)
     {
         //read per intero che stabilirà cosa fare
         char choice = client_message[0];
         client_message[read_size] = '\0';
         printf("Intero da parte del client: %s\n", client_message);
-        strcpy(client_message, "");
+
+        clearBuffer(client_message);
 
         int msg = networkMessageHandler(choice, conn, sock);
         char mess[33];
@@ -150,7 +134,7 @@ void *connection_handler(void *socket_desc)
         }
     }
     //clear the message buffer
-    memset(client_message, 0, 2000);
+    memset(client_message, 0, 200);
 }
 
 long writeSock(int socket, char *str)
@@ -169,18 +153,18 @@ long writeSock(int socket, char *str)
     }
     strcat(cpy, "\n");
     long bytes = write(socket, cpy, strlen(cpy));
-    free(cpy),
+    free(cpy);
     free(newstr);
     return bytes;
 }
 
 int readSock(int socket, char *str)
 {
-    int read_size = recv(socket, str, 2000, 0);
-    char *newstr = malloc(strlen(str) + 2);
-    char *cpy = malloc(strlen(str)+2);
+    int read_size = read(socket, str, sizeof(str)-1);
+    char *newstr = (char*) malloc(sizeof(char)*read_size);
+    char *cpy = (char*) malloc(sizeof(char)*read_size);
     int c = 0;
-    strcpy(newstr, str);
+
     for(size_t i = 0; i < strlen(newstr); ++i)
     {
         if(newstr[i] != '\n')
@@ -191,7 +175,27 @@ int readSock(int socket, char *str)
     }
     strcat(cpy, "\0");
     strcpy(str, cpy);
-    free(cpy),
+    free(cpy);
             free(newstr);
     return read_size;
+}
+
+char* readSock2(int socket, char *str) {
+
+    int read_size = read(socket, str, 2000);
+    int len = strlen(str);
+    char* newstr = (char*)malloc(sizeof(char)*len);
+    
+    for(int i = 0; str[i] != '\0'; i++) {newstr[i] = str[i];}
+    
+    printf("fatto: %s|\n", newstr);
+    fflush(stdout);
+    clearBuffer(str);
+    return newstr;
+}
+
+
+void clearBuffer(char *str) { 
+    for(int i = 0; i < strlen(str); i++) 
+        str[i] = ""; 
 }
