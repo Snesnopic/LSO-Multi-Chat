@@ -106,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
 
     protected void tryLogin(String username, String password, boolean isRegister) {
 
-        if (username.isEmpty() || password.isEmpty())
+        if ((username.isEmpty() || password.isEmpty()) || (username.length() < 5) || (password.length() < 5))
             new AlertDialog.Builder(this).setMessage(R.string.fields_error).setNegativeButton(android.R.string.ok, null)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
