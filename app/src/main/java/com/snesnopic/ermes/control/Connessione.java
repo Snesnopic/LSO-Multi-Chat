@@ -143,9 +143,8 @@ public class Connessione extends Thread {
         send(2);
         send(utente.userid);
         String response = recv();
-        Integer len = new Integer(response);
 
-        for(int i = 0; i < len; i++ ) {
+        for(int i = 0; i < Integer.parseInt(response); i++ ) {
             Group a = new Group();
             a.id = Integer.parseInt(recv());
             a.userid = Integer.parseInt(recv());
