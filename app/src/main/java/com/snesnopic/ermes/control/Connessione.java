@@ -104,7 +104,7 @@ public class Connessione extends Thread {
 
                 pw.println(n);
                 try {
-                    Thread.sleep(200); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
+                    Thread.sleep(100); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
                 } catch (InterruptedException e) {e.printStackTrace();}
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+n);
             }
@@ -116,13 +116,15 @@ public class Connessione extends Thread {
     }
 
     private String recv() {
+        int c = 0;
+        StringBuilder str = new StringBuilder();
         Thread t = new Thread(() -> {
             if (isConnected) {
                 try {
-                    Thread.sleep(200); //una wait per far elaborare la lettura della socket
+                    Thread.sleep(100); //una wait per far elaborare la lettura della socket
                     result = bf.readLine();
                     System.out.println("++++++++MESSAGGIO LETTO++++++++++\n"+result);
-                    Thread.sleep(200); //una wait per far elaborare la lettura della socket
+                    Thread.sleep(100); //una wait per far elaborare la lettura della socket
                 }
                 catch (InterruptedException | IOException e) {System.out.println("Errore nella recv");}
             }
@@ -140,25 +142,65 @@ public class Connessione extends Thread {
 
     public ArrayList<Group> getRoomJoined(){
         ArrayList<Group> myRooms = new ArrayList<>();
-        send(2);
-        send(utente.userid);
-        String response = recv();
+        try {
+            send(2);
+            send(utente.userid);
+            Thread.sleep(500);     //attende che la query sul server si completi
+            String response = recv();
+            int j = clearResponse(response);
 
-        for(int i = 0; i < Integer.parseInt(response); i++ ) {
-            Group a = new Group();
-            a.id = Integer.parseInt(recv());
-            a.userid = Integer.parseInt(recv());
-            a.name = recv();
 
-            Message msg = new Message();
-            msg.message = "Ultimo messaggio gruppo " + i;
-            msg.time = LocalDateTime.now();
-            a.messages = new ArrayList<>();
-            a.messages.add(msg);
-            myRooms.add(a);
+            for(int i = 0; i < j; i++ ) {
+                Group a = new Group();
+                a.id = clearResponse(recv());
+                a.userid = clearResponse(recv());
+                a.name = recv();
+
+                Message msg = new Message();
+                msg.message = "Ultimo messaggio gruppo " + i;
+                msg.time = LocalDateTime.now();
+                a.messages = new ArrayList<>();
+                a.messages.add(msg);
+                myRooms.add(a);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("--------------- Errore lettura gruppi\n");
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         return myRooms;
+    }
+
+    private int clearResponse(String response) {
+        int cleared = 0;
+
+        try {
+            cleared = Integer.parseInt(response);
+            return cleared;
+        } catch (NumberFormatException e) {
+            int j = 0;
+            char[] buff = new char[response.length()];
+            for(int i = 0; i < response.length(); i++) {
+                if((response.charAt(i) <= 57) && (response.charAt(i)) >= 48) {
+                    System.out.println("++++++ Char copiato: "+response.charAt(i));
+                    buff[j] = response.charAt(i);
+                    System.out.println("++++++ Char copiato: "+buff[j]);
+                    j++;
+                }
+            }
+            char[] buff2 = new char[j];
+
+            for(int i = 0; i < j; i++) {
+                buff2[i] = buff[i];
+            }
+
+            String parsing = String.valueOf(buff2);
+            System.out.println("Stringa finale: "+parsing);
+            return Integer.parseInt(parsing);
+        }
+
     }
 
 }
