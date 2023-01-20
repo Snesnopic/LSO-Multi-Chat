@@ -25,7 +25,7 @@ void dbDeconnection(PGconn *connection)
     PQfinish(connection);
 }
 
-void update(char table [], char attribute [], char condition [], PGconn *conn)
+int update(char table [], char attribute [], char condition [], PGconn *conn)
 {
     PGresult *res;
     if(conn == NULL)
@@ -39,9 +39,22 @@ void update(char table [], char attribute [], char condition [], PGconn *conn)
     strcat(sql, table);
     strcat(sql, " SET ");
     strcat(sql, attribute);
-    strcat(sql, " WHERE ");
-    strcat(sql, condition);
+    if(strcmp(condition, "") != 0)
+    {
+        strcat(sql, " WHERE ");
+        strcat(sql, condition);
+    }
     res = PQexec(conn, sql);
+    if(PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        printf("Errore UPDATE\n");
+        return 0;
+    }
+    else
+    {
+        printf("UPDATE riuscito\n");
+        return 1;
+    }
 }
 
 char ** selectdb(char attributes [], char table [], char condition [], PGconn *conn, int *rowsRet, int numberOfTableColumns)
@@ -113,7 +126,7 @@ int insert(char tableAndColumn [], char data [], PGconn *conn)
     strcat(sql, data);
     strcat(sql, ");");
     printf("COMANDO SQL: %s\n", sql);
-    res = PQexec(conn, sql);
+    res = PQexec(conn, sql);PQresultStatus(res) != PGRES_COMMAND_OK
     if(PQresultStatus(res) != PGRES_COMMAND_OK)
     {
         printf("INSERT non andata a buon fine\n");
