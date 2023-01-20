@@ -126,8 +126,9 @@ int insert(char tableAndColumn [], char data [], PGconn *conn)
     }
 }
 
-void delete(char table_name [], char condition [], PGconn *conn)
+int delete(char table_name [], char condition [], PGconn *conn)
 {
+    //condition dev'essere = "" se non si vuole nessuna condizione nella where
     // condition = ad esempio: CustomerName = "GiorgioUni"
     if(conn == NULL)
     {
@@ -139,8 +140,22 @@ void delete(char table_name [], char condition [], PGconn *conn)
     strcpy(sql, "");
     strcat(sql, "DELETE FROM ");
     strcat(sql, table_name);
-    strcat(sql, " WHERE ");
-    strcat(sql, condition);
+    if(strcmp(condition, "") == 0)
+    {
+        strcat(sql, " WHERE ");
+        strcat(sql, condition);
+    }
     strcat(sql, ";");
+    printf("COMANDO SQL: %s\n", sql);
     res = PQexec(conn, sql);
+    if(PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        printf("DELETE non andata a buon fine\n");
+        return 0;
+    }
+    else
+    {
+        printf("DELETE eseguita con successo\n");
+        return 1;
+    }
 }

@@ -134,7 +134,73 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
               
               printf("Gruppi inviati.\n");
               
-              return -2; 
+              return -2;
+        case 3:
+            read_size = recv(socket, client_message, 200 , 0);     //legge l'userid che ha effettuato la richiesta
+            if(read_size < 0) return -1;
+
+            printf("User id del client: %s|", client_message);
+            fflush(stdout);
+
+            Group* gruppi;
+            int row = 0;
+            char* groupid = (char*)malloc(sizeof(char)*200);
+            char* creatorUserId = (char*)malloc(sizeof(char)*200);
+
+            gruppi = getGroupsNotOfUsers(atoi(client_message), conn, &row); //ottiene tutti i gruppi in cui l'utente non c'è
+
+            buff = (char*)malloc(sizeof(char)*500);
+
+            itoa(row, buff);
+
+            writeSock(socket, buff);
+
+
+            for(int i = 0; i < row; i++) {
+                itoa(gruppi[i].groupId, groupid);
+                writeSock(socket, groupid); //scrive il groupid
+                itoa(gruppi[i].creatorUserId, creatorUserId); //scrive l'userid del creatore
+                writeSock(socket, creatorUserId);
+                writeSock(socket, gruppi[i].groupName);
+                memset(groupid, 0, 200);
+                memset(creatorUserId, 0, 200);
+            }
+
+            printf("Gruppi inviati.\n");
+
+            return -2;
+        case 4:
+            read_size = recv(socket, client_message, 200 , 0);     //legge il groupid che ha effettuato la richiesta
+            if(read_size < 0) return -1;
+
+            printf("Group id del client: %s|", client_message);
+            fflush(stdout);
+
+            GroupMessage * messaggi;
+            int row = 0;
+            char* userid = (char*)malloc(sizeof(char)*200);
+
+            messaggi = getGroupMessages(atoi(client_message), conn, &row); //ottiene tutti i messaggi del gruppo
+
+            buff = (char*)malloc(sizeof(char)*500);
+
+            itoa(row, buff);
+
+            writeSock(socket, buff);
+
+
+            for(int i = 0; i < row; i++) {
+                itoa(messaggi[i].userId, userid);
+                writeSock(socket, userid); //scrive userid
+                writeSock(socket, messaggi[i].message);
+                writeSock(socket, messaggi[i].timestamp);
+                memset(groupid, 0, 200);
+                memset(creatorUserId, 0, 200);
+            }
+
+            printf("Messaggi inviati.\n");
+
+            return -2;
         default:
             printf("Errore network message hanlder: valore di scelta non valido\n");
     }

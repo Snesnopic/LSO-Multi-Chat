@@ -144,3 +144,79 @@ GroupMessage* getGroupMessages(int group_id, PGconn *conn, int *row)
     }
     return messaggi;
 }
+
+int deleteGroup(char groupname[], PGconn* conn)
+{
+    if(conn == NULL)
+    {
+        printf("connessione con DB persa o assente\n");
+        exit(0);
+    }
+    char where_condition[100];
+    strcpy(where_condition, " roomname = ");
+    strcat(where_condition, groupname);
+    if(delete("room", where_condition, conn) == 0)
+    {
+        printf("Gruppo non esistente\n");
+        return 0;
+    }
+    else
+    {
+        printf("Cancellazione avvenuta\n");
+        return 1;
+    }
+}
+
+GroupRequest* getGroupRequests(int group_id, int user_id, PGconn *conn, int *row)
+{
+    if (conn == NULL)
+    {
+        printf("connessione con DB persa o assente\n");
+        exit(0);
+    }
+    char **queryResult = (char**)malloc(100 * sizeof(char*));
+    for(int i = 0; i < 100; i++)
+        queryResult[i] = (char*)malloc(100*sizeof(char));
+    char whereCondition[250] = " roomid = ";
+    char buffer[33];
+    itoa(group_id, buffer);
+    strcat(whereCondition, buffer);
+    strcpy(buffer, "");
+    strcat(whereCondition, " AND userid = ");
+    itoa(user_id, buffer);
+    strcat(whereCondition, buffer);
+    queryResult = selectdb("room, userid", "joinrequest", whereCondition, conn, row, 2);
+    GroupRequest *richieste = (GroupRequest*)malloc(*row * sizeof (GroupRequest));
+    int j = 0;
+    for(int i = 0; i < *row; i = i + 1)
+    {
+        richieste[i].groupId = atoi(queryResult[j]);
+        richieste[i].userId = atoi(queryResult[j+1]);
+        j = j + 2;
+    }
+    return richieste;
+}
+
+int richiestaGruppo(char group_name, int user_id, PGconn *conn, int *row)
+{
+    if(conn == NULL)
+    {
+        printf("connessione con DB persa o assente\n");
+        exit(0);
+    }
+    char **queryResult = (char**)malloc(100 * sizeof(char*));
+    for(int i = 0; i < 100; i++)
+        queryResult[i] = (char*)malloc(100*sizeof(char));
+    whereCondition[100] = "roomname = ";
+    strcat(whereCondition, group_name);
+    queryResult = selectdb("roomid", "room", whereCondition, conn, row, 1);
+    char insertData[250];
+    strcpy(insertData, "");
+    strcat(insertData, queryResult[0]);
+    strcat(insertData, ", ");
+    char userid[250];
+    strcpy(userid, "");
+    itoa(user_id, userid);
+    strcat(insertData, userid);
+    return insert("joinrequest(roomid, userid)", insertData, conn);
+}

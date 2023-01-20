@@ -13,8 +13,11 @@ int usernameAndPasswordCheck(char username[], char password[], PGconn* conn)
     strcat(whereCondition, "' AND userpassword = '");
     strcat(whereCondition, password);
     strcat(whereCondition, "'");
-    queryResult = selectdb("userid", "userdata", whereCondition, conn, &placeholder, 1);
-    return atoi(queryResult[0]);
+    queryResult = selectdb("username", "userdata", whereCondition, conn, &placeholder, 1);
+    if(queryResult)
+        return 0; //caso in cui username OPPURE password sono sbagliati
+    else
+        return 1; //caso in cui username E password sono corretti
 }
 
 

@@ -13,4 +13,4 @@ void dbDeconnection(PGconn *connection);
 void update(char table [], char attribute [], char condition [], PGconn *conn);
 char ** selectdb(char attributes [], char table [], char condition [], PGconn *conn, int *rowsRet, int numberOfTableColumns);
 int insert(char tableAndColumn [], char data[], PGconn *conn);
-void delete(char table_name [], char condition [], PGconn *conn);
+int delete(char table_name [], char condition [], PGconn *conn);
