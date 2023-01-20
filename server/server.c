@@ -69,6 +69,10 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
     int msg;
     char *buff;
     char *buff2;
+    Group* gruppi;
+    int row;
+    char* groupid;
+    char* creatorUserId;
     switch(scelta)
     {
         case '0': //login          
@@ -83,6 +87,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             fflush(stdout);
 
             msg = usernameAndPasswordCheck(buff, buff2, conn);
+            printf("SONO msg %d", msg);
             memset(buff, 0, strlen(buff));
             memset(buff2, 0, strlen(buff2));
             return msg;
@@ -108,10 +113,8 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
               printf("User id del client: %s|", client_message);
               fflush(stdout);
               
-              Group* gruppi;
-              int row = 0;
-              char* groupid = (char*)malloc(sizeof(char)*200);
-              char* creatorUserId = (char*)malloc(sizeof(char)*200);
+              groupid = (char*)malloc(sizeof(char)*200);
+              creatorUserId = (char*)malloc(sizeof(char)*200);
               
               gruppi = getGroupsOfUsers(atoi(client_message), conn, &row); //ottiene tutti i gruppi dell'utente 
 
@@ -135,17 +138,15 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
               printf("Gruppi inviati.\n");
               
               return -2;
-        case 3:
+        case '3':
             read_size = recv(socket, client_message, 200 , 0);     //legge l'userid che ha effettuato la richiesta
             if(read_size < 0) return -1;
 
             printf("User id del client: %s|", client_message);
             fflush(stdout);
 
-            Group* gruppi;
-            int row = 0;
-            char* groupid = (char*)malloc(sizeof(char)*200);
-            char* creatorUserId = (char*)malloc(sizeof(char)*200);
+            groupid = (char*)malloc(sizeof(char)*200);
+            creatorUserId = (char*)malloc(sizeof(char)*200);
 
             gruppi = getGroupsNotOfUsers(atoi(client_message), conn, &row); //ottiene tutti i gruppi in cui l'utente non c'è
 
