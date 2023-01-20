@@ -18,6 +18,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket);
 long writeSock(int socket, char *str);
 int readSock(int socket, char *str);
 char* readSock2(int socket, char *str);
+long writeSock2(int socket, char *str);
 
 PGconn* conn = NULL;
 
@@ -120,6 +121,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
 
               writeSock(socket, buff);
 
+
               for(int i = 0; i < row; i++) {
                   itoa(gruppi[i].groupId, groupid);
                   writeSock(socket, groupid); //scrive il groupid
@@ -130,7 +132,9 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
                   memset(creatorUserId, 0, 200);
               }
               
-              return 1; 
+              printf("Gruppi inviati.\n");
+              
+              return -2; 
         default:
             printf("Errore network message hanlder: valore di scelta non valido\n");
     }
@@ -155,7 +159,7 @@ void *connection_handler(void *socket_desc)
         itoa(msg, mess);
         fflush(stdout);
         printf("messaggio della send: %s\n", mess);
-        writeSock(sock, mess);
+        if(msg != -2) writeSock(sock, mess);
 
         if(read_size == 0)
         {
@@ -203,6 +207,25 @@ char* readSock2(int socket, char *str) {
     memset(str, 0, strlen(str));
     return newstr;
 }
+
+long writeSock2(int socket, char *str)
+{
+    char *cpy = malloc(strlen(str)+2);
+    int c = 0;
+    for(int i = 0; i < strlen(str); i++)
+    {
+        if(str[i] != '\n')
+        {
+            cpy[c] = str[i];
+            c++;
+        }
+    }
+    cpy[c+1] = '\n';
+    long bytes = write(socket, cpy, strlen(cpy));
+    free(cpy);
+    return bytes;
+}
+
 
 /*
 int readSock(int socket, char *str)
