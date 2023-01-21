@@ -21,6 +21,7 @@ char* readSock2(int socket, char *str);
 long writeSock2(int socket, char *str);
 
 PGconn* conn = NULL;
+int userID = -1;
 
 int main()
 {
@@ -86,11 +87,11 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             printf("Password da parte del client: %s|\n", buff2);
             fflush(stdout);
 
-            msg = usernameAndPasswordCheck(buff, buff2, conn);
-            printf("SONO msg %d", msg);
+            userID = usernameAndPasswordCheck(buff, buff2, conn);
+            printf("Sono userID: %d\n", userID);
             memset(buff, 0, strlen(buff));
             memset(buff2, 0, strlen(buff2));
-            return msg;
+            return userID;
         case '1': //registrazione
             //read per username
             buff = readSock2(socket, client_message);
@@ -103,27 +104,27 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             printf("Password da parte del client: %s\n", buff2);
             fflush(stdout);
 
-
-            return userRegistration(buff, buff2, conn); //1 se registrazione OK, 0 altrimenti
+            if(userRegistration(buff, buff2, conn)) {
+                userID = usernameAndPasswordCheck(buff, buff2, conn);
+                return 1;
+            }//1 se registrazione OK, 0 altrimenti
+            else return 0;
+            
             
         case '2': //ottieni tutti i gruppi di un utente
-              read_size = recv(socket, client_message, 200 , 0);     //legge l'userid che ha effettuato la richiesta
-              if(read_size < 0) return -1;
-              
-              printf("User id del client: %s|", client_message);
+              printf("User id del client: %d|", userID);
               fflush(stdout);
               
               groupid = (char*)malloc(sizeof(char)*200);
               creatorUserId = (char*)malloc(sizeof(char)*200);
               
-              gruppi = getGroupsOfUsers(atoi(client_message), conn, &row); //ottiene tutti i gruppi dell'utente 
+              gruppi = getGroupsOfUsers(userID, conn, &row); //ottiene tutti i gruppi dell'utente 
 
               buff = (char*)malloc(sizeof(char)*500);
 
               itoa(row, buff);
 
               writeSock(socket, buff);
-
 
               for(int i = 0; i < row; i++) {
                   itoa(gruppi[i].groupId, groupid);
@@ -139,16 +140,13 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
               
               return -2;
         case '3':
-            read_size = recv(socket, client_message, 200 , 0);     //legge l'userid che ha effettuato la richiesta
-            if(read_size < 0) return -1;
-
-            printf("User id del client: %s|", client_message);
+            printf("User id del client: %d|", userID);
             fflush(stdout);
 
             groupid = (char*)malloc(sizeof(char)*200);
             creatorUserId = (char*)malloc(sizeof(char)*200);
 
-            gruppi = getGroupsNotOfUsers(atoi(client_message), conn, &row); //ottiene tutti i gruppi in cui l'utente non c'è
+            gruppi = getGroupsNotOfUsers(userID, conn, &row); //ottiene tutti i gruppi in cui l'utente non c'è
 
             buff = (char*)malloc(sizeof(char)*500);
 
@@ -156,13 +154,18 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
 
             writeSock(socket, buff);
 
-
             for(int i = 0; i < row; i++) {
+
                 itoa(gruppi[i].groupId, groupid);
-                writeSock(socket, groupid); //scrive il groupid
+
+                writeSock2(socket, groupid); //scrive il groupid
                 itoa(gruppi[i].creatorUserId, creatorUserId); //scrive l'userid del creatore
-                writeSock(socket, creatorUserId);
-                writeSock(socket, gruppi[i].groupName);
+
+                writeSock2(socket, creatorUserId);
+
+                writeSock2(socket, gruppi[i].groupName);
+                
+                printf("\nHo inviato al ciclo %d\nGROUP ID: %s|\nCREATOR USER ID: %s|\nGROUP NAME: %s|\n", i, groupid, creatorUserId, gruppi[i].groupName);
                 memset(groupid, 0, 200);
                 memset(creatorUserId, 0, 200);
             }
@@ -171,17 +174,15 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
 
             return -2;
         case 4:
-            read_size = recv(socket, client_message, 200 , 0);     //legge il groupid che ha effettuato la richiesta
-            if(read_size < 0) return -1;
 
-            printf("Group id del client: %s|", client_message);
+            printf("Group id del client: %d|", userID);
             fflush(stdout);
 
             GroupMessage * messaggi;
             int row = 0;
             char* userid = (char*)malloc(sizeof(char)*200);
 
-            messaggi = getGroupMessages(atoi(client_message), conn, &row); //ottiene tutti i messaggi del gruppo
+            messaggi = getGroupMessages(userID, conn, &row); //ottiene tutti i messaggi del gruppo
 
             buff = (char*)malloc(sizeof(char)*500);
 
@@ -259,6 +260,7 @@ long writeSock(int socket, char *str)
     strcat(cpy, "\n");
     long bytes = write(socket, cpy, strlen(cpy));
     free(cpy);
+    
     free(newstr);
     return bytes;
 }
@@ -277,19 +279,9 @@ char* readSock2(int socket, char *str) {
 
 long writeSock2(int socket, char *str)
 {
-    char *cpy = malloc(strlen(str)+2);
-    int c = 0;
-    for(int i = 0; i < strlen(str); i++)
-    {
-        if(str[i] != '\n')
-        {
-            cpy[c] = str[i];
-            c++;
-        }
-    }
-    cpy[c+1] = '\n';
-    long bytes = write(socket, cpy, strlen(cpy));
-    free(cpy);
+    printf("\n%s|%d\n", str, strlen(str));
+    long bytes = write(socket, str, strlen(str));
+    write(socket, "\n", 1);
     return bytes;
 }
 
