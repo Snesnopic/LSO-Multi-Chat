@@ -1,5 +1,7 @@
 package com.snesnopic.ermes.activitypkg;
 
+import static com.snesnopic.ermes.activitypkg.LoginActivity.connection;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,19 +23,7 @@ import java.util.List;
 public class OtherGroupsFragment extends Fragment {
     public List<Group> GetOtherGroups()
     {
-        ArrayList<Group> otherGroups = new ArrayList<>();
-        for(int i = 0; i < 5; ++i)
-        {
-            Group a = new Group();
-            a.name = "Gruppo " + i;
-            Message msg = new Message();
-            msg.message = "Ultimo messaggio gruppo " + i;
-            msg.time = LocalDateTime.now();
-            a.messages = new ArrayList<>();
-            a.messages.add(msg);
-            otherGroups.add(a);
-        }
-        return otherGroups;
+        return connection.getOtherGroups();
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

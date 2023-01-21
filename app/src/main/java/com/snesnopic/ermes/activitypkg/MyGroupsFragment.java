@@ -23,9 +23,7 @@ import java.util.List;
 public class MyGroupsFragment extends Fragment {
     public List<Group> GetMyGroups()
     {
-        ArrayList<Group> myGroups = connection.getRoomJoined();
-
-        return myGroups;
+        return connection.getOtherGroups();
     }
 
     @Override

@@ -104,7 +104,7 @@ public class Connessione extends Thread {
 
                 pw.println(n);
                 try {
-                    Thread.sleep(100); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
+                    Thread.sleep(150); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
                 } catch (InterruptedException e) {e.printStackTrace();}
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+n);
             }
@@ -117,18 +117,17 @@ public class Connessione extends Thread {
 
     private String recv() {
         int c = 0;
-        StringBuilder str = new StringBuilder();
         Thread t = new Thread(() -> {
             if (isConnected) {
                 try {
-                    Thread.sleep(100); //una wait per far elaborare la lettura della socket
+                    Thread.sleep(150); //una wait per far elaborare la lettura della socket
                     result = bf.readLine();
-                    System.out.println("++++++++MESSAGGIO LETTO++++++++++\n"+result);
-                    Thread.sleep(100); //una wait per far elaborare la lettura della socket
+                    System.out.println("++++++++MESSAGGIO LETTO++++++++++\n"+result+"|\nLunghezza stringa: "+result.length());
+                    Thread.sleep(200); //una wait per far elaborare la lettura della socket
+                    return;
                 }
-                catch (InterruptedException | IOException e) {System.out.println("Errore nella recv");}
+                catch (InterruptedException | IOException e) {System.out.println("Errore nella recv"); return;}
             }
-            return;
         });
         t.start();
         try {
@@ -144,11 +143,9 @@ public class Connessione extends Thread {
         ArrayList<Group> myRooms = new ArrayList<>();
         try {
             send(2);
-            send(utente.userid);
-            Thread.sleep(500);     //attende che la query sul server si completi
+            Thread.sleep(400);     //attende che la query sul server si completi
             String response = recv();
             int j = clearResponse(response);
-
 
             for(int i = 0; i < j; i++ ) {
                 Group a = new Group();
@@ -173,8 +170,48 @@ public class Connessione extends Thread {
         return myRooms;
     }
 
+    public ArrayList<Group> getOtherGroups() {
+        ArrayList<Group> otherRooms = new ArrayList<>();
+        System.out.println("Sono in getOther");
+        try {
+            send(3);
+            Thread.sleep(800);     //attende che la query sul server si completi
+            int j = clearResponse(recv());
+
+            for(int i = 0; i < j; i++ ) {
+                Group a = new Group();
+                a.id = clearResponse(recv());
+                a.userid = clearResponse(recv());
+                a.name = recv();
+
+                Message msg = new Message();
+                msg.message = "Ultimo messaggio gruppo " + i;
+                msg.time = LocalDateTime.now();
+                a.messages = new ArrayList<>();
+                a.messages.add(msg);
+                otherRooms.add(a);
+
+                otherRooms.add(a);
+            }
+
+            return otherRooms;
+        } catch (NumberFormatException e) {
+            System.out.println("--------------- Errore lettura gruppi esterni\n");
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return otherRooms;
+    }
+
+
     private int clearResponse(String response) {
-        int cleared = 0;
+        int cleared = -1;
+        if(response.equals("")) {
+            System.out.println("-------------Stringa da convertire vuota! Ritorno -1");
+            return cleared;
+        }
 
         try {
             cleared = Integer.parseInt(response);
@@ -184,24 +221,16 @@ public class Connessione extends Thread {
             char[] buff = new char[response.length()];
             for(int i = 0; i < response.length(); i++) {
                 if((response.charAt(i) <= 57) && (response.charAt(i)) >= 48) {
-                    System.out.println("++++++ Char copiato: "+response.charAt(i));
                     buff[j] = response.charAt(i);
-                    System.out.println("++++++ Char copiato: "+buff[j]);
                     j++;
                 }
             }
             char[] buff2 = new char[j];
-
-            for(int i = 0; i < j; i++) {
-                buff2[i] = buff[i];
-            }
+            for(int i = 0; i < j; i++) buff2[i] = buff[i];
 
             String parsing = String.valueOf(buff2);
-            System.out.println("Stringa finale: "+parsing);
             return Integer.parseInt(parsing);
         }
-
     }
-
 }
 
