@@ -154,11 +154,7 @@ public class Connessione extends Thread {
                 a.userid = clearResponse(recv());
                 a.name = recv();
 
-                Message msg = new Message();
-                msg.message = "Ultimo messaggio gruppo " + i;
-                msg.time = LocalDateTime.now();
-                a.messages = new ArrayList<>();
-                a.messages.add(msg);
+                a.messages = getAllMessages();
                 myRooms.add(a);
             }
         } catch (NumberFormatException e) {
@@ -173,7 +169,6 @@ public class Connessione extends Thread {
 
     public ArrayList<Group> getOtherGroups() {
         ArrayList<Group> otherRooms = new ArrayList<>();
-        System.out.println("Sono in getOther");
         try {
             send(3);
             Thread.sleep(400);     //attende che la query sul server si completi
@@ -185,11 +180,7 @@ public class Connessione extends Thread {
                 a.userid = clearResponse(recv());
                 a.name = recv();
 
-                Message msg = new Message();
-                msg.message = "Ultimo messaggio gruppo " + i;
-                msg.time = LocalDateTime.now();
-                a.messages = new ArrayList<>();
-                a.messages.add(msg);
+                a.messages = getAllMessages();
                 otherRooms.add(a);
             }
 
@@ -203,7 +194,6 @@ public class Connessione extends Thread {
 
         return otherRooms;
     }
-
 
     private int clearResponse(String response) {
         int cleared = -1;
@@ -230,6 +220,41 @@ public class Connessione extends Thread {
             String parsing = String.valueOf(buff2);
             return Integer.parseInt(parsing);
         }
+    }
+
+    public ArrayList<Message> getAllMessages() {
+        ArrayList<Message> msg = new ArrayList();
+        try {
+            send(4);
+            Thread.sleep(500);
+            int j = clearResponse(recv());
+
+
+            if(j == 0) {
+                Message m = new Message();
+                m.senderUsername = "Odisseo";
+                m.message = "Nessun messaggio inviato su questo gruppo.";
+                m.time = LocalDateTime.now();
+                msg.add(m);
+                return msg;
+            }
+
+            for(int i = 0; i < j; i++) {
+                Message m = new Message();
+                m.senderUsername = recv();
+                m.message = recv();
+                m.time = LocalDateTime.now();
+                String tmp = recv();
+                msg.add(m);
+            }
+
+            return msg;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        return msg;
     }
 }
 
