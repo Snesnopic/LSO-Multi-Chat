@@ -39,7 +39,6 @@ public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClick
     @Override
     public void onClick(View v) {
         if (this.g != null) {
-            Toast.makeText(this.context, "Clicked on " + this.g.name, Toast.LENGTH_SHORT ).show();
             Intent mainIntent = new Intent(context, ChatActivity.class);
             mainIntent.putExtra("groupName",g.name);
             context.startActivity(mainIntent);

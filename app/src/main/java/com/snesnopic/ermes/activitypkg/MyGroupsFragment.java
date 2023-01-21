@@ -23,7 +23,7 @@ import java.util.List;
 public class MyGroupsFragment extends Fragment {
     public List<Group> GetMyGroups()
     {
-        return connection.getOtherGroups();
+        return connection.getRoomJoined();
     }
 
     @Override

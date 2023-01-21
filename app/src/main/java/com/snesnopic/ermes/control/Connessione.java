@@ -87,7 +87,7 @@ public class Connessione extends Thread {
                 pw.write(str+"\0");
                 pw.flush();
                 try {
-                    Thread.sleep(250); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
+                    Thread.sleep(150); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
                 } catch (InterruptedException e) {e.printStackTrace(); return;}
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+str);
             }
@@ -104,7 +104,7 @@ public class Connessione extends Thread {
 
                 pw.println(n);
                 try {
-                    Thread.sleep(150); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
+                    Thread.sleep(100); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
                 } catch (InterruptedException e) {e.printStackTrace();}
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+n);
             }
@@ -120,10 +120,10 @@ public class Connessione extends Thread {
         Thread t = new Thread(() -> {
             if (isConnected) {
                 try {
-                    Thread.sleep(150); //una wait per far elaborare la lettura della socket
+                    Thread.sleep(100); //una wait per far elaborare la lettura della socket
                     result = bf.readLine();
                     System.out.println("++++++++MESSAGGIO LETTO++++++++++\n"+result+"|\nLunghezza stringa: "+result.length());
-                    Thread.sleep(200); //una wait per far elaborare la lettura della socket
+                    Thread.sleep(100); //una wait per far elaborare la lettura della socket
                     return;
                 }
                 catch (InterruptedException | IOException e) {System.out.println("Errore nella recv"); return;}
@@ -134,6 +134,7 @@ public class Connessione extends Thread {
             while(t.isAlive());
             return result;
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("--------------------------------------\nErrore nell'attesa del Thread di lettura");
             return result;
         }
@@ -175,7 +176,7 @@ public class Connessione extends Thread {
         System.out.println("Sono in getOther");
         try {
             send(3);
-            Thread.sleep(800);     //attende che la query sul server si completi
+            Thread.sleep(400);     //attende che la query sul server si completi
             int j = clearResponse(recv());
 
             for(int i = 0; i < j; i++ ) {
@@ -189,8 +190,6 @@ public class Connessione extends Thread {
                 msg.time = LocalDateTime.now();
                 a.messages = new ArrayList<>();
                 a.messages.add(msg);
-                otherRooms.add(a);
-
                 otherRooms.add(a);
             }
 
