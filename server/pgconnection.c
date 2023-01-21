@@ -8,7 +8,7 @@
 PGconn* dbConnection(PGconn *conn)
 {
     //ATTENZIONE: i dati del db sono relativi, modificateli in base al vostro pc
-    conn = PQconnectdb("dbname=ErmesDB host=localhost user=postgres password=gheovgos");
+    conn = PQconnectdb("dbname=ErmesChatDB host=localhost user=postgres password=gheovgos");
     if(PQstatus(conn) == CONNECTION_BAD)
     {
         printf("Connessione al db non riuscita\n");
@@ -25,7 +25,7 @@ void dbDeconnection(PGconn *connection)
     PQfinish(connection);
 }
 
-int update(char table [], char attribute [], char condition [], PGconn *conn)
+void update(char table [], char attribute [], char condition [], PGconn *conn)
 {
     PGresult *res;
     if(conn == NULL)
@@ -39,22 +39,9 @@ int update(char table [], char attribute [], char condition [], PGconn *conn)
     strcat(sql, table);
     strcat(sql, " SET ");
     strcat(sql, attribute);
-    if(strcmp(condition, "") != 0)
-    {
-        strcat(sql, " WHERE ");
-        strcat(sql, condition);
-    }
+    strcat(sql, " WHERE ");
+    strcat(sql, condition);
     res = PQexec(conn, sql);
-    if(PQresultStatus(res) != PGRES_COMMAND_OK)
-    {
-        printf("Errore UPDATE\n");
-        return 0;
-    }
-    else
-    {
-        printf("UPDATE riuscito\n");
-        return 1;
-    }
 }
 
 char ** selectdb(char attributes [], char table [], char condition [], PGconn *conn, int *rowsRet, int numberOfTableColumns)
@@ -126,7 +113,7 @@ int insert(char tableAndColumn [], char data [], PGconn *conn)
     strcat(sql, data);
     strcat(sql, ");");
     printf("COMANDO SQL: %s\n", sql);
-    res = PQexec(conn, sql);PQresultStatus(res) != PGRES_COMMAND_OK
+    res = PQexec(conn, sql);
     if(PQresultStatus(res) != PGRES_COMMAND_OK)
     {
         printf("INSERT non andata a buon fine\n");

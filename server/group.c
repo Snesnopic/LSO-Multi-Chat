@@ -130,7 +130,7 @@ GroupMessage* getGroupMessages(int group_id, PGconn *conn, int *row)
     char whereCondition[250] = " roomid = ";
     char buffer[33];
     itoa(group_id, buffer);
-    strcpy(whereCondition, buffer);
+    strcat(whereCondition, buffer);
     queryResult = selectdb("messagetext, timestampdata, userid", "MessageData", whereCondition, conn, row, 3);
     GroupMessage *messaggi = (GroupMessage *) malloc(*row * sizeof(GroupMessage));
     int j = 0;
@@ -207,7 +207,7 @@ int richiestaGruppo(char group_name, int user_id, PGconn *conn, int *row)
     char **queryResult = (char**)malloc(100 * sizeof(char*));
     for(int i = 0; i < 100; i++)
         queryResult[i] = (char*)malloc(100*sizeof(char));
-    whereCondition[100] = "roomname = ";
+    char whereCondition[100] = "roomname = ";
     strcat(whereCondition, group_name);
     queryResult = selectdb("roomid", "room", whereCondition, conn, row, 1);
     char insertData[250];
@@ -220,46 +220,3 @@ int richiestaGruppo(char group_name, int user_id, PGconn *conn, int *row)
     strcat(insertData, userid);
     return insert("joinrequest(roomid, userid)", insertData, conn);
 }
-
-int messaggioGruppo(char message, int user_id, int group_id, PGconn *conn, int *row)
-{
-    if(conn == NULL)
-    {
-        printf("connessione con DB persa o assente\n");
-        exit(0);
-    }
-    char insertData[250];
-    strcpy(insertData, "");
-    strcat(insertData, message);
-    strcat(insertData, ", ");
-    char userid[250];
-    char groupid[250];
-    itoa(group_id, groupid);
-    itoa(user_id, userid);
-    strcpy(groupid, "");
-    strcpy(userid, "");
-    strcat(insertData, groupid);
-    strcat(insertData, ", ");
-    strcat(insertData, userid);
-    return insert("messagedata(messagetext, roomid, userid)", insertData, conn);
-}
-
-
-int creaGruppo(char group_name, int creatorUserId, PGconn *conn)
-{
-    if(conn == NULL)
-    {
-        printf("connessione con DB persa o assente\n");
-        exit(0);
-    }
-    char userid[250];
-    strcpy(userid, "");
-    itoa(user_id, userid);
-    char insertData[250];
-    strcpy(insertData, "");
-    strcat(insertData, group_name);
-    strcat(insertData, ", ");
-    itoa(user_id, userid);
-    return insert("room(roomname, creatoruserid)", insertData, conn);
-}
-

@@ -173,7 +173,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             printf("Gruppi inviati.\n");
 
             return -2;
-        case 4:
+        case '4':
 
             printf("Group id del client: %d|", userID);
             fflush(stdout);
@@ -188,14 +188,14 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
 
             itoa(row, buff);
 
-            writeSock(socket, buff);
+            writeSock2(socket, buff);
 
 
             for(int i = 0; i < row; i++) {
                 itoa(messaggi[i].userId, userid);
-                writeSock(socket, userid); //scrive userid
-                writeSock(socket, messaggi[i].message);
-                writeSock(socket, messaggi[i].timestamp);
+                writeSock2(socket, "SferaEbbasta"); //scrive userid
+                writeSock2(socket, messaggi[i].message);
+                writeSock2(socket, messaggi[i].timestamp);
                 memset(groupid, 0, 200);
                 memset(creatorUserId, 0, 200);
             }
