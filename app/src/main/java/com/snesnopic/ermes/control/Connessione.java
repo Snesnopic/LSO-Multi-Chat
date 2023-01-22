@@ -154,8 +154,11 @@ public class Connessione extends Thread {
                 a.userid = clearResponse(recv());
                 a.name = recv();
 
-                a.messages = getAllMessages();
                 myRooms.add(a);
+            }
+
+            for(int i = 0; i < myRooms.size(); i++) {
+                myRooms.get(i).messages = getAllMessages();
             }
         } catch (NumberFormatException e) {
             System.out.println("--------------- Errore lettura gruppi\n");
@@ -171,7 +174,7 @@ public class Connessione extends Thread {
         ArrayList<Group> otherRooms = new ArrayList<>();
         try {
             send(3);
-            Thread.sleep(400);     //attende che la query sul server si completi
+            Thread.sleep(600);     //attende che la query sul server si completi
             int j = clearResponse(recv());
 
             for(int i = 0; i < j; i++ ) {
@@ -180,8 +183,10 @@ public class Connessione extends Thread {
                 a.userid = clearResponse(recv());
                 a.name = recv();
 
-                a.messages = getAllMessages();
                 otherRooms.add(a);
+            }
+            for(int i = 0; i < otherRooms.size(); i++) {
+                otherRooms.get(i).messages = getAllMessages();
             }
 
             return otherRooms;
@@ -225,10 +230,7 @@ public class Connessione extends Thread {
     public ArrayList<Message> getAllMessages() {
         ArrayList<Message> msg = new ArrayList();
         try {
-            send(4);
-            Thread.sleep(500);
             int j = clearResponse(recv());
-
 
             if(j == 0) {
                 Message m = new Message();
@@ -252,7 +254,6 @@ public class Connessione extends Thread {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         return msg;
     }
