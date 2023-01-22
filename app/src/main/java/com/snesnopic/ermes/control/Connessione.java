@@ -18,7 +18,7 @@ public class Connessione extends Thread {
     private Socket s;
     private static Connessione instance;
     private String result = "null";
-    static User utente;
+    static User utente = new User("Utente 1");
     static Group room;
     static Message messaggio;
     static Request richiesta;
