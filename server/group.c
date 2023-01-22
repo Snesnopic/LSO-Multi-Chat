@@ -220,3 +220,45 @@ int richiestaGruppo(char group_name, int user_id, PGconn *conn, int *row)
     strcat(insertData, userid);
     return insert("joinrequest(roomid, userid)", insertData, conn);
 }
+
+int messaggioGruppo(char message, int user_id, int group_id, PGconn *conn, int *row)
+{
+    if(conn == NULL)
+    {
+        printf("connessione con DB persa o assente\n");
+        exit(0);
+    }
+    char insertData[250];
+    strcpy(insertData, "");
+    strcat(insertData, message);
+    strcat(insertData, ", ");
+    char userid[250];
+    char groupid[250];
+    itoa(group_id, groupid);
+    itoa(user_id, userid);
+    strcpy(groupid, "");
+    strcpy(userid, "");
+    strcat(insertData, groupid);
+    strcat(insertData, ", ");
+    strcat(insertData, userid);
+    return insert("messagedata(messagetext, roomid, userid)", insertData, conn);
+}
+
+
+int creaGruppo(char group_name, int creatorUserId, PGconn *conn)
+{
+    if(conn == NULL)
+    {
+        printf("connessione con DB persa o assente\n");
+        exit(0);
+    }
+    char userid[250];
+    strcpy(userid, "");
+    itoa(user_id, userid);
+    char insertData[250];
+    strcpy(insertData, "");
+    strcat(insertData, group_name);
+    strcat(insertData, ", ");
+    itoa(user_id, userid);
+    return insert("room(roomname, creatoruserid)", insertData, conn);
+}

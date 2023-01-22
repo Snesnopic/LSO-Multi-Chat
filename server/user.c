@@ -41,3 +41,58 @@ int userRegistration(char username[], char password[], PGconn* conn)
         return 1;
     }
 }
+
+int usernameCheck(char username[], PGconn *conn)
+{
+    if(conn == NULL)
+    {
+        printf("connessione al DB persa o assente\n");
+        exit(0);
+    }
+    int placeholder = 0;
+    char **queryResult = NULL;
+    char whereCondition[100] = " username = '";
+    strcat(whereCondition, username);
+    strcat(whereCondition, "'");
+    queryResult = selectdb("userid", "userdata", whereCondition, conn, &placeholder, 1);
+    return atoi(queryResult[0]);
+}
+
+int modificaUsername(char newUsername[], int user_id, PGconn *conn)
+{
+    if(conn == NULL)
+    {
+        printf("connessione con DB persa o assente\n");
+        exit(0);
+    }
+    if(usernameCheck(newUsername, conn) == 0)
+    {
+        printf("Username esistente\n");
+        return -1;
+    }
+    char whereCondition[250];
+    strcpy(whereCondition, "");
+    strcat(whereCondition, "userid = ");
+    char userid[250];
+    strcpy(userid, "");
+    itoa(user_id, userid);
+    strcat(whereCondition, userid);
+    return update("userdata", "username", whereCondition, conn);
+}
+
+int modificaPassword(char username[], int user_id, PGconn *conn)
+{
+    if(conn == NULL)
+    {
+        printf("connessione con DB persa o assente\n");
+        exit(0);
+    }
+    char whereCondition[250];
+    strcpy(whereCondition, "");
+    strcat(whereCondition, "userid = ");
+    char userid[250];
+    strcpy(userid, "");
+    itoa(user_id, userid);
+    strcat(whereCondition, userid);
+    return update("userdata", "password", whereCondition, conn);
+}

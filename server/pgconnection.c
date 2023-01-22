@@ -25,23 +25,32 @@ void dbDeconnection(PGconn *connection)
     PQfinish(connection);
 }
 
-void update(char table [], char attribute [], char condition [], PGconn *conn)
+int update(char table [], char attribute [], char condition [], PGconn *conn)
 {
     PGresult *res;
     if(conn == NULL)
-    {
-        printf("Tentato UPDATE ma connessione con db assente");
         exit(0);
-    }
-    char sql[500];
-    strcpy(sql, "");
-    strcat(sql, "UPDATE ");
     strcat(sql, table);
     strcat(sql, " SET ");
     strcat(sql, attribute);
     strcat(sql, " WHERE ");
     strcat(sql, condition);
+    if(strcmp(condition, "") != 0)
+    {
+        strcat(sql, " WHERE ");
+        strcat(sql, condition);
+    }
     res = PQexec(conn, sql);
+    if(PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        printf("Errore UPDATE\n");
+        return 0;
+    }
+    else
+    {
+        printf("UPDATE riuscito\n");
+        return 1;
+    }
 }
 
 char ** selectdb(char attributes [], char table [], char condition [], PGconn *conn, int *rowsRet, int numberOfTableColumns)
