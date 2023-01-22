@@ -85,11 +85,12 @@ public class Connessione extends Thread {
     private void send(String str) {
         Thread t = new Thread(() -> {
             if (isConnected) {
-                pw.write(str+"\0");
-                pw.flush();
+                pw.println(str+"\0");
                 try {
-                    Thread.sleep(150); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
-                } catch (InterruptedException e) {e.printStackTrace(); return;}
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+str);
             }
             return;
@@ -104,9 +105,6 @@ public class Connessione extends Thread {
             if (isConnected) {
 
                 pw.println(n);
-                try {
-                    Thread.sleep(100); //una wait per far elaborare la scrittura sulla socket (altrimenti i messaggi veranno inviati uniti)
-                } catch (InterruptedException e) {e.printStackTrace();}
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+n);
             }
             return;
@@ -121,13 +119,11 @@ public class Connessione extends Thread {
         Thread t = new Thread(() -> {
             if (isConnected) {
                 try {
-                    Thread.sleep(100); //una wait per far elaborare la lettura della socket
                     result = bf.readLine();
-                    System.out.println("++++++++MESSAGGIO LETTO++++++++++\n"+result+"|\nLunghezza stringa: "+result.length());
-                    Thread.sleep(100); //una wait per far elaborare la lettura della socket
+                    System.out.println("++++++++MESSAGGIO LETTO++++++++++\n"+result);
                     return;
                 }
-                catch (InterruptedException | IOException e) {System.out.println("Errore nella recv"); return;}
+                catch (IOException e) {e.printStackTrace(); return;}
             }
         });
         t.start();
@@ -145,7 +141,6 @@ public class Connessione extends Thread {
         ArrayList<Group> myRooms = new ArrayList<>();
         try {
             send(2);
-            Thread.sleep(400);     //attende che la query sul server si completi
             String response = recv();
             int j = clearResponse(response);
 
@@ -164,8 +159,6 @@ public class Connessione extends Thread {
         } catch (NumberFormatException e) {
             System.out.println("--------------- Errore lettura gruppi\n");
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
 
         return myRooms;
@@ -175,7 +168,6 @@ public class Connessione extends Thread {
         ArrayList<Group> otherRooms = new ArrayList<>();
         try {
             send(3);
-            Thread.sleep(600);     //attende che la query sul server si completi
             int j = clearResponse(recv());
 
             for(int i = 0; i < j; i++ ) {
@@ -186,16 +178,14 @@ public class Connessione extends Thread {
 
                 otherRooms.add(a);
             }
-            send(otherRooms.size());
             for(int i = 0; i < otherRooms.size(); i++) {
                 otherRooms.get(i).messages = getAllMessages(otherRooms.get(i).id);
+                System.out.println("Sono i: "+i);
             }
 
             return otherRooms;
         } catch (NumberFormatException e) {
             System.out.println("--------------- Errore lettura gruppi esterni\n");
-            e.printStackTrace();
-        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -236,6 +226,7 @@ public class Connessione extends Thread {
 
         try {
             int j = clearResponse(recv());
+            System.out.println("Sono j, valgo: "+j);
 
             if(j == 0) {
                 Message m = new Message();
@@ -251,7 +242,6 @@ public class Connessione extends Thread {
                 m.senderUsername = recv();
                 m.message = recv();
                 m.time = convertStringtoDateTime(recv());
-                System.out.println(m.time);
                 msg.add(m);
             }
 
