@@ -262,3 +262,20 @@ int creaGruppo(char group_name, int creatorUserId, PGconn *conn)
     itoa(user_id, userid);
     return insert("room(roomname, creatoruserid)", insertData, conn);
 }
+
+int modificaNomeGruppo(char newGroupName[], int group_id, PGconn *conn)
+{
+    if(conn == NULL)
+    {
+        printf("connessione con DB persa o assente\n");
+        exit(0);
+    }
+    char groupid[250];
+    strcpy(groupid, "");
+    itoa(group_id, groupid);
+    char whereCondition[250];
+    strcpy(whereCondition, "");
+    strcat(whereCondition, "roomid = ");
+    strcat(whereCondition, groupid);
+    return update("room", "roomname", whereCondition, conn);
+}
