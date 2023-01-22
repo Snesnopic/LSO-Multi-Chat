@@ -1,0 +1,22 @@
+MESSAGGI DA UTENTE A SERVER
+0: registrazione (INPUT: username, password| OUTPUT: -1 fallimento, userid successo)
+1: login (INPUT: username, password | OUTPUT -1 fallimento, userid successo)
+2: query gruppi (OUTPUT: n.gruppi, gruppi stessi)
+3: query gruppi estranei (OUTPUT: n.gruppi, gruppi stessi)
+4: query richieste gruppi (OUTPUT: n gruppi, per ogni gruppo n richieste, richieste stesse)
+5: manda richiesta a gruppo (INPUT: id gruppo | OUTPUT: -1 fallimento, altrimenti successo)
+6: manda messaggio a gruppo (INPUT: testo messaggio | OUTPUT: -1 fallimento, altrimenti successo)
+7: crea gruppo (INPUT: nome gruppo | OUTPUT: -1 fallimento, groupid successo)
+8: modifica username (INPUT: nuovousername | OUTPUT: -1 fallimento, altrimenti successo)
+9: modifica password (INPUT: nuovapassword | OUTPUT: -1 fallimento, altrimenti successo)
+10: modifica nome gruppo (INPUT: idgruppo, nuovonomegruppo | OUTPUT: -1 fallimento, altrimenti successo)
+11: gestisci richiesta (INPUT: idgruppo, idutente, [0 (rifiuta), 1(accetta)] | OUTPUT: -1 fallimento, altrimenti successo)
+FUNZIONI GENERICHE
+12: ottieni informazioni gruppo (INPUT: idgruppo | OUTPUT: informazioni gruppo)
+13: ottieni informazioni utente (INPUT: idutente | OUTPUT: informazioni utente)
+
+MESSAGGI DA SERVER A UTENTE
+0: nuovo messaggio (INPUT: idgruppo, idutente, nomeutente, timestamp, messaggio)
+1: nuovo gruppo (INPUT: idgruppo, nomegruppo)
+2: nuova richiesta (INPUT: idutente, idgruppo)
+3: utente ha cambiato informazioni (INPUT: idutente, nuovonome) ???? Da rivedere
