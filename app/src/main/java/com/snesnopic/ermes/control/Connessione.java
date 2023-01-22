@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class Connessione extends Thread {
@@ -158,7 +159,7 @@ public class Connessione extends Thread {
             }
 
             for(int i = 0; i < myRooms.size(); i++) {
-                myRooms.get(i).messages = getAllMessages();
+                myRooms.get(i).messages = getAllMessages(myRooms.get(i).id);
             }
         } catch (NumberFormatException e) {
             System.out.println("--------------- Errore lettura gruppi\n");
@@ -185,8 +186,9 @@ public class Connessione extends Thread {
 
                 otherRooms.add(a);
             }
+            send(otherRooms.size());
             for(int i = 0; i < otherRooms.size(); i++) {
-                otherRooms.get(i).messages = getAllMessages();
+                otherRooms.get(i).messages = getAllMessages(otherRooms.get(i).id);
             }
 
             return otherRooms;
@@ -227,8 +229,11 @@ public class Connessione extends Thread {
         }
     }
 
-    public ArrayList<Message> getAllMessages() {
+    public ArrayList<Message> getAllMessages(int groupID) {
         ArrayList<Message> msg = new ArrayList();
+        send(4);
+        send(groupID);
+
         try {
             int j = clearResponse(recv());
 
@@ -245,8 +250,8 @@ public class Connessione extends Thread {
                 Message m = new Message();
                 m.senderUsername = recv();
                 m.message = recv();
-                m.time = LocalDateTime.now();
-                String tmp = recv();
+                m.time = convertStringtoDateTime(recv());
+                System.out.println(m.time);
                 msg.add(m);
             }
 
@@ -256,6 +261,12 @@ public class Connessione extends Thread {
         }
 
         return msg;
+    }
+
+    private LocalDateTime convertStringtoDateTime(String time) {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return LocalDateTime.parse(time.substring(0, 16), format);
+
     }
 }
 
