@@ -70,10 +70,12 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
     int msg;
     char *buff;
     char *buff2;
-    Group* gruppi;
+    Group* groupsOfUsers;
+    Group* otherGroups;
     int row;
     char* groupid;
     char* creatorUserId;
+    GroupMessage * messaggi;
     switch(scelta)
     {
         case '0': //login          
@@ -98,7 +100,6 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             printf("Username da parte del client: %s\n", buff);
             fflush(stdout);
 
-
             //read per password
             buff2 = readSock2(socket, client_message);
             printf("Password da parte del client: %s\n", buff2);
@@ -118,7 +119,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
               groupid = (char*)malloc(sizeof(char)*200);
               creatorUserId = (char*)malloc(sizeof(char)*200);
               
-              gruppi = getGroupsOfUsers(userID, conn, &row); //ottiene tutti i gruppi dell'utente 
+              groupsOfUsers = getGroupsOfUsers(userID, conn, &row); //ottiene tutti i gruppi dell'utente 
 
               buff = (char*)malloc(sizeof(char)*500);
 
@@ -127,16 +128,44 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
               writeSock(socket, buff);
 
               for(int i = 0; i < row; i++) {
-                  itoa(gruppi[i].groupId, groupid);
+                  itoa(groupsOfUsers[i].groupId, groupid);
                   writeSock(socket, groupid); //scrive il groupid
-                  itoa(gruppi[i].creatorUserId, creatorUserId); //scrive l'userid del creatore
+                  itoa(groupsOfUsers[i].creatorUserId, creatorUserId); //scrive l'userid del creatore
                   writeSock(socket, creatorUserId);
-                  writeSock(socket, gruppi[i].groupName);
+                  writeSock(socket, groupsOfUsers[i].groupName);
                   memset(groupid, 0, 200);
                   memset(creatorUserId, 0, 200);
               }
               
               printf("Gruppi inviati.\n");
+              
+              printf("Ciclo: %d|\n", row);
+              fflush(stdout);
+              for(int i = 0; i < row; i++) {
+                  int size = 0;
+
+                  messaggi = getGroupMessages(groupsOfUsers[i].groupId, conn, &size); //ottiene tutti i messaggi del gruppo
+                  if(size > 0) {
+                    memset(buff, 0, 200);
+                    itoa(size, buff);
+                    puts(buff);
+
+                    writeSock2(socket, buff);
+                    memset(buff, 0, 200);
+
+                    for(int j = 0; j < size; j++) {
+                        itoa(messaggi[j].userId, buff);
+                        writeSock2(socket, buff); //scrive userid (sarebbe molto piu' efficace ottenere l'username del sender)
+                        writeSock2(socket, messaggi[j].message);
+                        writeSock2(socket, messaggi[j].timestamp);                  
+                    }
+
+                    printf("Messaggi inviati.\n");
+                }
+                else {
+                    printf("Nessun messaggio inviato su questo gruppo: %d\n", row);
+                }
+            }
               
               return -2;
         case '3':
@@ -146,7 +175,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             groupid = (char*)malloc(sizeof(char)*200);
             creatorUserId = (char*)malloc(sizeof(char)*200);
 
-            gruppi = getGroupsNotOfUsers(userID, conn, &row); //ottiene tutti i gruppi in cui l'utente non c'è
+            otherGroups = getGroupsNotOfUsers(userID, conn, &row); //ottiene tutti i gruppi in cui l'utente non c'è
 
             buff = (char*)malloc(sizeof(char)*500);
 
@@ -156,51 +185,47 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
 
             for(int i = 0; i < row; i++) {
 
-                itoa(gruppi[i].groupId, groupid);
+                itoa(otherGroups[i].groupId, groupid);
 
                 writeSock2(socket, groupid); //scrive il groupid
-                itoa(gruppi[i].creatorUserId, creatorUserId); //scrive l'userid del creatore
+                itoa(otherGroups[i].creatorUserId, creatorUserId); //scrive l'userid del creatore
 
                 writeSock2(socket, creatorUserId);
 
-                writeSock2(socket, gruppi[i].groupName);
+                writeSock2(socket, otherGroups[i].groupName);
                 
-                printf("\nHo inviato al ciclo %d\nGROUP ID: %s|\nCREATOR USER ID: %s|\nGROUP NAME: %s|\n", i, groupid, creatorUserId, gruppi[i].groupName);
                 memset(groupid, 0, 200);
                 memset(creatorUserId, 0, 200);
             }
 
             printf("Gruppi inviati.\n");
+                          
+              printf("Ciclo: %d|\n", row);
+              fflush(stdout);
+              for(int i = 0; i < row; i++) {
+                  int size = 0;
 
-            return -2;
-        case '4':
+                  messaggi = getGroupMessages(otherGroups[i].groupId, conn, &size); //ottiene tutti i messaggi del gruppo
+                  if(size > 0) {
+                    memset(buff, 0, 200);
+                    itoa(size, buff);
+                    
+                    writeSock2(socket, buff);
+                    memset(buff, 0, 200);
 
-            printf("Group id del client: %d|", userID);
-            fflush(stdout);
+                    for(int j = 0; j < size; j++){
+                        itoa(messaggi[j].userId, buff);
+                        writeSock2(socket, buff); //scrive userid (sarebbe molto piu' efficace ottenere l'username del sender)
+                        writeSock2(socket, messaggi[j].message);
+                        writeSock2(socket, messaggi[j].timestamp);                  
+                    }
 
-            GroupMessage * messaggi;
-            int row = 0;
-            char* userid = (char*)malloc(sizeof(char)*200);
-
-            messaggi = getGroupMessages(userID, conn, &row); //ottiene tutti i messaggi del gruppo
-
-            buff = (char*)malloc(sizeof(char)*500);
-
-            itoa(row, buff);
-
-            writeSock2(socket, buff);
-
-
-            for(int i = 0; i < row; i++) {
-                itoa(messaggi[i].userId, userid);
-                writeSock2(socket, "SferaEbbasta"); //scrive userid
-                writeSock2(socket, messaggi[i].message);
-                writeSock2(socket, messaggi[i].timestamp);
-                memset(groupid, 0, 200);
-                memset(creatorUserId, 0, 200);
+                    printf("Messaggi inviati.\n");
+                }
+                else {
+                    printf("Nessun messaggio inviato su questo gruppo: %d\n", row);
+                }
             }
-
-            printf("Messaggi inviati.\n");
 
             return -2;
         default:
