@@ -197,7 +197,7 @@ GroupRequest* getGroupRequests(int group_id, int user_id, PGconn *conn, int *row
     return richieste;
 }
 
-int richiestaGruppo(char group_name, int user_id, PGconn *conn, int *row)
+int richiestaGruppo(char *group_name, int user_id, PGconn *conn, int *row)
 {
     if(conn == NULL)
     {
@@ -221,7 +221,7 @@ int richiestaGruppo(char group_name, int user_id, PGconn *conn, int *row)
     return insert("joinrequest(roomid, userid)", insertData, conn);
 }
 
-int messaggioGruppo(char message, int user_id, int group_id, PGconn *conn, int *row)
+int messaggioGruppo(char *message, int user_id, int group_id, PGconn *conn, int *row)
 {
     if(conn == NULL)
     {
@@ -245,7 +245,7 @@ int messaggioGruppo(char message, int user_id, int group_id, PGconn *conn, int *
 }
 
 
-int creaGruppo(char group_name, int creatorUserId, PGconn *conn)
+int creaGruppo(char *group_name, int creatorUserId, PGconn *conn)
 {
     if(conn == NULL)
     {
@@ -254,12 +254,12 @@ int creaGruppo(char group_name, int creatorUserId, PGconn *conn)
     }
     char userid[250];
     strcpy(userid, "");
-    itoa(user_id, userid);
+    itoa(creatorUserId, userid);
     char insertData[250];
     strcpy(insertData, "");
     strcat(insertData, group_name);
     strcat(insertData, ", ");
-    itoa(user_id, userid);
+    itoa(creatorUserId, userid);
     return insert("room(roomname, creatoruserid)", insertData, conn);
 }
 

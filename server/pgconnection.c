@@ -28,6 +28,7 @@ void dbDeconnection(PGconn *connection)
 int update(char table [], char attribute [], char condition [], PGconn *conn)
 {
     PGresult *res;
+    char sql[500];
     if(conn == NULL)
         exit(0);
     strcat(sql, table);
