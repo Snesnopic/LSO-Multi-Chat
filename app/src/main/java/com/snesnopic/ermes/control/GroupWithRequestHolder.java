@@ -2,6 +2,7 @@ package com.snesnopic.ermes.control;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -18,8 +19,10 @@ public class GroupWithRequestHolder extends RecyclerView.ViewHolder implements V
     private final RecyclerView list;
     private final TextView groupName;
     private final Context context;
+    private final ImageButton acceptAll;
+    private final ImageButton refuseAll;
     private Group g;
-    public ArrayList<Request> RequestsOfGroup(Group g)
+    public ArrayList<Request> RequestsOfGroup(Group g) //qui sostituire con call a Connessione che restituisce richieste del gruppo g
     {
         ArrayList<Request> requestsOfGroup = new ArrayList<>();
         for(int i = 0; i < 5; ++i)
@@ -39,6 +42,8 @@ public class GroupWithRequestHolder extends RecyclerView.ViewHolder implements V
         groupName = itemView.findViewById(R.id.txt_groupwithrequestname);
         list = itemView.findViewById(R.id.requestsRecyclerView);
         itemView.setOnClickListener(this);
+        acceptAll = itemView.findViewById(R.id.acceptAllButton);
+        refuseAll = itemView.findViewById(R.id.refuseAllButton);
     }
 
     public void bindGroupWithRequest(Group g)
@@ -48,6 +53,12 @@ public class GroupWithRequestHolder extends RecyclerView.ViewHolder implements V
         RequestsOfGroupAdapter rofga = new RequestsOfGroupAdapter(context,RequestsOfGroup(g));
         list.setAdapter(rofga);
         list.setLayoutManager(new LinearLayoutManager(context));
+        acceptAll.setOnClickListener(v -> {
+            //TODO: accetta tutte le richieste del gruppo g.name
+        });
+        refuseAll.setOnClickListener(v -> {
+            //TODO: rifiuta tutte le richieste del gruppo g.name
+        });
     }
     @Override
     public void onClick(View v) {
