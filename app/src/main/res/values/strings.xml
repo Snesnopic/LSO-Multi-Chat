@@ -11,7 +11,7 @@
     <string name="other_groups">Other groups</string>
     <string name="requests">Requests</string>
     <string name="insert_group_name">Group name</string>
-    <string name="group_name_hint">e.g. Gaming group</string>
+    <string name="group_name_hint">Gaming group</string>
     <string name="title_activity_main2">MainActivity2</string>
     <string name="todo">TODO</string>
     <string name="todog">TODO</string>
@@ -36,6 +36,8 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="create">Create</string>
+    <string name="cancel">Cancel</string>
     >
 
 </resources>
