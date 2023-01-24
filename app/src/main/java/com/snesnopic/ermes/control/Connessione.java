@@ -85,13 +85,11 @@ public class Connessione extends Thread {
     private void send(String str) {
         Thread t = new Thread(() -> {
             if (isConnected) {
-                pw.println(str+"\0");
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                pw.println(str.toCharArray());
+                pw.flush();
+                String ok = recv();
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+str);
+                while(!ok.equals("-80"));
             }
             return;
         });

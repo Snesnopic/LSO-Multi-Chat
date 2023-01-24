@@ -80,13 +80,15 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
     {
         case '0': //login          
             //read per username
-            buff = readSock2(socket, client_message);
-            printf("Username da parte del client: %s|\n", buff);
+            char* client_message2 = (char*)malloc(sizeof(char)*200);
+            buff = readSock2(socket, client_message2);
+            printf("Username da parte del client: %s| Socket: %d\n", buff, socket);
             fflush(stdout);
 
             //read per password
             printf("\nSto per leggere la password.\n");
-            buff2 = readSock2(socket, client_message);         
+            printf("Sono qui?\n");
+            buff2 = readSock2(socket, client_message2);
             printf("Password da parte del client: %s|\n", buff2);
             fflush(stdout);
 
@@ -267,30 +269,22 @@ long writeSock(int socket, char *str)
 }
 
 char* readSock2(int socket, char *str) {
-    fsync(socket);
-    printf("\nEffettuo la read.. ");
+
     int read_size = read(socket, str, 2000);
-    printf("Read completata.\n");
     char* newstr = (char*)malloc(sizeof(char)*strlen(str));
     
     for(int i = 0; str[i] != '\n' && i < strlen(str); i++) {
-        printf("\nSto copiando i caratteri..");
         newstr[i] = str[i];
-        }
-        
-    printf("Caratteri copiati.\n");
+    }
+    writeSock2(socket, "-80");
     
     fflush(stdout);
-    fflush(stdin);
-    printf("Stdin e stdout flushati.\n");
     memset(str, 0, strlen(str));
-    lseek(socket, 1, SEEK_CUR);
     return newstr;
 }
 
 long writeSock2(int socket, char *str)
 {
-    printf("\n%s|%d\n", str, strlen(str));
     long bytes = write(socket, str, strlen(str));
     write(socket, "\n", 1);
     return bytes;
