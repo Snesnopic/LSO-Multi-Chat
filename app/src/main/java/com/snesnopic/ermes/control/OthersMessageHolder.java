@@ -14,18 +14,19 @@ public class OthersMessageHolder extends RecyclerView.ViewHolder {
     private Context context;
     private TextView date;
     private final TextView message;
+    private final TextView sender;
     private final TextView timestamp;
-    private Message m;
+
     public OthersMessageHolder(Context context, @NonNull View itemView) {
         super(itemView);
         this.context = context;
         message = itemView.findViewById(R.id.text_gchat_message_other);
         timestamp = itemView.findViewById(R.id.text_gchat_timestamp_other);
+        sender = itemView.findViewById(R.id.text_gchat_user_other);
     }
     public void bindMessage(Message m)
     {
-        this.m = m;
-        date.setText(m.time.toLocalDate().toString());
+        sender.setText(m.senderUsername);
         message.setText(m.message);
         timestamp.setText(m.time.format(DateTimeFormatter.ofPattern("dd:MM:yy HH:mm:ss")));
     }

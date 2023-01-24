@@ -14,8 +14,9 @@ public class MyMessageHolder extends RecyclerView.ViewHolder{
     private final Context context;
     private TextView date;
     private final TextView message;
+
     private final TextView timestamp;
-    private Message m;
+
     public MyMessageHolder(Context context, @NonNull View itemView) {
         super(itemView);
         this.context = context;
@@ -24,8 +25,6 @@ public class MyMessageHolder extends RecyclerView.ViewHolder{
     }
     public void bindMessage(Message m)
     {
-        this.m = m;
-        date.setText(m.time.toLocalDate().toString());
         message.setText(m.message);
         timestamp.setText(m.time.format(DateTimeFormatter.ofPattern("dd:MM:yy HH:mm:ss")));
     }
