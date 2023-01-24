@@ -85,6 +85,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             fflush(stdout);
 
             //read per password
+            printf("\nSto per leggere la password.\n");
             buff2 = readSock2(socket, client_message);         
             printf("Password da parte del client: %s|\n", buff2);
             fflush(stdout);
@@ -183,13 +184,14 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             groupID = atoi(buff);
             printf("group id: %d\n", groupID); 
             messaggi = getGroupMessages(groupID, conn, &row); //ottiene tutti i messaggi del gruppo            
-            if(row > 0) {
-                memset(buff, 0, 200);
-                itoa(row, buff);
+            memset(buff, 0, 200);
+            itoa(row, buff);
                     
-                writeSock2(socket, buff);
-                memset(buff, 0, 200);
-
+            writeSock2(socket, buff);
+            memset(buff, 0, 200);
+            
+            if(row > 0) {
+            
                 for(int j = 0; j < row; j++){
                     itoa(messaggi[j].userId, buff);
                     writeSock2(socket, buff); //scrive userid (sarebbe molto piu' efficace ottenere l'username del sender)
@@ -265,14 +267,24 @@ long writeSock(int socket, char *str)
 }
 
 char* readSock2(int socket, char *str) {
-
+    fsync(socket);
+    printf("\nEffettuo la read.. ");
     int read_size = read(socket, str, 2000);
+    printf("Read completata.\n");
     char* newstr = (char*)malloc(sizeof(char)*strlen(str));
     
-    for(int i = 0; str[i] != '\0' && i < strlen(str); i++) {newstr[i] = str[i];}
+    for(int i = 0; str[i] != '\n' && i < strlen(str); i++) {
+        printf("\nSto copiando i caratteri..");
+        newstr[i] = str[i];
+        }
+        
+    printf("Caratteri copiati.\n");
     
     fflush(stdout);
+    fflush(stdin);
+    printf("Stdin e stdout flushati.\n");
     memset(str, 0, strlen(str));
+    lseek(socket, 1, SEEK_CUR);
     return newstr;
 }
 
