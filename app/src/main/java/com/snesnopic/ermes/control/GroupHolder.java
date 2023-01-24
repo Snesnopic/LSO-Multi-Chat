@@ -4,10 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.snesnopic.ermes.activitypkg.ChatActivity;
 import com.snesnopic.ermes.R;
 import com.snesnopic.ermes.datapkg.Group;
