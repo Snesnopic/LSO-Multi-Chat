@@ -1,6 +1,8 @@
 package com.snesnopic.ermes.activitypkg;
 
 import android.os.Bundle;
+import static com.snesnopic.ermes.activitypkg.LoginActivity.connection;
+import static com.snesnopic.ermes.activitypkg.LoginActivity.myGroups;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,18 +15,22 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class ChatActivity extends AppCompatActivity {
-    ArrayList<Message> GetMessagesFromGroup(String groupName)
-    {
-        ArrayList<Message> messages = new ArrayList<>();
-        for(int i = 0; i < 5; ++i)
-        {
-            Message msg = new Message();
-            msg.senderUsername = "Utente "+i;
-            msg.message = "PROVA " + i;
-            msg.time = LocalDateTime.now();
-            messages.add(msg);
+
+    ArrayList<Message> GetMessagesFromGroup(String groupName) {
+        ArrayList<Message> msg;
+        for(int i = 0; i < myGroups.size(); i++) {
+            if(myGroups.get(i).name.equals(groupName)) return (ArrayList<Message>) myGroups.get(i).messages;
         }
-        return messages;
+        msg = new ArrayList<>();
+        Message e = new Message();
+        e.time = LocalDateTime.now();
+        e.message = "Nessun messaggio inviato su questo gruppo.";
+        e.senderUsername = "Odisseo";
+
+        msg.add(e);
+
+        return msg;
+
     }
     RecyclerView list;
     protected void onCreate(Bundle savedInstanceState) {

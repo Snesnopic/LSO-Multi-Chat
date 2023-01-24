@@ -1,6 +1,7 @@
 package com.snesnopic.ermes.activitypkg;
 
 import static com.snesnopic.ermes.activitypkg.LoginActivity.connection;
+import static com.snesnopic.ermes.activitypkg.LoginActivity.otherGroups;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,9 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OtherGroupsFragment extends Fragment {
-    public List<Group> GetOtherGroups()
-    {
-        return connection.getOtherGroups();
+    public List<Group> GetOtherGroups() {
+        otherGroups = connection.getOtherGroups();
+        return otherGroups;
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
