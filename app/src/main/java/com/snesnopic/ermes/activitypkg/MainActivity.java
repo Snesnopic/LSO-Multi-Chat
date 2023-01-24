@@ -98,8 +98,8 @@ public class MainActivity extends AppCompatActivity {
         });
         //pulsante di nuovo gruppo
         newGroupButton.setOnClickListener(view -> {
-            Intent createGroupIntent = new Intent(this,CreateGroupActivity.class);
-            startActivity(createGroupIntent);
+            CreateGroupDialog cgd = new CreateGroupDialog();
+            cgd.show(getSupportFragmentManager(),"CreateGroup");
         });
         //pulsante di logout
         logoutButton.setOnClickListener(view -> {
