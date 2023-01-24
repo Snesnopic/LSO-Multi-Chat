@@ -14,12 +14,15 @@ import android.widget.ImageView;
 import com.google.android.material.snackbar.Snackbar;
 import com.snesnopic.ermes.R;
 import com.snesnopic.ermes.control.Connessione;
+import com.snesnopic.ermes.datapkg.Group;
+import com.snesnopic.ermes.datapkg.User;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
 public class LoginActivity extends AppCompatActivity {
@@ -31,6 +34,9 @@ public class LoginActivity extends AppCompatActivity {
     File path;                                                 //path dove viene creato il file
     File file;                                                 //file che contiene alcune informazioni dell'utente
     static Connessione connection;
+    static ArrayList<Group> myGroups;
+    static ArrayList<Group> otherGroups;
+    static User thisUser;
     CheckBox checkbox;
 
     @Override
