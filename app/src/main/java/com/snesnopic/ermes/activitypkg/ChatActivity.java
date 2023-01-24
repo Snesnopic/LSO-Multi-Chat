@@ -32,6 +32,7 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.chat_activity);
         list = findViewById(R.id.recycler_gchat);
         String groupName = getIntent().getExtras().getString("groupName");
+        ChatActivity.this.setTitle(groupName);
         ArrayList<Message> messages = GetMessagesFromGroup(groupName);
         MessageAdapter adapter = new MessageAdapter(this, messages.size(),messages);
         list.setLayoutManager(new LinearLayoutManager(this));
