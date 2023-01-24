@@ -13,13 +13,12 @@ import java.time.format.DateTimeFormatter;
 public class OthersMessageHolder extends RecyclerView.ViewHolder {
     private Context context;
     private TextView date;
-    private TextView message;
-    private TextView timestamp;
+    private final TextView message;
+    private final TextView timestamp;
     private Message m;
     public OthersMessageHolder(Context context, @NonNull View itemView) {
         super(itemView);
         this.context = context;
-        date = itemView.findViewById(R.id.text_gchat_date_other);
         message = itemView.findViewById(R.id.text_gchat_message_other);
         timestamp = itemView.findViewById(R.id.text_gchat_timestamp_other);
     }
@@ -28,6 +27,6 @@ public class OthersMessageHolder extends RecyclerView.ViewHolder {
         this.m = m;
         date.setText(m.time.toLocalDate().toString());
         message.setText(m.message);
-        timestamp.setText(m.time.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+        timestamp.setText(m.time.format(DateTimeFormatter.ofPattern("dd:MM:yy HH:mm:ss")));
     }
 }
