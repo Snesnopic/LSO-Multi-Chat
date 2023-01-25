@@ -1,4 +1,5 @@
 package com.snesnopic.ermes.control;
+
 import com.snesnopic.ermes.datapkg.*;
 
 import java.io.BufferedReader;
@@ -21,6 +22,9 @@ public class Connessione extends Thread {
     private String result = "null";
     static User utente = new User("Utente 1");
     static Group room;
+    public static ArrayList<Group> myGroups;
+    public static ArrayList<Group> otherGroups;
+    static User thisUser;
     static Message messaggio;
     static Request richiesta;
 
@@ -255,6 +259,39 @@ public class Connessione extends Thread {
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         return LocalDateTime.parse(time.substring(0, 16), format);
 
+    }
+
+    public boolean createGroup(String groupName) {
+        send(15);  //da cambiare
+        send(groupName);
+        if(clearResponse(recv()) == 1) {
+            Group e = new Group();
+            ArrayList<Message> msg = new ArrayList<>();
+            Message emptyMessage = new Message();
+            e.name = groupName;
+            e.id = clearResponse(recv());
+            e.userid = utente.userid;
+            emptyMessage.message = "Gruppo appena creato";
+            emptyMessage.senderUsername = thisUser.username;
+            emptyMessage.time = LocalDateTime.now();
+            msg.add(emptyMessage);
+            e.messages = msg;
+            myGroups.add(e);
+            return true;
+        }
+        else return false;
+    }
+
+    public boolean changeUserSettings(int userID, String newUsername, String newUserpassword) {
+        send(100); //da cambiare
+        send(userID);
+        send(newUsername);
+
+        if(newUserpassword.equals("") || newUserpassword.isEmpty()) send(utente.password);
+        else send(newUserpassword);
+
+        if(clearResponse(recv()) == 1) return true;
+        else return false;
     }
 }
 

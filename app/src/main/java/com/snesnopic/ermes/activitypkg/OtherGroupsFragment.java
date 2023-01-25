@@ -1,12 +1,13 @@
 package com.snesnopic.ermes.activitypkg;
 
 import static com.snesnopic.ermes.activitypkg.LoginActivity.connection;
-import static com.snesnopic.ermes.activitypkg.LoginActivity.otherGroups;
+import static com.snesnopic.ermes.control.Connessione.otherGroups;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -16,9 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.snesnopic.ermes.R;
 import com.snesnopic.ermes.control.GroupsAdapter;
 import com.snesnopic.ermes.datapkg.Group;
-import com.snesnopic.ermes.datapkg.Message;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class OtherGroupsFragment extends Fragment {

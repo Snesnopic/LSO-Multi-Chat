@@ -1,7 +1,7 @@
 package com.snesnopic.ermes.activitypkg;
 
 import static com.snesnopic.ermes.activitypkg.LoginActivity.connection;
-import static com.snesnopic.ermes.activitypkg.LoginActivity.myGroups;
+import static com.snesnopic.ermes.control.Connessione.myGroups;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

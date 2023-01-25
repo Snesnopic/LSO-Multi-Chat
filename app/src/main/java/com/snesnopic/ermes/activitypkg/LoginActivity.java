@@ -34,9 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     File path;                                                 //path dove viene creato il file
     File file;                                                 //file che contiene alcune informazioni dell'utente
     static Connessione connection;
-    static ArrayList<Group> myGroups;
-    static ArrayList<Group> otherGroups;
-    static User thisUser;
+
     CheckBox checkbox;
 
     @Override
