@@ -14,7 +14,7 @@
 #define MAXCLIENTS 50
 void *connection_handler(void *);
 
-int networkMessageHandler(char scelta, PGconn *conn, int socket);
+int networkMessageHandler(int scelta, PGconn *conn, int socket);
 long writeSock(int socket, char *str);
 int readSock(int socket, char *str);
 char* readSock2(int socket, char *str);
@@ -63,7 +63,7 @@ int main()
     }
 }
 
-int networkMessageHandler(char scelta, PGconn *conn, int socket)
+int networkMessageHandler(int scelta, PGconn *conn, int socket)
 {
     char* client_message = (char*)malloc(sizeof(char)*2000);
     int read_size;
@@ -72,6 +72,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
     char *buff2;
     Group* groupsOfUsers;
     Group* otherGroups;
+    Group* requestGroups;
     int row;
     char* groupid;
     char* creatorUserId;
@@ -80,7 +81,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
     int status;
     switch(scelta)
     {
-        case '0': //login          
+        case 0: //login          
             //read per username
             char* client_message2 = (char*)malloc(sizeof(char)*200);
             buff = readSock2(socket, client_message2);
@@ -88,8 +89,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             fflush(stdout);
 
             //read per password
-            printf("\nSto per leggere la password.\n");
-            printf("Sono qui?\n");
+
             buff2 = readSock2(socket, client_message2);
             printf("Password da parte del client: %s|\n", buff2);
             fflush(stdout);
@@ -99,7 +99,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             memset(buff, 0, strlen(buff));
             memset(buff2, 0, strlen(buff2));
             return userID;
-        case '1': //registrazione
+        case 1: //registrazione
             //read per username
             buff = readSock2(socket, client_message);
             printf("Username da parte del client: %s\n", buff);
@@ -117,7 +117,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             else return 0;
             
             
-        case '2': //ottieni tutti i gruppi di un utente
+        case 2: //ottieni tutti i gruppi di un utente
               printf("User id del client: %d|", userID);
               fflush(stdout);
               
@@ -134,10 +134,10 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
 
               for(int i = 0; i < row; i++) {
                   itoa(groupsOfUsers[i].groupId, groupid);
-                  writeSock(socket, groupid); //scrive il groupid
+                  writeSock2(socket, groupid); //scrive il groupid
                   itoa(groupsOfUsers[i].creatorUserId, creatorUserId); //scrive l'userid del creatore
-                  writeSock(socket, creatorUserId);
-                  writeSock(socket, groupsOfUsers[i].groupName);
+                  writeSock2(socket, creatorUserId);
+                  writeSock2(socket, groupsOfUsers[i].groupName);
                   memset(groupid, 0, 200);
                   memset(creatorUserId, 0, 200);
               }
@@ -145,7 +145,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
               printf("Gruppi inviati.\n");
 
               return -2;
-        case '3':
+        case 3:
             printf("User id del client: %d|", userID);
             fflush(stdout);
 
@@ -180,8 +180,9 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
 
             return -2;
             
-        case '4': 
-            buff = (char*)malloc(sizeof(char)*200);
+        case 4: 
+            buff = (char*)malloc(200*sizeof(char));
+            //buff = readSock2(socket, client_message);
             read(socket, buff, 200);
             int groupID = -1;
 
@@ -206,9 +207,8 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
                 else { printf("Nessun messaggio inviato su questo gruppo: %d\n", row); }
                     
             return -2;
-        case '5':
-            buff = (char*)malloc(sizeof(char)*200);
-            read(socket, buff, 200);
+        case 5:
+            buff = readSock2(socket, client_message);
             int group_ID = -1;
             groupID = atoi(buff);
             printf("group id: %d\n", group_ID);
@@ -239,7 +239,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             }
             else
                 printf("Nessuna richiesta per questo gruppo: %d\n", row);
-        case '6':
+        case 6:
             char message[250];
             strcpy(message, "");
             char time_stamp[250];
@@ -280,7 +280,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
                 return 1;
             else
                 return -1;
-        case '7':
+        case 7:
             
             char* nome_gruppo = readSock2(socket, client_message);
             printf("nome del nuovo gruppo: %s\n", nome_gruppo);
@@ -301,7 +301,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
                 return -1;
             }
             
-        case '8':
+        case 8:
             char nuovo_username[250];
             strcpy(nuovo_username, "");
 
@@ -321,7 +321,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
                 return 1;
             else
                 return -1;
-        case '9':
+        case 9:
             char nuova_pass[250];
             strcpy(nuova_pass, "");
 
@@ -341,7 +341,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
                 return 1;
             else
                 return -1;
-        case '10':
+        case 10:
             char nuovo_nomegruppo[250];
             strcpy(nuovo_nomegruppo, "");
 
@@ -361,6 +361,34 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
                 return 1;
             else
                 return -1;
+                
+        case 11: //ottenimemento di tutti gruppi che hanno almeno una richiesta E sono del proprietario (LE RICHIESTE TOTALI SONO ESCLUSE. RESTITUISCE **SOLO** I GRUPPI!!)
+            char* creatorUserID = readSock2(socket, client_message);
+            printf("Creator user id: %s|\n", creatorUserID);
+
+            requestGroups = getRequestGroups(conn, creatorUserID, &row);
+
+            printf("Sono row: %d", row);
+            buff = (char*)malloc(200*sizeof(char));
+            itoa(row, buff);
+            writeSock2(socket, buff);
+            if(row <= 0) {
+                printf("Non sono presenti richieste in alcun gruppo.\n");
+                return -1;
+            }
+            else {
+                printf("Sono nell'else");
+                for(int i = 0; i < row; i++) {
+                    memset(buff, 0, 200);
+                    itoa(requestGroups[i].groupId, buff);
+                    writeSock2(socket, requestGroups[i].groupId);
+                    writeSock2(socket, requestGroups[i].groupName);
+                }
+                
+                printf("Gruppi richieste inviati.\n");
+                return 1;
+            }
+        
         default:
             printf("Errore network message hanlder: valore di scelta non valido\n");
     }
@@ -376,11 +404,11 @@ void *connection_handler(void *socket_desc)
     while((read_size = recv(sock , client_message , 200 , 0)) > 0)
     {
         //read per intero che stabilirà cosa fare
-        char choice = client_message[0];
+        int scelta = atoi(client_message);
         client_message[read_size] = '\0';
         printf("Intero da parte del client: %s\n", client_message);
         memset(client_message, 0, 200);
-        int msg = networkMessageHandler(choice, conn, sock);
+        int msg = networkMessageHandler(scelta, conn, sock);
         char mess[33];
         itoa(msg, mess);
         fflush(stdout);
