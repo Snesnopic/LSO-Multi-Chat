@@ -118,7 +118,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         settingsButton.setOnClickListener(view -> {
-            //code here
+            SettingsDialog sd = new SettingsDialog();
+            sd.show(getSupportFragmentManager(),"Settings");
         });
 
     }
