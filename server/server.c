@@ -281,25 +281,26 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             else
                 return -1;
         case '7':
-            char nome_gruppo[250];
-            strcpy(nome_gruppo, "");
-
-            buff = (char*)malloc(sizeof(char)*200);
-            read(socket, buff, 200);
-            strcpy(nome_gruppo, buff);
+            
+            char* nome_gruppo = readSock2(socket, client_message);
             printf("nome del nuovo gruppo: %s\n", nome_gruppo);
-            memset(buff, 0 , 200);
 
-            read(socket, buff, 200);
-            user_id = atoi(buff);
+            char* userID = readSock2(socket, client_message);
+            user_id = atoi(userID);
             printf("id del creatore del nuovo gruppo: %d\n", user_id);
-            memset(buff, 0, 200);
 
             status = creaGruppo(nome_gruppo, user_id, conn);
-            if(status == 1)
+            if(status) {
+                itoa(status, buff);
+                writeSock2(socket, buff);
                 return 1;
-            else
+            }
+            else {
+                writeSock2(socket, "-1");
+            
                 return -1;
+            }
+            
         case '8':
             char nuovo_username[250];
             strcpy(nuovo_username, "");
