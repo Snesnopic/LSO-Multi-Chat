@@ -22,6 +22,7 @@ public class GroupWithRequestHolder extends RecyclerView.ViewHolder implements V
     private final ImageButton acceptAll;
     private final ImageButton refuseAll;
     private Group g;
+
     public ArrayList<Request> RequestsOfGroup(Group g) //qui sostituire con call a Connessione che restituisce richieste del gruppo g
     {
         ArrayList<Request> requestsOfGroup = new ArrayList<>();

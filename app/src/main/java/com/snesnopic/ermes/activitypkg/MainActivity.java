@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         newGroupButton.setOnClickListener(view -> {
             CreateGroupDialog cgd = new CreateGroupDialog();
             cgd.show(getSupportFragmentManager(),"CreateGroup");
+
         });
         //pulsante di logout
         logoutButton.setOnClickListener(view -> {

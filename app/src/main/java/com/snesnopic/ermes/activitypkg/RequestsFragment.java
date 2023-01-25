@@ -1,5 +1,7 @@
 package com.snesnopic.ermes.activitypkg;
 
+import static com.snesnopic.ermes.activitypkg.LoginActivity.connection;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,16 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RequestsFragment extends Fragment {
+
     public List<Group> GetGroupsWithRequests()
     {
-        ArrayList<Group> groupsWithRequests = new ArrayList<>();
-        for(int i = 0; i < 5; ++i)
-        {
-            Group a = new Group();
-            a.name = "Gruppo " + i;
-            groupsWithRequests.add(a);
-        }
-        return groupsWithRequests;
+        return connection.getRequestOfGroups();
     }
 
     @Override

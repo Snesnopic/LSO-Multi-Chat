@@ -20,13 +20,12 @@ public class Connessione extends Thread {
     private Socket s;
     private static Connessione instance;
     private String result = "null";
-    static User utente = new User("Utente 1");
-    static Group room;
+    static User thisUser = new User("Utente 1");
+    static Group thisRoom;
     public static ArrayList<Group> myGroups;
     public static ArrayList<Group> otherGroups;
-    static User thisUser;
+    public static ArrayList<Group> requestGroups;
     static Message messaggio;
-    static Request richiesta;
 
     public static Connessione getInstance(String hostname, int port) {
         if (instance == null) {
@@ -67,10 +66,10 @@ public class Connessione extends Thread {
         //ritorna vero se riceve un userID diverso da 0 (login success) altrimenti falso
         try {
             if(!response.equals("0")) {
-                utente = new User();
-                utente.userid = Integer.parseInt(response);
-                utente.username = username;
-                utente.password = password;
+                thisUser = new User();
+                thisUser.userid = Integer.parseInt(response);
+                thisUser.username = username;
+                thisUser.password = password;
                 return true;
             }
             else return false;
@@ -262,15 +261,16 @@ public class Connessione extends Thread {
     }
 
     public boolean createGroup(String groupName) {
-        send(15);  //da cambiare
+        send(5);  //da cambiare
         send(groupName);
+        send(thisUser.userid);
         if(clearResponse(recv()) == 1) {
             Group e = new Group();
             ArrayList<Message> msg = new ArrayList<>();
             Message emptyMessage = new Message();
             e.name = groupName;
             e.id = clearResponse(recv());
-            e.userid = utente.userid;
+            e.userid = thisUser.userid;
             emptyMessage.message = "Gruppo appena creato";
             emptyMessage.senderUsername = thisUser.username;
             emptyMessage.time = LocalDateTime.now();
@@ -287,11 +287,37 @@ public class Connessione extends Thread {
         send(userID);
         send(newUsername);
 
-        if(newUserpassword.equals("") || newUserpassword.isEmpty()) send(utente.password);
+        if(newUserpassword.equals("") || newUserpassword.isEmpty()) send(thisUser.password);
         else send(newUserpassword);
 
         if(clearResponse(recv()) == 1) return true;
         else return false;
+    }
+
+    public ArrayList<Group> getRequestOfGroups() {
+        requestGroups = new ArrayList<>();
+
+        send(15); //valore fittizio
+        send(thisUser.userid);
+
+        int j = clearResponse(recv());
+        if(j <= 0) {
+            System.out.println("Nessuna richiesta");
+
+            return requestGroups;
+        }
+
+        for(int i = 0; i < j; i++) {
+            Group p = new Group();
+            p.id = clearResponse(recv());
+            p.name = recv();
+            p.userid = thisUser.userid;
+            p.messages = getAllMessages(p.id);
+
+            requestGroups.add(p);
+        }
+
+        return requestGroups;
     }
 }
 

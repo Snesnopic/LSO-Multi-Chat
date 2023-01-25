@@ -46,7 +46,7 @@ public class MessageAdapter extends RecyclerView.Adapter{
     @Override
     public int getItemViewType(int position) {
         Message m = messages.get(position);
-        if(m.senderUsername.equals(Connessione.utente.username))
+        if(m.senderUsername.equals(Connessione.thisUser.username))
             return 1;
         else
             return 0;
