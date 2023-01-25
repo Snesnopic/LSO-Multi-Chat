@@ -14,6 +14,7 @@ typedef struct GroupMessage
     int groupId;
     char message[1000];
     char timestamp[250];
+    char username[250];
 }GroupMessage;
 
 
@@ -41,7 +42,7 @@ GroupRequest* getGroupRequests(int group_id, int user_id, PGconn *conn, int *row
 
 int richiestaGruppo(char group_name[], int user_id, PGconn *conn, int *row);
 
-int messaggioGruppo(char message[], int user_id, int group_id, PGconn *conn, int *row);
+int messaggioGruppo(char message[], int user_id, int group_id, char *timestamp, PGconn *conn, int *row);
 
 int creaGruppo(char group_name[], int creatorUserId, PGconn *conn);
 

@@ -127,11 +127,12 @@ GroupMessage* getGroupMessages(int group_id, PGconn *conn, int *row)
     char **queryResult = (char**)malloc(100 * sizeof(char*));
     for(int i = 0; i < 100; i++)
         queryResult[i] = (char*)malloc(100*sizeof(char));
-    char whereCondition[250] = " roomid = ";
+    char whereCondition[250] = " MessageData.roomid = ";
     char buffer[33];
     itoa(group_id, buffer);
     strcat(whereCondition, buffer);
-    queryResult = selectdb("messagetext, timestampdata, userid", "MessageData", whereCondition, conn, row, 3);
+    strcat(whereCondition, " AND MessageData.userid = UserData.userid");
+    queryResult = selectdb("MessageData.messagetext, MessageData.timestampdata, UserData.userName", "MessageData, UserData", whereCondition, conn, row, 3);
     GroupMessage *messaggi = (GroupMessage *) malloc(*row * sizeof(GroupMessage));
     int j = 0;
     for(int i = 0; i < *row; i = i + 1)
@@ -139,7 +140,7 @@ GroupMessage* getGroupMessages(int group_id, PGconn *conn, int *row)
         strcpy(messaggi[i].message, queryResult[j]);
         strcpy(messaggi[i].timestamp, queryResult[j+1]);
         messaggi[i].groupId = group_id;
-        messaggi[i].userId = atoi(queryResult[j+2]);
+        strcpy(messaggi[i].username, queryResult[j+2]);
         j = j + 3;
     }
     return messaggi;
@@ -221,7 +222,7 @@ int richiestaGruppo(char *group_name, int user_id, PGconn *conn, int *row)
     return insert("joinrequest(roomid, userid)", insertData, conn);
 }
 
-int messaggioGruppo(char *message, int user_id, int group_id, PGconn *conn, int *row)
+int messaggioGruppo(char *message, int user_id, int group_id, char *timestamp, PGconn *conn, int *row)
 {
     if(conn == NULL)
     {
@@ -241,7 +242,9 @@ int messaggioGruppo(char *message, int user_id, int group_id, PGconn *conn, int 
     strcat(insertData, groupid);
     strcat(insertData, ", ");
     strcat(insertData, userid);
-    return insert("messagedata(messagetext, roomid, userid)", insertData, conn);
+    strcat(insertData, ", ");
+    strcat(insertData, timestamp);
+    return insert("messagedata(messagetext, roomid, userid, timestampdata)", insertData, conn);
 }
 
 

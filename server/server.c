@@ -76,6 +76,8 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
     char* groupid;
     char* creatorUserId;
     GroupMessage * messaggi;
+    GroupRequest * richieste;
+    int status;
     switch(scelta)
     {
         case '0': //login          
@@ -195,8 +197,7 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
             if(row > 0) {
             
                 for(int j = 0; j < row; j++){
-                    itoa(messaggi[j].userId, buff);
-                    writeSock2(socket, buff); //scrive userid (sarebbe molto piu' efficace ottenere l'username del sender)
+                    writeSock2(socket, messaggi[j].username);
                     writeSock2(socket, messaggi[j].message);
                     writeSock2(socket, messaggi[j].timestamp);  
                     memset(buff, 0, 200);
@@ -205,7 +206,160 @@ int networkMessageHandler(char scelta, PGconn *conn, int socket)
                 else { printf("Nessun messaggio inviato su questo gruppo: %d\n", row); }
                     
             return -2;
-            
+        case '5':
+            buff = (char*)malloc(sizeof(char)*200);
+            read(socket, buff, 200);
+            int group_ID = -1;
+            groupID = atoi(buff);
+            printf("group id: %d\n", group_ID);
+
+            strcpy(buff, "");
+            read(socket, buff, 200);
+            int user_id = 0;
+            user_id = atoi(buff);
+            printf("user id: %d\n", user_id);
+
+            richieste = getGroupRequests(group_ID, user_id, conn, &row);
+            memset(buff, 0, 200);
+            itoa(row, buff);
+
+            writeSock2(socket, buff);
+            memset(buff, 0, 200);
+            if(row > 0)
+            {
+                for(int j = 0; j < row; j++)
+                {
+                    itoa(richieste->userId, user_id);
+                    itoa(richieste->groupId, group_ID);
+                    writeSock2(socket, user_id);
+                    writeSock2(socket, group_ID);
+                    memset(buff, 0, 200);
+                }
+                printf("Richieste inviate\n");
+            }
+            else
+                printf("Nessuna richiesta per questo gruppo: %d\n", row);
+        case '6':
+            char message[250];
+            strcpy(message, "");
+            char time_stamp[250];
+            strcpy(time_stamp, "");
+            char userName[250];
+            strcpy(userName, "");
+            int user_ID = 0;
+            int group_id = 0;
+
+            buff = (char*)malloc(sizeof(char)*200);
+            read(socket, buff, 200);
+            printf("Messaggio: %s\n", buff);
+            strcpy(message, buff);
+            memset(buff, 0 , 200);
+
+            read(socket, buff, 200);
+            printf("username: %s\n", buff);
+            strcpy(userName, buff);
+            memset(buff, 0 , 200);
+
+            read(socket, buff, 200);
+            printf("timestamp messaggio: %s\n", buff);
+            strcpy(time_stamp, buff);
+            memset(buff, 0 , 200);
+
+            read(socket, buff, 200);
+            user_ID = atoi(buff);
+            printf("user id messaggio: %d\n", user_ID);
+            memset(buff, 0 , 200);
+
+            read(socket, buff, 200);
+            group_id = atoi(buff);
+            printf("user id messaggio: %d\n", user_ID);
+            memset(buff, 0 , 200);
+
+            status = messaggioGruppo(message, user_ID, group_id, time_stamp, conn, &row);
+            if(status == 1)
+                return 1;
+            else
+                return -1;
+        case '7':
+            char nome_gruppo[250];
+            strcpy(nome_gruppo, "");
+
+            buff = (char*)malloc(sizeof(char)*200);
+            read(socket, buff, 200);
+            strcpy(nome_gruppo, buff);
+            printf("nome del nuovo gruppo: %s\n", nome_gruppo);
+            memset(buff, 0 , 200);
+
+            read(socket, buff, 200);
+            user_id = atoi(buff);
+            printf("id del creatore del nuovo gruppo: %d\n", user_id);
+            memset(buff, 0, 200);
+
+            status = creaGruppo(nome_gruppo, user_id, conn);
+            if(status == 1)
+                return 1;
+            else
+                return -1;
+        case '8':
+            char nuovo_username[250];
+            strcpy(nuovo_username, "");
+
+            buff = (char*)malloc(sizeof(char)*200);
+            read(socket, buff, 200);
+            strcpy(nuovo_username, buff);
+            printf("nuovo username: %s\n", nuovo_username);
+            memset(buff, 0 , 200);
+
+            read(socket, buff, 200);
+            user_id = atoi(buff);
+            printf("id dell'utente che sta modificando il suo username: %d\n", user_id);
+            memset(buff, 0, 200);
+
+            status = modificaUsername(nuovo_username, user_id, conn);
+            if(status == 1)
+                return 1;
+            else
+                return -1;
+        case '9':
+            char nuova_pass[250];
+            strcpy(nuova_pass, "");
+
+            buff = (char*)malloc(sizeof(char)*200);
+            read(socket, buff, 200);
+            strcpy(nuova_pass, buff);
+            printf("nuova password: %s\n", nuova_pass);
+            memset(buff, 0 , 200);
+
+            read(socket, buff, 200);
+            user_id = atoi(buff);
+            printf("id dell'utente che sta modificando la sua password: %d\n", user_id);
+            memset(buff, 0, 200);
+
+            status = modificaPassword(nuovo_username, user_id, conn);
+            if(status == 1)
+                return 1;
+            else
+                return -1;
+        case '10':
+            char nuovo_nomegruppo[250];
+            strcpy(nuovo_nomegruppo, "");
+
+            buff = (char*)malloc(sizeof(char)*200);
+            read(socket, buff, 200);
+            strcpy(nuovo_nomegruppo, buff);
+            printf("nuovo nome gruppo: %s\n", nuovo_nomegruppo);
+            memset(buff, 0 , 200);
+
+            read(socket, buff, 200);
+            group_id = atoi(buff);
+            printf("id del gruppo che sta venendo modificato: %d\n", user_id);
+            memset(buff, 0, 200);
+
+            status = modificaPassword(nuovo_nomegruppo, group_id, conn);
+            if(status == 1)
+                return 1;
+            else
+                return -1;
         default:
             printf("Errore network message hanlder: valore di scelta non valido\n");
     }

@@ -29,6 +29,7 @@ int update(char table [], char attribute [], char condition [], PGconn *conn)
 {
     PGresult *res;
     char sql[500];
+    strcpy(sql, "");
     if(conn == NULL)
         exit(0);
     strcat(sql, table);
