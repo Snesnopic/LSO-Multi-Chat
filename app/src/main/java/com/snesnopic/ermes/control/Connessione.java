@@ -261,10 +261,11 @@ public class Connessione extends Thread {
     }
 
     public boolean createGroup(String groupName) {
-        send(5);  //da cambiare
+        send(7);
         send(groupName);
+        System.out.println(thisUser.userid);
         send(thisUser.userid);
-        if(clearResponse(recv()) == 1) {
+        if(!recv().equals("-1")) {
             Group e = new Group();
             ArrayList<Message> msg = new ArrayList<>();
             Message emptyMessage = new Message();
@@ -297,7 +298,7 @@ public class Connessione extends Thread {
     public ArrayList<Group> getRequestOfGroups() {
         requestGroups = new ArrayList<>();
 
-        send(15); //valore fittizio
+        send(5); //valore fittizio
         send(thisUser.userid);
 
         int j = clearResponse(recv());
