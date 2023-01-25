@@ -298,7 +298,7 @@ public class Connessione extends Thread {
     public ArrayList<Group> getRequestOfGroups() {
         requestGroups = new ArrayList<>();
 
-        send(5); //valore fittizio
+        send(11); //valore fittizio
         send(thisUser.userid);
 
         int j = clearResponse(recv());
@@ -313,9 +313,11 @@ public class Connessione extends Thread {
             p.id = clearResponse(recv());
             p.name = recv();
             p.userid = thisUser.userid;
-            p.messages = getAllMessages(p.id);
 
             requestGroups.add(p);
+        }
+        for(int i = 0; i < requestGroups.size(); i++) {
+            requestGroups.get(i).messages = getAllMessages(requestGroups.get(i).id);
         }
 
         return requestGroups;
