@@ -20,7 +20,7 @@
     <string name="sendMessage">Send</string>
     <string name="enter_message_hint">Enter Message</string>
     <string name="login_failed">Login failed, try again</string>
-    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="settings">Settings</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
