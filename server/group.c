@@ -259,11 +259,24 @@ int creaGruppo(char *group_name, int creatorUserId, PGconn *conn)
     strcpy(userid, "");
     itoa(creatorUserId, userid);
     char insertData[250];
-    strcpy(insertData, "");
+    strcpy(insertData, "'");
     strcat(insertData, group_name);
-    strcat(insertData, ", ");
+    strcat(insertData, "', ");
     itoa(creatorUserId, userid);
-    return insert("room(roomname, creatoruserid)", insertData, conn);
+    strcat(insertData, userid);
+
+    if(insert("room(roomname, creatoruserid)", insertData, conn)) {
+        char* whereCondition = (char*)malloc(sizeof(char)*2000);
+        char* userID = (char*)malloc(200*sizeof(char));
+        int row;
+        strcpy(whereCondition, "roomname = '");
+        strcat(whereCondition, group_name);
+        strcat(whereCondition, "' AND creatoruserid = ");
+        itoa(creatorUserId, userID);
+        strcat(whereCondition, userID);
+        char **res = selectdb("roomid", "room", whereCondition, conn, &row, 1);
+        return atoi(res[0]);
+    }
 }
 
 int modificaNomeGruppo(char newGroupName[], int group_id, PGconn *conn)
