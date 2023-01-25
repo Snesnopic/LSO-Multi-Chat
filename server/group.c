@@ -177,7 +177,7 @@ GroupRequest* getGroupRequests(int group_id, int user_id, PGconn *conn, int *row
     }
     char **queryResult = (char**)malloc(100 * sizeof(char*));
     for(int i = 0; i < 100; i++)
-        queryResult[i] = (char*)malloc(100*sizeof(char));
+        queryResult[i] = (char*)malloc(200*sizeof(char));
     char whereCondition[250] = " roomid = ";
     char buffer[33];
     itoa(group_id, buffer);
@@ -294,4 +294,37 @@ int modificaNomeGruppo(char newGroupName[], int group_id, PGconn *conn)
     strcat(whereCondition, "roomid = ");
     strcat(whereCondition, groupid);
     return update("room", "roomname", whereCondition, conn);
+}
+
+Group* getRequestGroups(PGconn* conn, char* creatorUserID, int *row) {
+    if(conn == NULL)
+    {
+        printf("Connessione con DB persa o assente\n");
+        exit(0);
+    }
+    char **queryResult = (char**)malloc(100 * sizeof(char*));
+    for(int i = 0; i < 100; i++)
+        queryResult[i] = (char*)malloc(1000*sizeof(char));
+        
+    char* whereCond = (char*)malloc(500*sizeof(char));
+    strcat(whereCond, "creatoruserid = ");
+    strcat(whereCond, creatorUserID);
+    strcat(whereCond, " AND roomid in (select roomid from joinrequest)");
+        
+    queryResult = selectdb("*", "Room", whereCond, conn, &row, 3);
+    printf("Sono row di group.c: %d\n", row);
+    int rows = *row;
+    Group *gruppi = (Group*)malloc(rows *sizeof(Group));
+    printf("Gruppi allocati");
+    int j = 0;
+
+    for(int i = 0; i < rows; i++)
+    {
+        gruppi[i].creatorUserId = atoi(queryResult[j]);
+        strcpy(gruppi[i].groupName, queryResult[j+1]);
+        gruppi[i].groupId = atoi(queryResult[j+2]);
+        j = j + 3;
+    }
+    printf("Gruppi inviati");
+    return gruppi;
 }
