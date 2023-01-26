@@ -66,7 +66,7 @@ int main()
 int networkMessageHandler(int scelta, PGconn *conn, int socket)
 {
     char* client_message = (char*)malloc(sizeof(char)*2000);
-    char* client_message2 = (char*)malloc(sizeof(char)*200);
+    char* client_message2 = (char*)malloc(sizeof(char)*2000);
     int read_size;
     int msg;
     char *buff;
@@ -244,40 +244,41 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
             }
                 
         case 6:   //Ottieni messaggio dal client
-            char message[250];
-            strcpy(message, "");
-            char time_stamp[250];
-            strcpy(time_stamp, "");
-            char userName[250];
-            strcpy(userName, "");
+            char* message = (char*)malloc(2000*sizeof(char));
+            char* time_stamp = (char*)malloc(100*sizeof(char));
+            char* userName = (char*)malloc(200*sizeof(char));
             int user_ID = 0;
             int group_id = 0;
 
-            buff = (char*)malloc(sizeof(char)*200);
-            buff = readSock2(socket, client_message2);
+            buff = readSock2(socket, client_message);
             printf("Messaggio: %s\n", buff);
+            fflush(stdout);
             strcpy(message, buff);
-            memset(buff, 0 , 200);
+            free(buff);
 
-            buff = readSock2(socket, client_message2);
+            buff = readSock2(socket, client_message);
             printf("username: %s\n", buff);
+            fflush(stdout);
             strcpy(userName, buff);
-            memset(buff, 0 , 200);
+            free(buff);
 
             buff = readSock2(socket, client_message2);
             printf("timestamp messaggio: %s\n", buff);
+            fflush(stdout);
             strcpy(time_stamp, buff);
-            memset(buff, 0 , 200);
+            free(buff);
 
             buff = readSock2(socket, client_message2);
             user_ID = atoi(buff);
             printf("user id messaggio: %d\n", user_ID);
-            memset(buff, 0 , 200);
+            fflush(stdout);
+            free(buff);
 
             buff = readSock2(socket, client_message2);
             group_id = atoi(buff);
             printf("group id messaggio: %d\n", group_id);
-            memset(buff, 0 , 200);
+            fflush(stdout);
+            free(buff);
 
             status = messaggioGruppo(message, user_ID, group_id, time_stamp, conn, &row);
             writeSock2(socket, status);

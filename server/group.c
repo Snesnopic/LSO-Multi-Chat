@@ -230,21 +230,23 @@ int messaggioGruppo(char *message, int user_id, int group_id, char *timestamp, P
         printf("connessione con DB persa o assente\n");
         exit(0);
     }
-    char insertData[250];
-    strcpy(insertData, "");
+    for(int i = 0; i < strlen(timestamp); i++) {
+        if(timestamp[i] == 'T') timestamp[i] = ' ';
+    }
+    char insertData[3000];
+    strcpy(insertData, " '");
     strcat(insertData, message);
-    strcat(insertData, ", ");
+    strcat(insertData, "', ");
     char userid[250];
     char groupid[250];
     itoa(group_id, groupid);
     itoa(user_id, userid);
-    strcpy(groupid, "");
-    strcpy(userid, "");
     strcat(insertData, groupid);
     strcat(insertData, ", ");
     strcat(insertData, userid);
-    strcat(insertData, ", ");
+    strcat(insertData, ", '");
     strcat(insertData, timestamp);
+    strcat(insertData, "'");
     return insert("messagedata(messagetext, roomid, userid, timestampdata)", insertData, conn);
 }
 
