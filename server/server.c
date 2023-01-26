@@ -209,7 +209,7 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
         case 5:
             buff = readSock2(socket, client_message);
             int group_ID = -1;
-            groupID = atoi(buff);
+            group_ID = atoi(buff);
             printf("group id: %d\n", group_ID);
 
             strcpy(buff, "");
@@ -228,16 +228,18 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
             {
                 for(int j = 0; j < row; j++)
                 {
-                    itoa(richieste->userId, user_id);
-                    itoa(richieste->groupId, group_ID);
-                    writeSock2(socket, user_id);
-                    writeSock2(socket, group_ID);
+                    
+                    writeSock2(socket, richieste[j].username);
                     memset(buff, 0, 200);
                 }
                 printf("Richieste inviate\n");
+                return -2;
             }
-            else
+            else {
                 printf("Nessuna richiesta per questo gruppo: %d\n", row);
+                return -2;
+            }
+                
         case 6:   //Ottieni messaggio dal client
             char message[250];
             strcpy(message, "");
@@ -368,12 +370,6 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
 
             Group* requestGroups;
             getRequestGroups(conn, creatorUserID, &row, &requestGroups);
-            printf("%d\n", strlen(requestGroups[0].groupName));
-            fflush(stdout);
-            printf("Gruppi ricevuti: %ld\n", row);
-            fflush(stdout);
-            printf("Group name %d", requestGroups[0].groupId);
-            fflush(stdout);
             
             buff = (char*)malloc(200*sizeof(char));
             itoa(row, buff);
@@ -383,19 +379,15 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
                 return -2;
             }
             else {
-                printf("Sono nell'else  \n");
-                fflush(stdout);
+
                 for(int i = 0; i < row; i++) {
                     memset(buff, 0, 200);
-                    printf("Sono row: %d, sono i: %d", row, i);
-                    fflush(stdout);
+
                     itoa(requestGroups[i].groupId, buff);
-                    printf("\n%s\n", buff);
-                    fflush(stdout);
+
                     writeSock2(socket, buff);
                     writeSock2(socket, requestGroups[i].groupName);
-                    printf("\n%s\n", requestGroups[i].groupName);
-                    fflush(stdout);
+
                 }
                 
                 printf("Gruppi richieste inviati.\n");
