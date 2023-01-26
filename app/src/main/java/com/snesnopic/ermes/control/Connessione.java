@@ -106,6 +106,8 @@ public class Connessione extends Thread {
             if (isConnected) {
 
                 pw.println(n);
+                String ok = recv();
+                while(!ok.equals("-80"));
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+n);
             }
             return;
@@ -319,6 +321,19 @@ public class Connessione extends Thread {
         }
 
         return requestGroups;
+    }
+
+    public boolean sendMessage(String text, Group actualRoom) {
+        if(text.equals("") || text.isEmpty()) return false;
+
+        send(6);
+        send(text);
+        send(thisUser.username);
+        send(LocalDateTime.now().toString());
+        send(thisUser.userid);
+        send(actualRoom.id);
+        if(clearResponse(recv()) == 1) return true;
+        else return false;
     }
 }
 
