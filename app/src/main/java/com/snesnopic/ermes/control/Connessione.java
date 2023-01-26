@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Connessione extends Thread {
     static PrintWriter pw = null;
@@ -20,7 +21,7 @@ public class Connessione extends Thread {
     private Socket s;
     private static Connessione instance;
     private String result = "null";
-    static User thisUser = new User("Utente 1");
+    public static User thisUser = new User("Utente 1","Password");
     static Group thisRoom;
     public static ArrayList<Group> myGroups;
     public static ArrayList<Group> otherGroups;
@@ -118,7 +119,6 @@ public class Connessione extends Thread {
     }
 
     private String recv() {
-        int c = 0;
         Thread t = new Thread(() -> {
             if (isConnected) {
                 try {
@@ -288,7 +288,7 @@ public class Connessione extends Thread {
         send(userID);
         send(newUsername);
 
-        if(newUserpassword.equals("") || newUserpassword.isEmpty()) send(thisUser.password);
+        if(newUserpassword.isEmpty() || Objects.isNull(newUsername)) send(thisUser.password);
         else send(newUserpassword);
 
         if(clearResponse(recv()) == 1) return true;
@@ -324,7 +324,7 @@ public class Connessione extends Thread {
     }
 
     public boolean sendMessage(String text, Group actualRoom) {
-        if(text.equals("") || text.isEmpty()) return false;
+        if(text.isEmpty() || Objects.isNull(text)) return false;
 
         send(6);
         send(text);
