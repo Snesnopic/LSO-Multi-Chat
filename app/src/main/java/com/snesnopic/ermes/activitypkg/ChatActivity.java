@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class ChatActivity extends AppCompatActivity {
+    public static MessageAdapter adapter;
 
     ArrayList<Message> GetMessagesFromGroup(String groupName) {
         ArrayList<Message> msg;
@@ -40,7 +41,7 @@ public class ChatActivity extends AppCompatActivity {
         String groupName = getIntent().getExtras().getString("groupName");
         ChatActivity.this.setTitle(groupName);
         ArrayList<Message> messages = GetMessagesFromGroup(groupName);
-        MessageAdapter adapter = new MessageAdapter(this, messages.size(),messages);
+        adapter = new MessageAdapter(this, messages.size(),messages);
         list.setLayoutManager(new LinearLayoutManager(this));
         list.setAdapter(adapter);
     }

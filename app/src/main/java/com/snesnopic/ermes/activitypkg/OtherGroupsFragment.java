@@ -21,6 +21,7 @@ import com.snesnopic.ermes.datapkg.Group;
 import java.util.List;
 
 public class OtherGroupsFragment extends Fragment {
+    public static GroupsAdapter adapter;
     public List<Group> GetOtherGroups() {
         otherGroups = connection.getOtherGroups();
         return otherGroups;
@@ -36,7 +37,7 @@ public class OtherGroupsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView list = view.findViewById(R.id.otherGroupsRecyclerView);
         List<Group> otherGroups = GetOtherGroups();
-        GroupsAdapter adapter = new GroupsAdapter(view.getContext(),otherGroups.size(),otherGroups);
+        adapter = new GroupsAdapter(view.getContext(),otherGroups.size(),otherGroups);
         list.setAdapter(adapter);
         list.setLayoutManager(new LinearLayoutManager(view.getContext()));
     }

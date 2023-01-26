@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RequestsFragment extends Fragment {
+    public static GroupsWithRequestsAdapter adapter;
 
     public List<Group> GetGroupsWithRequests()
     {
@@ -37,7 +38,7 @@ public class RequestsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView list = view.findViewById(R.id.groupsWithRequestRecyclerView);
         List<Group> groupsWithRequests = GetGroupsWithRequests();
-        GroupsWithRequestsAdapter adapter = new GroupsWithRequestsAdapter(view.getContext(),groupsWithRequests.size(),groupsWithRequests);
+        adapter = new GroupsWithRequestsAdapter(view.getContext(),groupsWithRequests.size(),groupsWithRequests);
         list.setAdapter(adapter);
         list.setLayoutManager(new LinearLayoutManager(view.getContext()));
     }
