@@ -1,5 +1,8 @@
 package com.snesnopic.ermes.control;
 
+import static com.snesnopic.ermes.activitypkg.LoginActivity.connection;
+import static com.snesnopic.ermes.control.Connessione.requestGroups;
+
 import android.content.Context;
 import android.view.View;
 import android.widget.ImageButton;
@@ -25,16 +28,7 @@ public class GroupWithRequestHolder extends RecyclerView.ViewHolder implements V
 
     public ArrayList<Request> RequestsOfGroup(Group g) //qui sostituire con call a Connessione che restituisce richieste del gruppo g
     {
-        ArrayList<Request> requestsOfGroup = new ArrayList<>();
-        for(int i = 0; i < 5; ++i)
-        {
-            Request r = new Request();
-            User a = new User();
-            a.username = "Utente " + i + "(" + g.name + ")";
-            r.user = a;
-            requestsOfGroup.add(r);
-        }
-        return requestsOfGroup;
+        return connection.getRequests(g);
     }
     public GroupWithRequestHolder(Context context, @NonNull View itemView)
     {

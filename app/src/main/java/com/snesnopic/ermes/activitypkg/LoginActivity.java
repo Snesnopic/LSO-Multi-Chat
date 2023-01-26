@@ -33,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     String password;
     File path;                                                 //path dove viene creato il file
     File file;                                                 //file che contiene alcune informazioni dell'utente
-    static Connessione connection;
+    public static Connessione connection;
 
     CheckBox checkbox;
 

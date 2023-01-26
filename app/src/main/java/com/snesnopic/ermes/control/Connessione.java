@@ -284,7 +284,7 @@ public class Connessione extends Thread {
     }
 
     public boolean changeUserSettings(int userID, String newUsername, String newUserpassword) {
-        send(100); //da cambiare
+        send(8);
         send(userID);
         send(newUsername);
 
@@ -321,6 +321,34 @@ public class Connessione extends Thread {
         }
 
         return requestGroups;
+    }
+
+    public ArrayList<Request> getRequests(Group g) {
+        ArrayList<Request> requests = new ArrayList<>();
+
+        send(5);
+        send(g.id);
+        send(thisUser.userid);
+        int j = clearResponse(recv());
+
+        if (j <= 0) {
+            Request r = new Request();
+            r.user = new User();
+            r.group = g;
+            r.user.username = "";
+            return requests;
+        } else {
+            for(int i = 0; i < j; i++) {
+                Request r = new Request();
+                r.user = new User();
+                r.group = g;
+                r.user.userid = -1;
+                r.user.username = recv();
+                requests.add(r);
+            }
+            return requests;
+        }
+
     }
 
     public boolean sendMessage(String text, Group actualRoom) {
