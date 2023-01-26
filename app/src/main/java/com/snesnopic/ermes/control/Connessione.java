@@ -20,7 +20,7 @@ public class Connessione extends Thread {
     private BufferedReader bf = null;
     private Socket s;
     private static Connessione instance;
-    private String result = "null";
+    private String result = "";
     public static User thisUser = new User("Utente 1","Password");
     static Group thisRoom;
     public static ArrayList<Group> myGroups;
@@ -195,7 +195,7 @@ public class Connessione extends Thread {
 
     private int clearResponse(String response) {
         int cleared = -1;
-        if(response.equals("")) {
+        if(response.equals("")||Objects.isNull(response)) {
             System.out.println("-------------Stringa da convertire vuota! Ritorno -1");
             return cleared;
         }
@@ -221,7 +221,7 @@ public class Connessione extends Thread {
     }
 
     public ArrayList<Message> getAllMessages(int groupID) {
-        ArrayList<Message> msg = new ArrayList();
+        ArrayList<Message> msg = new ArrayList<>();
         send(4);
         send(groupID);
 
