@@ -73,7 +73,6 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
     char *buff2;
     Group* groupsOfUsers;
     Group* otherGroups;
-    Group* requestGroups;
     int row;
     char* groupid;
     char* creatorUserId;
@@ -367,27 +366,41 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
             char* creatorUserID = readSock2(socket, client_message);
             printf("Creator user id: %s|\n", creatorUserID);
 
-            requestGroups = getRequestGroups(conn, creatorUserID, &row);
-
-            printf("Sono row: %d", row);
+            Group* requestGroups;
+            getRequestGroups(conn, creatorUserID, &row, &requestGroups);
+            printf("%d\n", strlen(requestGroups[0].groupName));
+            fflush(stdout);
+            printf("Gruppi ricevuti: %ld\n", row);
+            fflush(stdout);
+            printf("Group name %d", requestGroups[0].groupId);
+            fflush(stdout);
+            
             buff = (char*)malloc(200*sizeof(char));
             itoa(row, buff);
             writeSock2(socket, buff);
             if(row <= 0) {
                 printf("Non sono presenti richieste in alcun gruppo.\n");
-                return -1;
+                return -2;
             }
             else {
-                printf("Sono nell'else");
+                printf("Sono nell'else  \n");
+                fflush(stdout);
                 for(int i = 0; i < row; i++) {
                     memset(buff, 0, 200);
+                    printf("Sono row: %d, sono i: %d", row, i);
+                    fflush(stdout);
                     itoa(requestGroups[i].groupId, buff);
-                    writeSock2(socket, requestGroups[i].groupId);
+                    printf("\n%s\n", buff);
+                    fflush(stdout);
+                    writeSock2(socket, buff);
                     writeSock2(socket, requestGroups[i].groupName);
+                    printf("\n%s\n", requestGroups[i].groupName);
+                    fflush(stdout);
                 }
                 
                 printf("Gruppi richieste inviati.\n");
-                return 1;
+                fflush(stdout);
+                return -2;
             }
         
         default:
@@ -401,7 +414,6 @@ void *connection_handler(void *socket_desc)
     int sock = *(int*)socket_desc;
     int read_size;
     char* client_message = (char*) malloc(sizeof(char)*200);
-    printf("malloc fallita qui");
     
     while((read_size = recv(sock , client_message , 200 , 0)) > 0)
     {

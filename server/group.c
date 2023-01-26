@@ -299,35 +299,47 @@ int modificaNomeGruppo(char newGroupName[], int group_id, PGconn *conn)
     return update("room", "roomname", whereCondition, conn);
 }
 
-Group* getRequestGroups(PGconn* conn, char* creatorUserID, int *row) {
+void getRequestGroups(PGconn* conn, char* creatorUserID, int *row, Group** gruppi) {
     if(conn == NULL)
     {
         printf("Connessione con DB persa o assente\n");
         exit(0);
     }
-    char **queryResult = (char**)malloc(100 * sizeof(char*));
+    
+    char **queryResult = (char**)malloc(50 * sizeof(char*));
     for(int i = 0; i < 100; i++)
         queryResult[i] = (char*)malloc(1000*sizeof(char));
         
-    char* whereCond = (char*)malloc(500*sizeof(char));
+    char* whereCond = (char*)malloc(200*sizeof(char));
     strcat(whereCond, "creatoruserid = ");
     strcat(whereCond, creatorUserID);
     strcat(whereCond, " AND roomid in (select roomid from joinrequest)");
         
-    queryResult = selectdb("*", "Room", whereCond, conn, &row, 3);
-    printf("Sono row di group.c: %d\n", row);
-    int rows = *row;
-    Group *gruppi = (Group*)malloc(rows *sizeof(Group));
-    printf("Gruppi allocati");
+    queryResult = selectdb("*", "Room", whereCond, conn, row, 3);
+    *gruppi = (Group*)malloc(*row * sizeof(Group));
+
+    free(whereCond);
+
     int j = 0;
 
-    for(int i = 0; i < rows; i++)
+    for(int i = 0; i < (*row); i++)
     {
-        gruppi[i].creatorUserId = atoi(queryResult[j]);
-        strcpy(gruppi[i].groupName, queryResult[j+1]);
-        gruppi[i].groupId = atoi(queryResult[j+2]);
-        j = j + 3;
+        gruppi[i]->creatorUserId = atoi(queryResult[j]);
+        printf("\nSono id creator: %d", gruppi[i]->creatorUserId);
+        fflush(stdout);
+        j++;
+        strcpy(gruppi[i]->groupName, queryResult[j]);
+        printf("\nSono id creator: %s", gruppi[i]->groupName);
+        fflush(stdout);
+        j++;
+        gruppi[i]->groupId = atoi(queryResult[j]);
+        printf("\nSono id group: %d", gruppi[i]->groupId);
+        fflush(stdout);
+        j++;
+
+
     }
-    printf("Gruppi inviati");
-    return gruppi;
+    printf("Gruppi inviati\n");
+    fflush(stdout);
+
 }
