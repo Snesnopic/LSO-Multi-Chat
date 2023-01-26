@@ -181,22 +181,20 @@ GroupRequest* getGroupRequests(int group_id, int user_id, PGconn *conn, int *row
     char **queryResult = (char**)malloc(100 * sizeof(char*));
     for(int i = 0; i < 100; i++)
         queryResult[i] = (char*)malloc(200*sizeof(char));
-    char whereCondition[250] = " roomid = ";
+    char whereCondition[250] = " j.roomid = ";
     char buffer[33];
     itoa(group_id, buffer);
     strcat(whereCondition, buffer);
     strcpy(buffer, "");
-    strcat(whereCondition, " AND userid = ");
-    itoa(user_id, buffer);
-    strcat(whereCondition, buffer);
-    queryResult = selectdb("room, userid", "joinrequest", whereCondition, conn, row, 2);
+    strcat(whereCondition, " AND j.userid = u.userid");
+    queryResult = selectdb("u.username", "joinrequest AS j, USERDATA AS u", whereCondition, conn, row, 1);
     GroupRequest *richieste = (GroupRequest*)malloc(*row * sizeof (GroupRequest));
-    int j = 0;
+
     for(int i = 0; i < *row; i = i + 1)
     {
-        richieste[i].groupId = atoi(queryResult[j]);
-        richieste[i].userId = atoi(queryResult[j+1]);
-        j = j + 2;
+        richieste[i].username = queryResult[i];
+        richieste[i].groupId = atoi(queryResult[i]);
+        richieste[i].userId = atoi(queryResult[i]);
     }
     return richieste;
 }

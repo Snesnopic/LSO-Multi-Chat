@@ -20,6 +20,7 @@ typedef struct GroupMessage
 
 typedef struct GroupRequest
 {
+    char* username;
     int userId;
     int groupId;
 }GroupRequest;
