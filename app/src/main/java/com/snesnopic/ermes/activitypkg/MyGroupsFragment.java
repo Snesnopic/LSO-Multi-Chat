@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MyGroupsFragment extends Fragment {
+    //è statico perché da altre parti del codice si usa l'adapter per notificare la lista che i dati sono cambiati
+    public static GroupsAdapter adapter;
     public List<Group> GetMyGroups() {
         myGroups = connection.getRoomJoined();
         return myGroups;
@@ -38,7 +40,7 @@ public class MyGroupsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView list = view.findViewById(R.id.mygroupsRecyclerView);
         List<Group> myGroups = GetMyGroups();
-        GroupsAdapter adapter = new GroupsAdapter(view.getContext(), myGroups.size(), myGroups);
+        adapter = new GroupsAdapter(view.getContext(), myGroups.size(), myGroups);
         list.setAdapter(adapter);
         list.setLayoutManager(new LinearLayoutManager(view.getContext()));
     }

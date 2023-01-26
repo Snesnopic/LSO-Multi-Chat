@@ -15,7 +15,7 @@ public class SettingsDialog extends DialogFragment {
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         builder.setView(inflater.inflate(R.layout.settings_dialog, null));
         builder.setMessage(R.string.settings)
-                .setPositiveButton(R.string.create, (dialog, id) -> {
+                .setPositiveButton(R.string.edit, (dialog, id) -> {
                     //TODO: applica modifiche, check del nome inserito e check della password
                 })
                 .setNegativeButton(R.string.cancel, (dialog, id) -> {

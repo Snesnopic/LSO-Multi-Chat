@@ -26,6 +26,7 @@ public class CreateGroupDialog extends DialogFragment {
                     String newGroupName = et.getText().toString();
                     if(connection.createGroup(newGroupName)) {
                         System.out.println("Gruppo creato");
+                        MyGroupsFragment.adapter.notifyDataSetChanged(); //aggiorna la lista di gruppi
                     }
                     else {
                         System.out.println("Gruppo non creato");
