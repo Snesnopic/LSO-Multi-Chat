@@ -139,7 +139,7 @@ public class Connessione extends Thread {
     }
 
     public ArrayList<Group> getRoomJoined(){
-        ArrayList<Group> myRooms = new ArrayList<>();
+            myGroups = new ArrayList<>();
         try {
             send(2);
             String response = recv();
@@ -150,19 +150,17 @@ public class Connessione extends Thread {
                 a.id = clearResponse(recv());
                 a.userid = clearResponse(recv());
                 a.name = recv();
-
-                myRooms.add(a);
+                myGroups.add(a);
             }
 
-            for(int i = 0; i < myRooms.size(); i++) {
-                myRooms.get(i).messages = getAllMessages(myRooms.get(i).id);
+            for(int i = 0; i < myGroups.size(); i++) {
+                myGroups.get(i).messages = getAllMessages(myGroups.get(i).id);
             }
         } catch (NumberFormatException e) {
             System.out.println("--------------- Errore lettura gruppi\n");
             e.printStackTrace();
         }
-
-        return myRooms;
+        return myGroups;
     }
 
     public ArrayList<Group> getOtherGroups() {
