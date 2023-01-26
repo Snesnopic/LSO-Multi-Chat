@@ -36,7 +36,7 @@ int main()
     // Bind della socket
     if(bind(serverSocket,(struct sockaddr*)&serverAddr,sizeof(serverAddr)) == -1)
     {
-        printf("Errore nel binding\n");
+        printf("Errore nel binding..\n");
         return 1;
     }
     // Listening socket con max 40 richieste in coda
@@ -66,6 +66,7 @@ int main()
 int networkMessageHandler(int scelta, PGconn *conn, int socket)
 {
     char* client_message = (char*)malloc(sizeof(char)*2000);
+    char* client_message2 = (char*)malloc(sizeof(char)*200);
     int read_size;
     int msg;
     char *buff;
@@ -158,7 +159,7 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
 
             itoa(row, buff);
 
-            writeSock(socket, buff);
+            writeSock2(socket, buff);
 
             for(int i = 0; i < row; i++) {
 
@@ -181,9 +182,8 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
             return -2;
             
         case 4: 
-            buff = (char*)malloc(200*sizeof(char));
-            //buff = readSock2(socket, client_message);
-            read(socket, buff, 200);
+
+            buff = readSock2(socket, client_message);
             int groupID = -1;
 
             groupID = atoi(buff);
@@ -214,7 +214,7 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
             printf("group id: %d\n", group_ID);
 
             strcpy(buff, "");
-            read(socket, buff, 200);
+            buff = readSock2(socket, client_message2);
             int user_id = 0;
             user_id = atoi(buff);
             printf("user id: %d\n", user_id);
@@ -239,7 +239,7 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
             }
             else
                 printf("Nessuna richiesta per questo gruppo: %d\n", row);
-        case 6:
+        case 6:   //Ottieni messaggio dal client
             char message[250];
             strcpy(message, "");
             char time_stamp[250];
@@ -250,32 +250,33 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
             int group_id = 0;
 
             buff = (char*)malloc(sizeof(char)*200);
-            read(socket, buff, 200);
+            buff = readSock2(socket, client_message2);
             printf("Messaggio: %s\n", buff);
             strcpy(message, buff);
             memset(buff, 0 , 200);
 
-            read(socket, buff, 200);
+            buff = readSock2(socket, client_message2);
             printf("username: %s\n", buff);
             strcpy(userName, buff);
             memset(buff, 0 , 200);
 
-            read(socket, buff, 200);
+            buff = readSock2(socket, client_message2);
             printf("timestamp messaggio: %s\n", buff);
             strcpy(time_stamp, buff);
             memset(buff, 0 , 200);
 
-            read(socket, buff, 200);
+            buff = readSock2(socket, client_message2);
             user_ID = atoi(buff);
             printf("user id messaggio: %d\n", user_ID);
             memset(buff, 0 , 200);
 
-            read(socket, buff, 200);
+            buff = readSock2(socket, client_message2);
             group_id = atoi(buff);
-            printf("user id messaggio: %d\n", user_ID);
+            printf("group id messaggio: %d\n", group_id);
             memset(buff, 0 , 200);
 
             status = messaggioGruppo(message, user_ID, group_id, time_stamp, conn, &row);
+            writeSock2(socket, status);
             if(status == 1)
                 return 1;
             else
@@ -306,12 +307,12 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
             strcpy(nuovo_username, "");
 
             buff = (char*)malloc(sizeof(char)*200);
-            read(socket, buff, 200);
+            buff = readSock2(socket, client_message);
             strcpy(nuovo_username, buff);
             printf("nuovo username: %s\n", nuovo_username);
             memset(buff, 0 , 200);
 
-            read(socket, buff, 200);
+            buff = readSock2(socket, client_message);
             user_id = atoi(buff);
             printf("id dell'utente che sta modificando il suo username: %d\n", user_id);
             memset(buff, 0, 200);
@@ -326,12 +327,12 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
             strcpy(nuova_pass, "");
 
             buff = (char*)malloc(sizeof(char)*200);
-            read(socket, buff, 200);
+            buff = readSock2(socket, client_message2);
             strcpy(nuova_pass, buff);
             printf("nuova password: %s\n", nuova_pass);
             memset(buff, 0 , 200);
 
-            read(socket, buff, 200);
+            buff = readSock2(socket, client_message2);
             user_id = atoi(buff);
             printf("id dell'utente che sta modificando la sua password: %d\n", user_id);
             memset(buff, 0, 200);
@@ -346,12 +347,12 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
             strcpy(nuovo_nomegruppo, "");
 
             buff = (char*)malloc(sizeof(char)*200);
-            read(socket, buff, 200);
+            buff = readSock2(socket, client_message2);
             strcpy(nuovo_nomegruppo, buff);
             printf("nuovo nome gruppo: %s\n", nuovo_nomegruppo);
             memset(buff, 0 , 200);
 
-            read(socket, buff, 200);
+            buff = readSock2(socket, client_message);
             group_id = atoi(buff);
             printf("id del gruppo che sta venendo modificato: %d\n", user_id);
             memset(buff, 0, 200);
@@ -400,9 +401,11 @@ void *connection_handler(void *socket_desc)
     int sock = *(int*)socket_desc;
     int read_size;
     char* client_message = (char*) malloc(sizeof(char)*200);
+    printf("malloc fallita qui");
     
     while((read_size = recv(sock , client_message , 200 , 0)) > 0)
     {
+        writeSock2(sock, "-80");
         //read per intero che stabilirà cosa fare
         int scelta = atoi(client_message);
         client_message[read_size] = '\0';
@@ -464,6 +467,24 @@ char* readSock2(int socket, char *str) {
     fflush(stdout);
     memset(str, 0, strlen(str));
     return newstr;
+}
+
+int readSockN(int socket, char *str) {
+
+    int read_size = read(socket, str, 200);
+    char* newstr = (char*)malloc(sizeof(char)*strlen(str));
+    
+    for(int i = 0; str[i] != '\n' && i < strlen(str); i++) {
+        if(str[i] >= 48 && str[i] <= 57)
+            newstr[i] = str[i];
+    }
+    int result = atoi(newstr);
+    printf("Ho letto l'intero: %d", result);
+    writeSock2(socket, "-800");
+    
+    fflush(stdout);
+    memset(str, 0, strlen(str));
+    return result;
 }
 
 long writeSock2(int socket, char *str)
