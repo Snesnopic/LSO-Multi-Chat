@@ -380,10 +380,12 @@ public class Connessione extends Thread {
     public boolean sendMessage(String text, Group actualRoom) {
         if(text.isEmpty() || Objects.isNull(text)) return false;
 
+        String time = LocalDateTime.now().toString();
+
         send(6);
         send(text);
         send(thisUser.username);
-        send(LocalDateTime.now().toString());
+        send(time.substring(0, 16));
         send(thisUser.userid);
         send(actualRoom.id);
         if(clearResponse(recv()) == 1) return true;
