@@ -107,8 +107,14 @@ public class Connessione extends Thread {
             if (isConnected) {
 
                 pw.println(n);
-                String ok = recv();
-                while(!ok.equals("-80"));
+                try {
+                    String ok = recv();
+                    while(!ok.equals("-80"));
+                } catch(NullPointerException e) {
+                    e.printStackTrace();
+                    return;
+                }
+
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+n);
             }
             return;
@@ -195,7 +201,7 @@ public class Connessione extends Thread {
 
     private int clearResponse(String response) {
         int cleared = -1;
-        if(response.equals("")||Objects.isNull(response)) {
+        if(Objects.isNull(response)) {
             System.out.println("-------------Stringa da convertire vuota! Ritorno -1");
             return cleared;
         }
@@ -283,13 +289,19 @@ public class Connessione extends Thread {
         else return false;
     }
 
-    public boolean changeUserSettings(int userID, String newUsername, String newUserpassword) {
+    public boolean changeUsername(String newUsername) {
         send(8);
-        send(userID);
         send(newUsername);
+        send(thisUser.userid);
 
-        if(newUserpassword.isEmpty() || Objects.isNull(newUsername)) send(thisUser.password);
-        else send(newUserpassword);
+        if(clearResponse(recv()) == 1) return true;
+        else return false;
+    }
+
+    public boolean changeUserPassword(String newPassword) {
+        send(9);
+        send(newPassword);
+        send(thisUser.userid);
 
         if(clearResponse(recv()) == 1) return true;
         else return false;
@@ -336,7 +348,6 @@ public class Connessione extends Thread {
             r.user = new User();
             r.group = g;
             r.user.username = "";
-            return requests;
         } else {
             for(int i = 0; i < j; i++) {
                 Request r = new Request();
@@ -346,8 +357,8 @@ public class Connessione extends Thread {
                 r.user.username = recv();
                 requests.add(r);
             }
-            return requests;
         }
+        return requests;
 
     }
 

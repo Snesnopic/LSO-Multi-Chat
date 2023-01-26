@@ -28,6 +28,7 @@ public class GroupWithRequestHolder extends RecyclerView.ViewHolder implements V
 
     public ArrayList<Request> RequestsOfGroup(Group g) //qui sostituire con call a Connessione che restituisce richieste del gruppo g
     {
+        System.out.println("=============Sono il gruppo: "+g.name);
         return connection.getRequests(g);
     }
     public GroupWithRequestHolder(Context context, @NonNull View itemView)
