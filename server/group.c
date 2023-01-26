@@ -119,6 +119,7 @@ Group* getAllGroups(PGconn* conn, int *row)
 
 GroupMessage* getGroupMessages(int group_id, PGconn *conn, int *row)
 {
+    printf("");
     if (conn == NULL)
     {
         printf("Connessione con DB persa o assente\n");
@@ -133,7 +134,9 @@ GroupMessage* getGroupMessages(int group_id, PGconn *conn, int *row)
     strcat(whereCondition, buffer);
     strcat(whereCondition, " AND MessageData.userid = UserData.userid");
     queryResult = selectdb("MessageData.messagetext, MessageData.timestampdata, UserData.userName", "MessageData, UserData", whereCondition, conn, row, 3);
-    GroupMessage *messaggi = (GroupMessage *) malloc(*row * sizeof(GroupMessage));
+    int mem = *row;
+    GroupMessage *messaggi = (GroupMessage *) malloc((mem+1)* sizeof(GroupMessage));
+
     int j = 0;
     for(int i = 0; i < *row; i = i + 1)
     {
