@@ -23,7 +23,10 @@ public class RequestsFragment extends Fragment {
 
     public List<Group> GetGroupsWithRequests()
     {
-        return connection.getRequestOfGroups();
+        ArrayList<Group> groups = connection.getRequestOfGroups();
+        for(int i = 0; i < groups.size(); i++) System.out.println("++++++Sono l'elemento "+i+groups.get(i).name);
+
+        return groups;
     }
 
     @Override
@@ -38,7 +41,7 @@ public class RequestsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView list = view.findViewById(R.id.groupsWithRequestRecyclerView);
         List<Group> groupsWithRequests = GetGroupsWithRequests();
-        adapter = new GroupsWithRequestsAdapter(view.getContext(),groupsWithRequests.size(),groupsWithRequests);
+        adapter = new GroupsWithRequestsAdapter(view.getContext(),groupsWithRequests.size(), groupsWithRequests);
         list.setAdapter(adapter);
         list.setLayoutManager(new LinearLayoutManager(view.getContext()));
     }

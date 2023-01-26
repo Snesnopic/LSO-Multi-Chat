@@ -308,15 +308,15 @@ public class Connessione extends Thread {
     }
 
     public ArrayList<Group> getRequestOfGroups() {
+        /* Questo codice funziona, ma dal lato Server succedono troppe cose strane, bisogna ricavarsi i gruppi in un altro modo, altrimenti si perde la sanita' mentale (vedi case 11)
         requestGroups = new ArrayList<>();
 
-        send(11); //valore fittizio
+        send(11);
         send(thisUser.userid);
 
         int j = clearResponse(recv());
         if(j <= 0) {
             System.out.println("Nessuna richiesta");
-
             return requestGroups;
         }
 
@@ -329,7 +329,22 @@ public class Connessione extends Thread {
             requestGroups.add(p);
         }
         for(int i = 0; i < requestGroups.size(); i++) {
+            System.out.println("--------------------Sono requestGroup size: "+requestGroups.size());
             requestGroups.get(i).messages = getAllMessages(requestGroups.get(i).id);
+        }
+
+        return requestGroups;
+
+         */
+
+        requestGroups = new ArrayList<>();
+        for(int i = 0; i < myGroups.size(); i++) {
+
+            System.out.println(+myGroups.size()+"<- Grandezza sono il gruppo: "+myGroups.get(i).name+" con id: "+myGroups.get(i).userid+" mentre sono userid: "+thisUser.userid);
+
+            if (thisUser.userid == myGroups.get(i).userid) {
+                requestGroups.add(myGroups.get(i));
+            }
         }
 
         return requestGroups;
