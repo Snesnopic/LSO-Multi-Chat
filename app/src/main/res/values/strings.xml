@@ -39,6 +39,9 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="create">Create</string>
     <string name="cancel">Cancel</string>
+    <string name="old_password">Old Password</string>
+    <string name="show">Show</string>
+    <string name="new_password">New Password</string>
     >
 
 </resources>
