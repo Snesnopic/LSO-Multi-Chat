@@ -2,6 +2,7 @@ package com.snesnopic.ermes.control;
 
 import static com.snesnopic.ermes.activitypkg.LoginActivity.connection;
 import static com.snesnopic.ermes.control.Connessione.requestGroups;
+import static com.snesnopic.ermes.control.Connessione.requests;
 
 import android.content.Context;
 import android.view.View;
@@ -51,6 +52,14 @@ public class GroupWithRequestHolder extends RecyclerView.ViewHolder implements V
         list.setLayoutManager(new LinearLayoutManager(context));
         acceptAll.setOnClickListener(v -> {
             //TODO: accetta tutte le richieste del gruppo g.name
+            for(int i = 0; i < requestGroups.size(); i++) {
+                if(requests.get(i).group.id == group.id) {
+                   if(connection.requestHandler(requestGroups.get(i), requests.get(i).user.userid, true)) {
+                       requests.remove(i);
+                       System.out.println("Tutti gli utenti sono stati accettati");
+                   }
+                }
+            }
         });
         refuseAll.setOnClickListener(v -> {
             //TODO: rifiuta tutte le richieste del gruppo g.name

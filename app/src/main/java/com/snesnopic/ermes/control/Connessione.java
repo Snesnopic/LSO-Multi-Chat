@@ -28,6 +28,7 @@ public class Connessione extends Thread {
     public static ArrayList<Group> myGroups;
     public static ArrayList<Group> otherGroups;
     public static ArrayList<Group> requestGroups;
+    public static ArrayList<Request> requests;
     static Message messaggio;
     public boolean isChatConnected = false;
 
@@ -237,7 +238,6 @@ public class Connessione extends Thread {
 
         try {
             int j = clearResponse(recv());
-            System.out.println("Sono j, valgo: "+j);
 
             if(j == 0) {
                 Message m = new Message();
@@ -364,7 +364,7 @@ public class Connessione extends Thread {
     }
 
     public ArrayList<Request> getRequests(Group g) {
-        ArrayList<Request> requests = new ArrayList<>();
+        requests = new ArrayList<>();
 
         send(5);
         send(g.id);
@@ -381,8 +381,9 @@ public class Connessione extends Thread {
                 Request r = new Request();
                 r.user = new User();
                 r.group = g;
-                r.user.userid = -1;
+
                 r.user.username = recv();
+                r.user.userid = clearResponse(recv());
                 requests.add(r);
             }
         }
@@ -430,7 +431,7 @@ public class Connessione extends Thread {
 
     public boolean requestHandler(Group g, int userID, boolean accepted) {
         if(accepted) {
-            send(12);
+            send(13);
             send(userID);
             send(g.id);
 
@@ -439,7 +440,7 @@ public class Connessione extends Thread {
             else return false;
         }
         else {
-            send(13);
+            send(14);
             send(userID);
             send(g.id);
 
