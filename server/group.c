@@ -55,9 +55,9 @@ Group* getGroupsOfUsers(int user_id, PGconn *conn, int *row)
     int j = 0;
     for(int i = 0; i < *row; i = i + 1)
     {
-        gruppi[i].groupId = atoi(queryResult[j+2]);
+        gruppi[i].groupId = atoi(queryResult[j]);
         strcpy(gruppi[i].groupName, queryResult[j+1]);
-        gruppi[i].creatorUserId = atoi(queryResult[j]);
+        gruppi[i].creatorUserId = atoi(queryResult[j+2]);
         j = j + 3;
     }
     return gruppi;
@@ -85,9 +85,9 @@ Group* getGroupsNotOfUsers(int user_id, PGconn *conn, int *row)
     int j = 0;
     for(int i = 0; i < *row; i = i + 1)
     {
-        gruppi[i].groupId = atoi(queryResult[j+2]);
+        gruppi[i].groupId = atoi(queryResult[j]);
         strcpy(gruppi[i].groupName, queryResult[j+1]);
-        gruppi[i].creatorUserId = atoi(queryResult[j]);
+        gruppi[i].creatorUserId = atoi(queryResult[j+2]);
         j = j + 3;
     }
     return gruppi;
@@ -230,21 +230,23 @@ int messaggioGruppo(char *message, int user_id, int group_id, char *timestamp, P
         printf("connessione con DB persa o assente\n");
         exit(0);
     }
-    char insertData[250];
-    strcpy(insertData, "");
+    for(int i = 0; i < strlen(timestamp); i++) {
+        if(timestamp[i] == 'T') timestamp[i] = ' ';
+    }
+    char insertData[3000];
+    strcpy(insertData, " '");
     strcat(insertData, message);
-    strcat(insertData, ", ");
+    strcat(insertData, "', ");
     char userid[250];
     char groupid[250];
     itoa(group_id, groupid);
     itoa(user_id, userid);
-    strcpy(groupid, "");
-    strcpy(userid, "");
     strcat(insertData, groupid);
     strcat(insertData, ", ");
     strcat(insertData, userid);
-    strcat(insertData, ", ");
+    strcat(insertData, ", '");
     strcat(insertData, timestamp);
+    strcat(insertData, "'");
     return insert("messagedata(messagetext, roomid, userid, timestampdata)", insertData, conn);
 }
 
@@ -323,20 +325,21 @@ void getRequestGroups(PGconn* conn, char* creatorUserID, int *row, Group** grupp
     for(int i = 0; i < (*row); i++)
     {
         gruppi[i]->creatorUserId = atoi(queryResult[j]);
-        printf("\nSono id creator: %d", gruppi[i]->creatorUserId);
-        fflush(stdout);
+        
         j++;
         strcpy(gruppi[i]->groupName, queryResult[j]);
-        printf("\nSono id creator: %s", gruppi[i]->groupName);
-        fflush(stdout);
+        
+      
         j++;
         gruppi[i]->groupId = atoi(queryResult[j]);
-        printf("\nSono id group: %d", gruppi[i]->groupId);
-        fflush(stdout);
+        
         j++;
-
+        
+        printf("\n*****************STAMPO IL GRUPPO*************\n\ncreatorUserID: %d\ngroupName: %s\ngroupID: %d\n\n***********************************************\n", gruppi[i]->creatorUserId, gruppi[i]->groupName, gruppi[i]->groupId);
+        fflush(stdout);
 
     }
+    
     printf("Gruppi inviati\n");
     fflush(stdout);
 

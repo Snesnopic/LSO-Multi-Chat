@@ -66,7 +66,7 @@ int main()
 int networkMessageHandler(int scelta, PGconn *conn, int socket)
 {
     char* client_message = (char*)malloc(sizeof(char)*2000);
-    char* client_message2 = (char*)malloc(sizeof(char)*200);
+    char* client_message2 = (char*)malloc(sizeof(char)*2000);
     int read_size;
     int msg;
     char *buff;
@@ -134,8 +134,10 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
 
               for(int i = 0; i < row; i++) {
                   itoa(groupsOfUsers[i].groupId, groupid);
+
                   writeSock2(socket, groupid); //scrive il groupid
                   itoa(groupsOfUsers[i].creatorUserId, creatorUserId); //scrive l'userid del creatore
+
                   writeSock2(socket, creatorUserId);
                   writeSock2(socket, groupsOfUsers[i].groupName);
                   memset(groupid, 0, 200);
@@ -223,6 +225,7 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
             itoa(row, buff);
 
             writeSock2(socket, buff);
+            printf("HO scritto sulla write socket2\n");
             memset(buff, 0, 200);
             if(row > 0)
             {
@@ -241,40 +244,41 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
             }
                 
         case 6:   //Ottieni messaggio dal client
-            char message[250];
-            strcpy(message, "");
-            char time_stamp[250];
-            strcpy(time_stamp, "");
-            char userName[250];
-            strcpy(userName, "");
+            char* message = (char*)malloc(2000*sizeof(char));
+            char* time_stamp = (char*)malloc(100*sizeof(char));
+            char* userName = (char*)malloc(200*sizeof(char));
             int user_ID = 0;
             int group_id = 0;
 
-            buff = (char*)malloc(sizeof(char)*200);
-            buff = readSock2(socket, client_message2);
+            buff = readSock2(socket, client_message);
             printf("Messaggio: %s\n", buff);
+            fflush(stdout);
             strcpy(message, buff);
-            memset(buff, 0 , 200);
+            free(buff);
 
-            buff = readSock2(socket, client_message2);
+            buff = readSock2(socket, client_message);
             printf("username: %s\n", buff);
+            fflush(stdout);
             strcpy(userName, buff);
-            memset(buff, 0 , 200);
+            free(buff);
 
             buff = readSock2(socket, client_message2);
             printf("timestamp messaggio: %s\n", buff);
+            fflush(stdout);
             strcpy(time_stamp, buff);
-            memset(buff, 0 , 200);
+            free(buff);
 
             buff = readSock2(socket, client_message2);
             user_ID = atoi(buff);
             printf("user id messaggio: %d\n", user_ID);
-            memset(buff, 0 , 200);
+            fflush(stdout);
+            free(buff);
 
             buff = readSock2(socket, client_message2);
             group_id = atoi(buff);
             printf("group id messaggio: %d\n", group_id);
-            memset(buff, 0 , 200);
+            fflush(stdout);
+            free(buff);
 
             status = messaggioGruppo(message, user_ID, group_id, time_stamp, conn, &row);
             writeSock2(socket, status);
@@ -365,29 +369,44 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
                 return -1;
                 
         case 11: //ottenimemento di tutti gruppi che hanno almeno una richiesta E sono del proprietario (LE RICHIESTE TOTALI SONO ESCLUSE. RESTITUISCE **SOLO** I GRUPPI!!)
+            //Il case è cursato. Non chiedere, se funziona, lasciala stare
+        
             char* creatorUserID = readSock2(socket, client_message);
             printf("Creator user id: %s|\n", creatorUserID);
 
             Group* requestGroups;
             getRequestGroups(conn, creatorUserID, &row, &requestGroups);
+            fflush(stdout);
+            for(int i = 0; i < row; i++) {
+                 printf("\n*****************STAMPO IL GRUPPO IN SERVER.C*************\n\ncreatorUserID: %d\ngroupName: %s\ngroupID: %d\n\n********************************************\n", requestGroups[i].creatorUserId, requestGroups[i].groupName, requestGroups[i].groupId);
+
+            }
+            fflush(stdout);
             
             buff = (char*)malloc(200*sizeof(char));
             itoa(row, buff);
             writeSock2(socket, buff);
+            memset(buff, 0, 200);
+            
+             
+    
+
             if(row <= 0) {
                 printf("Non sono presenti richieste in alcun gruppo.\n");
                 return -2;
             }
             else {
 
-                for(int i = 0; i < row; i++) {
-                    memset(buff, 0, 200);
-
+                for(int i = 0; i < row; i++) { 
                     itoa(requestGroups[i].groupId, buff);
-
                     writeSock2(socket, buff);
-                    writeSock2(socket, requestGroups[i].groupName);
-
+                    printf("%s|\n", buff);
+                    memset(buff, 0, 200);
+                    strcpy(buff, requestGroups[i].groupName);
+                    printf("%s|\n", buff);
+                    writeSock2(socket, buff);
+                    memset(buff, 0, 200);
+                    printf("\nSono row: %d, sono i: %d\n", row, i);
                 }
                 
                 printf("Gruppi richieste inviati.\n");
