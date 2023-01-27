@@ -63,12 +63,12 @@ public class Connessione extends Thread {
         send(username);
         send(password);
 
-        String response = recv();
+        int id = clearResponse(recv());
         //ritorna vero se riceve un userID diverso da 0 (login success) altrimenti falso
         try {
-            if(!response.equals("0")) {
+            if(id != 0) {
                 thisUser = new User();
-                thisUser.userid = Integer.parseInt(response);
+                thisUser.userid = id;
                 thisUser.username = username;
                 thisUser.password = password;
                 return true;
