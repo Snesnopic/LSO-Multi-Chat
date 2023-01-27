@@ -23,6 +23,7 @@
     <string name="settings">Settings</string>
     <string name="edit">Edit</string>
 
+    <string name="do_you_want_to_join">Do you want to join this group?</string>
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
