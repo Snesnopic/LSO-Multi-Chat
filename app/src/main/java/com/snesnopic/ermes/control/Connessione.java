@@ -388,7 +388,21 @@ public class Connessione extends Thread {
         send(time.substring(0, 16));
         send(thisUser.userid);
         send(actualRoom.id);
-        if(clearResponse(recv()) == 1) return true;
+        if(clearResponse(recv()) == 1) {
+            for(int i = 0; i < myGroups.size(); i++) {
+                if(myGroups.get(i).id == actualRoom.id) {
+                    Message newmsg = new Message();
+                    newmsg.time = LocalDateTime.now();
+                    newmsg.message = text;
+                    newmsg.senderUsername = thisUser.username;
+
+                    myGroups.get(i).messages.add(newmsg);
+
+                    return true;
+                }
+            }
+            return true;
+        }
         else return false;
     }
 }
