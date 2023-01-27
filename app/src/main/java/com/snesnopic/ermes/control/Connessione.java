@@ -1,5 +1,6 @@
 package com.snesnopic.ermes.control;
 
+import com.snesnopic.ermes.activitypkg.ChatActivity;
 import com.snesnopic.ermes.datapkg.*;
 
 import java.io.BufferedReader;
@@ -403,9 +404,8 @@ public class Connessione extends Thread {
                     newmsg.time = LocalDateTime.now();
                     newmsg.message = text;
                     newmsg.senderUsername = thisUser.username;
-
                     myGroups.get(i).messages.add(newmsg);
-
+                    ChatActivity.adapter.notifyDataSetChanged();
                     return true;
                 }
             }
