@@ -29,19 +29,22 @@ int update(char table [], char attribute [], char condition [], PGconn *conn)
 {
     PGresult *res;
     char sql[500];
-    strcpy(sql, "");
+    strcpy(sql, "UPDATE ");
     if(conn == NULL)
         exit(0);
     strcat(sql, table);
     strcat(sql, " SET ");
+    puts(attribute);
     strcat(sql, attribute);
     strcat(sql, " WHERE ");
-    strcat(sql, condition);
     if(strcmp(condition, "") != 0)
     {
-        strcat(sql, " WHERE ");
         strcat(sql, condition);
     }
+    else {
+        strcat(sql, "true");
+    }
+    puts(sql);
     res = PQexec(conn, sql);
     if(PQresultStatus(res) != PGRES_COMMAND_OK)
     {

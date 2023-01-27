@@ -41,7 +41,7 @@ int deleteGroup(char groupname[], PGconn* conn);
 
 GroupRequest* getGroupRequests(int group_id, int user_id, PGconn *conn, int *row);
 
-int richiestaGruppo(char group_name[], int user_id, PGconn *conn, int *row);
+int richiestaGruppo(int roomid, int user_id, PGconn *conn);
 
 int messaggioGruppo(char message[], int user_id, int group_id, char *timestamp, PGconn *conn, int *row);
 

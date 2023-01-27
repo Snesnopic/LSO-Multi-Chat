@@ -50,12 +50,11 @@ int usernameCheck(char username[], PGconn *conn)
         exit(0);
     }
     int placeholder = 0;
-    char **queryResult = NULL;
-    char whereCondition[100] = " username = '";
+    char whereCondition[200] = " username = '";
     strcat(whereCondition, username);
     strcat(whereCondition, "'");
-    queryResult = selectdb("userid", "userdata", whereCondition, conn, &placeholder, 1);
-    return atoi(queryResult[0]);
+    char** queryResult = selectdb("userid", "userdata", whereCondition, conn, &placeholder, 1);
+    return placeholder;
 }
 
 int modificaUsername(char newUsername[], int user_id, PGconn *conn)
@@ -65,7 +64,7 @@ int modificaUsername(char newUsername[], int user_id, PGconn *conn)
         printf("connessione con DB persa o assente\n");
         exit(0);
     }
-    if(usernameCheck(newUsername, conn) == 0)
+    if(usernameCheck(newUsername, conn) != 0)
     {
         printf("Username esistente\n");
         return -1;
@@ -77,10 +76,14 @@ int modificaUsername(char newUsername[], int user_id, PGconn *conn)
     strcpy(userid, "");
     itoa(user_id, userid);
     strcat(whereCondition, userid);
-    return update("userdata", "username", whereCondition, conn);
+    char *attributes = (char*)malloc(250*sizeof(char));
+    strcat(attributes, "username = '");
+    strcat(attributes, newUsername);
+    strcat(attributes, "'");
+    return update("userdata", attributes, whereCondition, conn);
 }
 
-int modificaPassword(char username[], int user_id, PGconn *conn)
+int modificaPassword(char *username, int user_id, PGconn *conn)
 {
     if(conn == NULL)
     {
@@ -94,5 +97,12 @@ int modificaPassword(char username[], int user_id, PGconn *conn)
     strcpy(userid, "");
     itoa(user_id, userid);
     strcat(whereCondition, userid);
-    return update("userdata", "password", whereCondition, conn);
+    char *attributes = (char*)malloc(250*sizeof(char));
+    memset(attributes, 0, 250);
+    strcat(attributes, "username = '");
+    puts(username);
+    strcat(attributes, username);
+    strcat(attributes, "'");
+    puts(attributes);
+    return update("userdata", attributes, whereCondition, conn);
 }

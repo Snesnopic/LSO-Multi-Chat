@@ -119,7 +119,6 @@ Group* getAllGroups(PGconn* conn, int *row)
 
 GroupMessage* getGroupMessages(int group_id, PGconn *conn, int *row)
 {
-    printf("");
     if (conn == NULL)
     {
         printf("Connessione con DB persa o assente\n");
@@ -199,27 +198,23 @@ GroupRequest* getGroupRequests(int group_id, int user_id, PGconn *conn, int *row
     return richieste;
 }
 
-int richiestaGruppo(char *group_name, int user_id, PGconn *conn, int *row)
+int richiestaGruppo(int roomid, int user_id, PGconn *conn)
 {
     if(conn == NULL)
     {
         printf("connessione con DB persa o assente\n");
         exit(0);
     }
-    char **queryResult = (char**)malloc(100 * sizeof(char*));
-    for(int i = 0; i < 100; i++)
-        queryResult[i] = (char*)malloc(100*sizeof(char));
-    char whereCondition[100] = "roomname = ";
-    strcat(whereCondition, group_name);
-    queryResult = selectdb("roomid", "room", whereCondition, conn, row, 1);
+    char* roomID = (char*)malloc(sizeof(char)*10);
+    char* userID = (char*)malloc(sizeof(char)*10);
+    itoa(roomid, roomID);
+    itoa(user_id, userID);
     char insertData[250];
+    
     strcpy(insertData, "");
-    strcat(insertData, queryResult[0]);
+    strcat(insertData, roomID);
     strcat(insertData, ", ");
-    char userid[250];
-    strcpy(userid, "");
-    itoa(user_id, userid);
-    strcat(insertData, userid);
+    strcat(insertData, userID);
     return insert("joinrequest(roomid, userid)", insertData, conn);
 }
 
