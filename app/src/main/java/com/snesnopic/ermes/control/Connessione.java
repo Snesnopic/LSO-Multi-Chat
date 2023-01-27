@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Connessione extends Thread {
     static PrintWriter pw = null;
@@ -28,6 +29,7 @@ public class Connessione extends Thread {
     public static ArrayList<Group> otherGroups;
     public static ArrayList<Group> requestGroups;
     static Message messaggio;
+    public boolean isChatConnected = false;
 
     public static Connessione getInstance(String hostname, int port) {
         if (instance == null) {
@@ -414,6 +416,81 @@ public class Connessione extends Thread {
             return true;
         }
         else return false;
+    }
+
+    public boolean makeJoinRequest(Group g) {
+        send(12);
+        send(thisUser.userid);
+        send(g.id);
+
+        int response = clearResponse(recv());
+        if(response == 1) return true;
+        else return false;
+    }
+
+    public boolean requestHandler(Group g, int userID, boolean accepted) {
+        if(accepted) {
+            send(12);
+            send(userID);
+            send(g.id);
+
+            int response = clearResponse(recv());
+            if(response == 1) return true;
+            else return false;
+        }
+        else {
+            send(13);
+            send(userID);
+            send(g.id);
+
+            int response = clearResponse(recv());
+            if(response == 1) return true;
+            else return false;
+        }
+    }
+
+    public void chatThread(int chatPort, Group actualGroup) {
+        Socket socketChat;
+        PrintWriter pwChat;
+        BufferedReader bfChat;
+        int i;
+        for(i = 0; i < myGroups.size(); i++) {
+            if(myGroups.get(i).id == actualGroup.id) break;
+        }
+        while(isConnected) {
+            try {
+                socketChat = new Socket(statichostname, chatPort);
+                pwChat = new PrintWriter(socketChat.getOutputStream(), true);
+                bfChat = new BufferedReader(new InputStreamReader(socketChat.getInputStream()));
+                AtomicReference<String> sender = new AtomicReference<>("Odisseo");
+                AtomicReference<String> message = new AtomicReference<>("");
+                BufferedReader finalBfChat = bfChat;
+                int finalI = i;
+                Thread t = new Thread(() -> {
+                    while (isConnected) {
+                        try {
+                            sender.set(finalBfChat.readLine());
+                            message.set(finalBfChat.readLine());
+                            System.out.println("++++++++MESSAGGIO LETTO DALLA CHAT++++++++++\n"+message);
+                            Message m = new Message();
+                            m.time = LocalDateTime.now();
+                            m.message = message.get();
+                            m.senderUsername = sender.get();
+
+                            myGroups.get(finalI).messages.add(m);
+
+                        }
+                        catch (IOException e) {e.printStackTrace(); return;}
+                    }
+                });
+                t.start();
+
+
+            } catch (IOException e) {
+                System.out.println("-----------Impossibile stabilire la connessione per la chat");
+                return;
+            }
+        }
     }
 }
 

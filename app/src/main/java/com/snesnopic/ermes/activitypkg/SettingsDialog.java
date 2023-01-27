@@ -1,6 +1,7 @@
 package com.snesnopic.ermes.activitypkg;
 
 import static com.snesnopic.ermes.activitypkg.LoginActivity.connection;
+import static com.snesnopic.ermes.control.Connessione.thisUser;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -16,6 +17,8 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.snesnopic.ermes.R;
 import com.snesnopic.ermes.control.Connessione;
+
+import java.io.File;
 
 public class SettingsDialog extends DialogFragment {
     @NonNull
@@ -45,22 +48,25 @@ public class SettingsDialog extends DialogFragment {
                 newPasswordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
         });
 
-        oldPasswordEditText.setText(Connessione.thisUser.password);
-        newUserNameEditText.setText(Connessione.thisUser.username);
+        oldPasswordEditText.setText(thisUser.password);
+        newUserNameEditText.setText(thisUser.username);
         builder.setMessage(R.string.settings)
                 .setPositiveButton(R.string.edit, (dialog, id) -> {
                     //TODO: applica modifiche, check del nome inserito e check della password
-                    if(newUserNameEditText.getText().toString().length() > 5) {
-                        if(connection.changeUsername(newUserNameEditText.getText().toString()))
-                            Snackbar.make(view, "Il tuo nuovo username è: "+newUserNameEditText.getText().toString(), Snackbar.LENGTH_LONG).show();
+                    if(!newUserNameEditText.getText().toString().equals(thisUser.username)) {
+                        if(newUserNameEditText.getText().toString().length() > 5) {
+                            if(connection.changeUsername(newUserNameEditText.getText().toString()))
+                                Snackbar.make(view, "Il tuo nuovo username è: "+newUserNameEditText.getText().toString(), Snackbar.LENGTH_LONG).show();
+                        }
                     }
-                    if(newPasswordEditText.getText().toString().equals(oldPasswordEditText.getText().toString())) {
-                        if(newPasswordEditText.getText().toString().length() > 5) {
-                            if(connection.changeUserPassword(newPasswordEditText.getText().toString())) {
-                                System.out.println("Password modificata in: "+newPasswordEditText.getText().toString());
+                    if(newPasswordEditText.getText().toString().length() > 5) {
+                        if(newPasswordEditText.getText().toString().equals(oldPasswordEditText.getText().toString())) {
+                            return;
+                        }
+                        else if(connection.changeUserPassword(newPasswordEditText.getText().toString())) {
+                            System.out.println("Password modificata in: "+newPasswordEditText.getText().toString());
                                 //modifica il file di testo
-                                Snackbar.make(view,"Password modificata!",Snackbar.LENGTH_LONG).show();
-                            }
+                            Snackbar.make(view,"Password modificata!",Snackbar.LENGTH_LONG).show();
                         }
                     }
                 })
@@ -68,5 +74,9 @@ public class SettingsDialog extends DialogFragment {
                     //non succede nulla
                 });
         return builder.create();
+    }
+
+    private void writeResources(boolean writeUsername, boolean writePassword) {
+
     }
 }
