@@ -294,7 +294,12 @@ public class Connessione extends Thread {
         send(newUsername);
         send(thisUser.userid);
 
-        if(clearResponse(recv()) == 1) return true;
+        if(clearResponse(recv()) == 1)
+        {
+            thisUser.username = newUsername;
+            return true;
+        }
+
         else return false;
     }
 
@@ -303,7 +308,10 @@ public class Connessione extends Thread {
         send(newPassword);
         send(thisUser.userid);
 
-        if(clearResponse(recv()) == 1) return true;
+        if(clearResponse(recv()) == 1) {
+            thisUser.password = newPassword;
+            return true;
+        }
         else return false;
     }
 

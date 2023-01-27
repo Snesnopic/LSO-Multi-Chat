@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import androidx.fragment.app.DialogFragment;
+import com.google.android.material.snackbar.Snackbar;
 import com.snesnopic.ermes.R;
 
 public class CreateGroupDialog extends DialogFragment {
@@ -22,14 +23,11 @@ public class CreateGroupDialog extends DialogFragment {
                     EditText et = view.findViewById(R.id.editTextNewGroupName);
                     String newGroupName = et.getText().toString();
                     if(connection.createGroup(newGroupName)) {
-                        System.out.println("Gruppo creato");
                         MyGroupsFragment.adapter.notifyDataSetChanged(); //aggiorna la lista di gruppi
+                        Snackbar.make(view, "Gruppo creato!", Snackbar.LENGTH_LONG).show();
                     }
-                    else {
-                        System.out.println("Gruppo non creato");
-
-                    }
-
+                    else
+                        Snackbar.make(view, "Gruppo non creato!", Snackbar.LENGTH_LONG).show();
                 })
                 .setNegativeButton(R.string.cancel, (dialog, id) -> {
                     //non succede nulla
