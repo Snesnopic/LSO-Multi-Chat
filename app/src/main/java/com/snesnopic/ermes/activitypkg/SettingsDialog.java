@@ -10,11 +10,9 @@ import android.text.method.SingleLineTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Switch;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
-
 import com.google.android.material.snackbar.Snackbar;
 import com.snesnopic.ermes.R;
 import com.snesnopic.ermes.control.Connessione;
@@ -53,18 +51,15 @@ public class SettingsDialog extends DialogFragment {
                 .setPositiveButton(R.string.edit, (dialog, id) -> {
                     //TODO: applica modifiche, check del nome inserito e check della password
                     if(newUserNameEditText.getText().toString().length() > 5) {
-                        if(connection.changeUsername(newUserNameEditText.getText().toString())) {
-                            System.out.println("Nome modificato in: "+newUserNameEditText.getText().toString());
-                            //modifica il file di testo memorizzato
-                            //notifica
-                        }
+                        if(connection.changeUsername(newUserNameEditText.getText().toString()))
+                            Snackbar.make(view, "Il tuo nuovo username è: "+newUserNameEditText.getText().toString(), Snackbar.LENGTH_LONG).show();
                     }
                     if(newPasswordEditText.getText().toString().equals(oldPasswordEditText.getText().toString())) {
                         if(newPasswordEditText.getText().toString().length() > 5) {
                             if(connection.changeUserPassword(newPasswordEditText.getText().toString())) {
                                 System.out.println("Password modificata in: "+newPasswordEditText.getText().toString());
                                 //modifica il file di testo
-                                //notifica
+                                Snackbar.make(view,"Password modificata!",Snackbar.LENGTH_LONG).show();
                             }
                         }
                     }
