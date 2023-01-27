@@ -119,7 +119,6 @@ Group* getAllGroups(PGconn* conn, int *row)
 
 GroupMessage* getGroupMessages(int group_id, PGconn *conn, int *row)
 {
-    printf("");
     if (conn == NULL)
     {
         printf("Connessione con DB persa o assente\n");
@@ -187,39 +186,39 @@ GroupRequest* getGroupRequests(int group_id, int user_id, PGconn *conn, int *row
     strcat(whereCondition, buffer);
     strcpy(buffer, "");
     strcat(whereCondition, " AND j.userid = u.userid");
-    queryResult = selectdb("u.username", "joinrequest AS j, USERDATA AS u", whereCondition, conn, row, 1);
+    queryResult = selectdb("u.username, j.userid, j.roomid", "joinrequest AS j, USERDATA AS u", whereCondition, conn, row, 3);
     GroupRequest *richieste = (GroupRequest*)malloc(*row * sizeof (GroupRequest));
+    int j = 0;
 
     for(int i = 0; i < *row; i = i + 1)
     {
-        richieste[i].username = queryResult[i];
-        richieste[i].groupId = atoi(queryResult[i]);
-        richieste[i].userId = atoi(queryResult[i]);
+        richieste[i].username = queryResult[j];
+        j++;
+        richieste[i].groupId = atoi(queryResult[j]);
+        j++;
+        richieste[i].userId = atoi(queryResult[j]);
+        j++;
     }
     return richieste;
 }
 
-int richiestaGruppo(char *group_name, int user_id, PGconn *conn, int *row)
+int richiestaGruppo(int roomid, int user_id, PGconn *conn)
 {
     if(conn == NULL)
     {
         printf("connessione con DB persa o assente\n");
         exit(0);
     }
-    char **queryResult = (char**)malloc(100 * sizeof(char*));
-    for(int i = 0; i < 100; i++)
-        queryResult[i] = (char*)malloc(100*sizeof(char));
-    char whereCondition[100] = "roomname = ";
-    strcat(whereCondition, group_name);
-    queryResult = selectdb("roomid", "room", whereCondition, conn, row, 1);
+    char* roomID = (char*)malloc(sizeof(char)*10);
+    char* userID = (char*)malloc(sizeof(char)*10);
+    itoa(roomid, roomID);
+    itoa(user_id, userID);
     char insertData[250];
+    
     strcpy(insertData, "");
-    strcat(insertData, queryResult[0]);
+    strcat(insertData, roomID);
     strcat(insertData, ", ");
-    char userid[250];
-    strcpy(userid, "");
-    itoa(user_id, userid);
-    strcat(insertData, userid);
+    strcat(insertData, userID);
     return insert("joinrequest(roomid, userid)", insertData, conn);
 }
 
@@ -280,6 +279,8 @@ int creaGruppo(char *group_name, int creatorUserId, PGconn *conn)
         char **res = selectdb("roomid", "room", whereCondition, conn, &row, 1);
         return atoi(res[0]);
     }
+    
+    return -1;
 }
 
 int modificaNomeGruppo(char newGroupName[], int group_id, PGconn *conn)
