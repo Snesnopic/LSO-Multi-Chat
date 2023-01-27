@@ -159,6 +159,7 @@ public class Connessione extends Thread {
                 a.id = clearResponse(recv());
                 a.userid = clearResponse(recv());
                 a.name = recv();
+                a.accessPermitted = true;
                 myGroups.add(a);
             }
 
@@ -183,7 +184,7 @@ public class Connessione extends Thread {
                 a.id = clearResponse(recv());
                 a.userid = clearResponse(recv());
                 a.name = recv();
-
+                a.accessPermitted = false;
                 otherRooms.add(a);
             }
             for(int i = 0; i < otherRooms.size(); i++) {
@@ -284,6 +285,7 @@ public class Connessione extends Thread {
             emptyMessage.time = LocalDateTime.now();
             msg.add(emptyMessage);
             e.messages = msg;
+            e.accessPermitted = true;
             myGroups.add(e);
             return true;
         }
