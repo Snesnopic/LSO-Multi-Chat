@@ -7,4 +7,5 @@ public class Group {
     public int id;
     public int userid;
     public List<Message> messages;
+    public boolean accessPermitted;
 }
