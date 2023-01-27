@@ -77,6 +77,7 @@ int modificaUsername(char newUsername[], int user_id, PGconn *conn)
     itoa(user_id, userid);
     strcat(whereCondition, userid);
     char *attributes = (char*)malloc(250*sizeof(char));
+    memset(attributes, 0, 250);
     strcat(attributes, "username = '");
     strcat(attributes, newUsername);
     strcat(attributes, "'");

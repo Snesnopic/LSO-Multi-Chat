@@ -254,8 +254,11 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
             free(buff);
             if(row > 0)
             {
-                for(int j = 0; j < row; j++)
-                writeSock2(socket, richieste[j].username);
+                for(int j = 0; j < row; j++) {
+                   writeSock2(socket, richieste[j].username);
+                   writeSock2(socket, richieste[j].userId);
+                }
+                
                     
                 printf("Richieste inviate\n");
                 return -2;
@@ -521,6 +524,7 @@ void *connection_handler(void *socket_desc)
     }
     //clear the message buffer
     memset(client_message, 0, 200);
+    return NULL;
 }
 
 long writeSock(int socket, char *str)
