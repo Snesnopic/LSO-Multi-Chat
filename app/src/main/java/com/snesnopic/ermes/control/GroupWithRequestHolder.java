@@ -42,11 +42,11 @@ public class GroupWithRequestHolder extends RecyclerView.ViewHolder implements V
         refuseAll = itemView.findViewById(R.id.refuseAllButton);
     }
 
-    public void bindGroupWithRequest(Group g)
+    public void bindGroupWithRequest(Group group)
     {
-        this.g = g;
+        this.g = group;
         groupName.setText(g.name);
-        RequestsOfGroupAdapter rofga = new RequestsOfGroupAdapter(context,RequestsOfGroup(g));
+        RequestsOfGroupAdapter rofga = new RequestsOfGroupAdapter(context, RequestsOfGroup(g));
         list.setAdapter(rofga);
         list.setLayoutManager(new LinearLayoutManager(context));
         acceptAll.setOnClickListener(v -> {
