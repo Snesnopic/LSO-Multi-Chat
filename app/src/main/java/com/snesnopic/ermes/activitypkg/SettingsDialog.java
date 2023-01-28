@@ -52,22 +52,16 @@ public class SettingsDialog extends DialogFragment {
         newUserNameEditText.setText(thisUser.username);
         builder.setMessage(R.string.settings)
                 .setPositiveButton(R.string.edit, (dialog, id) -> {
-                    //TODO: applica modifiche, check del nome inserito e check della password
-                    if(!newUserNameEditText.getText().toString().equals(thisUser.username)) {
-                        if(newUserNameEditText.getText().toString().length() > 5) {
-                            if(connection.changeUsername(newUserNameEditText.getText().toString()))
-                                Snackbar.make(view, "Il tuo nuovo username è: "+newUserNameEditText.getText().toString(), Snackbar.LENGTH_LONG).show();
-                        }
+                    String newUsername = newUserNameEditText.getText().toString();
+                    if(!newUsername.equals(thisUser.username) && newUsername.length() > 5) {
+                        if(connection.changeUsername(newUsername))
+                            Snackbar.make(view, "Il tuo nuovo username è: "+newUsername, Snackbar.LENGTH_LONG).show();
                     }
-                    if(newPasswordEditText.getText().toString().length() > 5) {
-                        if(newPasswordEditText.getText().toString().equals(oldPasswordEditText.getText().toString())) {
-                            return;
-                        }
-                        else if(connection.changeUserPassword(newPasswordEditText.getText().toString())) {
-                            System.out.println("Password modificata in: "+newPasswordEditText.getText().toString());
-                                //modifica il file di testo
+                    String newPassword = newPasswordEditText.getText().toString();
+                    if(!newPassword.equals(thisUser.password) && newPassword.length() > 5) {
+                        if(connection.changeUserPassword(newPassword))
                             Snackbar.make(view,"Password modificata!",Snackbar.LENGTH_LONG).show();
-                        }
+
                     }
                 })
                 .setNegativeButton(R.string.cancel, (dialog, id) -> {
