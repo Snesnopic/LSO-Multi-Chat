@@ -57,13 +57,14 @@ public class ChatActivity extends AppCompatActivity {
         list.setAdapter(adapter);
         chatText = (EditText) findViewById(R.id.edit_gchat_message);
         sendButton = (Button) findViewById(R.id.button_gchat_send);
-        for(int i = 0; i < myGroups.size(); i++) {
+        int i;
+        for(i = 0; i < myGroups.size(); i++) {
             if(myGroups.get(i).name.equals(groupName))  {
                 actualGroup = myGroups.get(i);
-                connection.chatThread(i);
                 break;
             }
         }
+        connection.chatThread(i);
         Group finalActualGroup = actualGroup;
         sendButton.setOnClickListener(v -> {
             connection.sendMessage(chatText.getText().toString(), finalActualGroup);
