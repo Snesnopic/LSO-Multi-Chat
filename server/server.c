@@ -22,6 +22,9 @@ long writeSock2(int socket, char *str);
 
 PGconn* conn = NULL;
 int userID = -1;
+int utentiConnessi[50] = {0};
+int globalConnection;
+
 
 int main()
 {
@@ -309,12 +312,20 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
             
 
             status = messaggioGruppo(message, user_ID, group_id, time_stamp, conn, &row);
-            itoa(status, buff);
             
-            writeSock2(socket, buff);
-            free(buff);
-            if(status == 1) {
+            writeSock2(globalConnection, "-777");
 
+            if(status == 1) {
+                for(int i = 0; i < 50; i++)
+                {
+                    if(utentiConnessi[i] == 1)
+                    {
+                        writeSock2(globalConnection, userName);
+                        writeSock2(globalConnection, message);
+                        writeSock2(globalConnection, buff); //buff sarebbe il group id
+                    }
+                }
+                free(buff);
                 free(message);
                 free(time_stamp);
                 free(userName);
@@ -322,6 +333,7 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
             }
                 
             else {
+                free(buff);
                 free(message);
                 free(time_stamp);
                 free(userName);
@@ -483,7 +495,26 @@ int networkMessageHandler(int scelta, PGconn *conn, int socket)
             free(buff2);
             if(status) return 1;
             else return -1;
-        
+
+        case 999:
+            globalConnection = socket(AF_INET, SOCK_STREAM, 0);
+            serverAddr.sin_addr.s_addr = INADDR_ANY;
+            serverAddr.sin_family = AF_INET;
+            serverAddr.sin_port = htons(PORTNUMBER);
+            if(bind(globalConnection,(struct sockaddr*)&serverAddr,sizeof(serverAddr)) == -1)
+            {
+                printf("Errore nel binding..\n");
+                return 1;
+            }
+            if (listen(globalConnection, MAXCLIENTS) == -1)
+            {
+                printf("Errore nell'ascolto\n");
+                return 1;
+            }
+            strcpy(buff, "");
+            readSock2(globalConnection, buff);
+            user_id = atoi(buff);
+            utentiConnessi[user_id] = 1;
         default:
             printf("Errore network message hanlder: valore di scelta non valido\n");
             return -2;
@@ -571,29 +602,3 @@ long writeSock2(int socket, char *str)
     write(socket, "\n", 1);
     return bytes;
 }
-
-
-/*
-int readSock(int socket, char *str)
-{
-    int read_size = read(socket, str, sizeof(str)-1);
-    char *newstr = (char*) malloc(sizeof(char)*read_size);
-    char *cpy = (char*) malloc(sizeof(char)*read_size);
-    int c = 0;
-
-    for(size_t i = 0; i < strlen(newstr); ++i)
-    {
-        if(newstr[i] != '\n')
-        {
-            cpy[c] = newstr[i];
-            c++;
-        }
-    }
-    strcat(cpy, "\0");
-    strcpy(str, cpy);
-    free(cpy);
-            free(newstr);
-    return read_size;
-}
-*/
-
