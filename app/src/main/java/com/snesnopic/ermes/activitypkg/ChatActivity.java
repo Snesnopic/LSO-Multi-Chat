@@ -66,9 +66,8 @@ public class ChatActivity extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(connection.sendMessage(chatText.getText().toString(), finalActualGroup))
-                    System.out.println("Messaggio inviato");
-
+                connection.sendMessage(chatText.getText().toString(), finalActualGroup);
+                System.out.println("Messaggio inviato");
             }
         });
     }

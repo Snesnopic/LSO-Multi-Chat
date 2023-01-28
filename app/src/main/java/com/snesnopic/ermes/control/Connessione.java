@@ -30,7 +30,8 @@ public class Connessione extends Thread {
     public static ArrayList<Group> requestGroups;
     public static ArrayList<Request> requests;
     static Message messaggio;
-    public boolean isChatConnected = false;
+    private Thread t;
+    private boolean mutex = true;
 
     public static Connessione getInstance(String hostname, int port) {
         if (instance == null) {
@@ -391,8 +392,8 @@ public class Connessione extends Thread {
 
     }
 
-    public boolean sendMessage(String text, Group actualRoom) {
-        if(text.isEmpty() || Objects.isNull(text)) return false;
+    public void sendMessage(String text, Group actualRoom) {
+        if(text.isEmpty() || Objects.isNull(text)) return;
 
         String time = LocalDateTime.now().toString();
 
@@ -402,7 +403,8 @@ public class Connessione extends Thread {
         send(time.substring(0, 16));
         send(thisUser.userid);
         send(actualRoom.id);
-        if(clearResponse(recv()) == 1) {
+        if(mutex) {
+            mutex = false;
             for(int i = 0; i < myGroups.size(); i++) {
                 if(myGroups.get(i).id == actualRoom.id) {
                     Message newmsg = new Message();
@@ -411,12 +413,11 @@ public class Connessione extends Thread {
                     newmsg.senderUsername = thisUser.username;
                     myGroups.get(i).messages.add(newmsg);
                     ChatActivity.adapter.notifyDataSetChanged();
-                    return true;
                 }
             }
-            return true;
+
+            mutex = true;
         }
-        else return false;
     }
 
     public boolean makeJoinRequest(Group g) {
@@ -450,48 +451,44 @@ public class Connessione extends Thread {
         }
     }
 
-    public void chatThread(int chatPort, Group actualGroup) {
-        Socket socketChat;
-        PrintWriter pwChat;
-        BufferedReader bfChat;
-        int i;
-        for(i = 0; i < myGroups.size(); i++) {
-            if(myGroups.get(i).id == actualGroup.id) break;
-        }
-        while(isConnected) {
-            try {
-                socketChat = new Socket(statichostname, chatPort);
-                pwChat = new PrintWriter(socketChat.getOutputStream(), true);
-                bfChat = new BufferedReader(new InputStreamReader(socketChat.getInputStream()));
-                AtomicReference<String> sender = new AtomicReference<>("Odisseo");
-                AtomicReference<String> message = new AtomicReference<>("");
-                BufferedReader finalBfChat = bfChat;
-                int finalI = i;
-                Thread t = new Thread(() -> {
-                    while (isConnected) {
-                        try {
-                            sender.set(finalBfChat.readLine());
-                            message.set(finalBfChat.readLine());
-                            System.out.println("++++++++MESSAGGIO LETTO DALLA CHAT++++++++++\n"+message);
-                            Message m = new Message();
-                            m.time = LocalDateTime.now();
-                            m.message = message.get();
-                            m.senderUsername = sender.get();
+    public void chatThread(int index) {
 
-                            myGroups.get(finalI).messages.add(m);
-
-                        }
-                        catch (IOException e) {e.printStackTrace(); return;}
+        t = new Thread(() -> {
+            while(isConnected) {
+                if(!recv().equals("-777")) continue;
+                else {
+                    if(mutex) {
+                        mutex = false;
+                        Message msg = new Message();
+                        msg.senderUsername = recv();
+                        msg.time = LocalDateTime.now();
+                        msg.message = recv();
+                        myGroups.get(index).messages.add(msg);
+                        mutex = true;
+                        ChatActivity.adapter.notifyDataSetChanged();
                     }
-                });
-                t.start();
+                }
+            }
+            System.out.println("Connessione assente!");
+            return;
 
+        });
 
-            } catch (IOException e) {
-                System.out.println("-----------Impossibile stabilire la connessione per la chat");
-                return;
+        t.start();
+    }
+
+    public boolean chatThreadStop() {
+        if(t.isAlive()) {
+            try {
+                t.interrupt();
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("--------ATTENZIONE: Thread chat non chiuso");
+                return false;
             }
         }
+        else return false;
     }
 }
 
