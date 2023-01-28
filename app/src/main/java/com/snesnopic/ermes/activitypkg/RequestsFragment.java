@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.snesnopic.ermes.R;
 import com.snesnopic.ermes.control.GroupsWithRequestsAdapter;
 import com.snesnopic.ermes.datapkg.Group;
@@ -44,5 +44,12 @@ public class RequestsFragment extends Fragment {
         adapter = new GroupsWithRequestsAdapter(view.getContext(),groupsWithRequests.size(), groupsWithRequests);
         list.setAdapter(adapter);
         list.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        final SwipeRefreshLayout pullToRefresh = view.findViewById(R.id.pullToRefresh);
+        pullToRefresh.setOnRefreshListener(() -> {
+            pullToRefresh.setRefreshing(false);
+            List<Group> newGroups = GetGroupsWithRequests();
+            adapter = new GroupsWithRequestsAdapter(view.getContext(), newGroups.size(), newGroups);
+            list.setAdapter(adapter);
+        });
     }
 }
