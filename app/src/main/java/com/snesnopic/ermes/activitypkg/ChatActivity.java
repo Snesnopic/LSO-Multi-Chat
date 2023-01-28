@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.snesnopic.ermes.R;
+import com.snesnopic.ermes.control.Connessione;
 import com.snesnopic.ermes.control.MessageAdapter;
 import com.snesnopic.ermes.datapkg.Group;
 import com.snesnopic.ermes.datapkg.Message;
@@ -59,16 +60,14 @@ public class ChatActivity extends AppCompatActivity {
         for(int i = 0; i < myGroups.size(); i++) {
             if(myGroups.get(i).name.equals(groupName))  {
                 actualGroup = myGroups.get(i);
+                connection.chatThread(i);
                 break;
             }
         }
         Group finalActualGroup = actualGroup;
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                connection.sendMessage(chatText.getText().toString(), finalActualGroup);
-                System.out.println("Messaggio inviato");
-            }
+        sendButton.setOnClickListener(v -> {
+            connection.sendMessage(chatText.getText().toString(), finalActualGroup);
+            System.out.println("Messaggio inviato");
         });
     }
 
