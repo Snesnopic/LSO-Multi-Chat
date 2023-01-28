@@ -32,6 +32,7 @@ public class Connessione extends Thread {
     static Message messaggio;
     private Thread t;
     private boolean mutex = true;
+    private String buffer;
 
     public static Connessione getInstance(String hostname, int port) {
         if (instance == null) {
@@ -452,10 +453,10 @@ public class Connessione extends Thread {
     }
 
     public void chatThread(int index) {
-
         t = new Thread(() -> {
             while(isConnected) {
-                if(!recv().equals("-777")) continue;
+                buffer = recv();
+                if(!buffer.equals("-777")) continue;
                 else {
                     if(mutex) {
                         mutex = false;
