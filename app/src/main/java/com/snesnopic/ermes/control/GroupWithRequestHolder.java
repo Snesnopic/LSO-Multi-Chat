@@ -51,7 +51,6 @@ public class GroupWithRequestHolder extends RecyclerView.ViewHolder implements V
         list.setAdapter(rofga);
         list.setLayoutManager(new LinearLayoutManager(context));
         acceptAll.setOnClickListener(v -> {
-            //TODO: accetta tutte le richieste del gruppo g.name
             for(int i = 0; i < requestGroups.size(); i++) {
                 if(requests.get(i).group.id == group.id) {
                    if(connection.requestHandler(requestGroups.get(i), requests.get(i).user.userid, true)) {
@@ -62,7 +61,14 @@ public class GroupWithRequestHolder extends RecyclerView.ViewHolder implements V
             }
         });
         refuseAll.setOnClickListener(v -> {
-            //TODO: rifiuta tutte le richieste del gruppo g.name
+            for(int i = 0; i < requestGroups.size(); i++) {
+                if(requests.get(i).group.id == group.id) {
+                    if(connection.requestHandler(requestGroups.get(i), requests.get(i).user.userid, false)) {
+                        requests.remove(i);
+                        System.out.println("Tutti gli utenti sono stati rifiutati");
+                    }
+                }
+            }
         });
     }
     @Override
