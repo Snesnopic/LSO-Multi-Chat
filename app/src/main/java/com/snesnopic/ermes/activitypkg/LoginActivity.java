@@ -1,29 +1,23 @@
 package com.snesnopic.ermes.activitypkg;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.content.Context;
 import android.widget.ImageView;
-
+import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.snackbar.Snackbar;
 import com.snesnopic.ermes.R;
 import com.snesnopic.ermes.control.Connessione;
-import com.snesnopic.ermes.datapkg.Group;
-import com.snesnopic.ermes.datapkg.User;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.concurrent.Executor;
+import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
     Context context = this;
@@ -41,10 +35,12 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
-        getSupportActionBar().hide();
+        Objects.requireNonNull(getSupportActionBar()).hide();
+        Intent mainIntent = new Intent(this, MainActivity.class);
+        startActivity(mainIntent);
+        finish();
         path = getFilesDir();
         file = new File(path, "resources");
-
         try {
                 connection = Connessione.getInstance("192.168.1.20", 8989);
                 connection.start();
@@ -65,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
         if (!connection.isConnected()) {
-            ImageView image = (ImageView) findViewById(R.id.logoImage);    //serve così può uscire la notifica in basso
+            ImageView image = findViewById(R.id.logoImage);    //serve così può uscire la notifica in basso
             Snackbar.make(image, "ATTENZIONE! Connessione non stabilita!", Snackbar.LENGTH_LONG).show();
         }
         else {
@@ -121,7 +117,7 @@ public class LoginActivity extends AppCompatActivity {
                 try {
                     if (checkbox.isChecked())   // <-- Potrebbe causare errore in runtime, da verificare eventualmente || Risolto
                         writeResources(username, password);
-                } catch (NullPointerException e) {} //non c'e' bisogno di fare nulla di particolare. Il try catch serve eventualmente per il login da file
+                } catch (NullPointerException ignored) {} //non c'e' bisogno di fare nulla di particolare. Il try catch serve eventualmente per il login da file
                 //crea utente e poi fai il login
                 //istanzia utente
                 Intent mainIntent = new Intent(this, MainActivity.class);
