@@ -5,6 +5,7 @@ import static com.snesnopic.ermes.control.Connessione.thisUser;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
 import android.text.method.SingleLineTransformationMethod;
@@ -16,9 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.snesnopic.ermes.R;
-import com.snesnopic.ermes.control.Connessione;
-
-import java.io.File;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 public class SettingsDialog extends DialogFragment {
     @NonNull
@@ -52,25 +52,44 @@ public class SettingsDialog extends DialogFragment {
         newUserNameEditText.setText(thisUser.username);
         builder.setMessage(R.string.settings)
                 .setPositiveButton(R.string.edit, (dialog, id) -> {
+                    boolean changeusername = false;
+                    boolean changepassword = false;
                     String newUsername = newUserNameEditText.getText().toString();
                     if(!newUsername.equals(thisUser.username) && newUsername.length() > 5) {
                         if(connection.changeUsername(newUsername))
+                        {
+                            changeusername = true;
                             Snackbar.make(view, "Il tuo nuovo username è: "+newUsername, Snackbar.LENGTH_LONG).show();
+                        }
                     }
                     String newPassword = newPasswordEditText.getText().toString();
                     if(!newPassword.equals(thisUser.password) && newPassword.length() > 5) {
                         if(connection.changeUserPassword(newPassword))
+                        {
+                            changepassword = true;
                             Snackbar.make(view,"Password modificata!",Snackbar.LENGTH_LONG).show();
+                        }
 
+                    }
+                    try {
+                        OutputStreamWriter write = new OutputStreamWriter(getContext().openFileOutput("resources", Context.MODE_PRIVATE));     //apre il file resources om scrittura
+                        if(changeusername)
+                            write.write(newUsername);
+                        else
+                            write.write(thisUser.username);
+                        write.write(10);
+                        if(changepassword)
+                            write.write(newPassword);
+                        else
+                            write.write(thisUser.password);
+                        write.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 })
                 .setNegativeButton(R.string.cancel, (dialog, id) -> {
                     //non succede nulla
                 });
         return builder.create();
-    }
-
-    private void writeResources(boolean writeUsername, boolean writePassword) {
-
     }
 }
