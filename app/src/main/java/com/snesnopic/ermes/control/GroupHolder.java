@@ -14,7 +14,7 @@ import com.snesnopic.ermes.datapkg.Group;
 import com.snesnopic.ermes.datapkg.Message;
 import java.time.format.DateTimeFormatter;
 
-public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener {
     private final TextView groupName;
     private final TextView lastMessage;
     private final TextView dateTime;
@@ -27,6 +27,7 @@ public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClick
         lastMessage = itemView.findViewById(R.id.txt_group_lastmessage);
         dateTime = itemView.findViewById(R.id.txt_group_datetime);
         itemView.setOnClickListener(this);
+        itemView.setOnLongClickListener(this);
     }
     public void bindGroup(Group g)
     {
@@ -66,5 +67,24 @@ public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClick
                         .show();
             }
         }
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        if (this.g != null) {
+            int alertMessage;
+            if(g.userid == Connessione.thisUser.userid) //se l'utente è il creatore del gruppo
+                alertMessage = R.string.delete_group_alert; //messaggio di conferma eliminazione gruppo
+            else
+                alertMessage = R.string.leave_group_alert; //messaggio di conferma lasciare gruppo
+            new AlertDialog.Builder(v.getContext()).setMessage(alertMessage)
+                    .setNegativeButton(android.R.string.no, null)
+                    .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                        //TODO: funzione che lascia/cancella gruppo
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+        return true; //necessario, se ritorna false chiama anche il OnClick normale
     }
 }
