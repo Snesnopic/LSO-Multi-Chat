@@ -55,7 +55,12 @@ public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClick
                 new AlertDialog.Builder(v.getContext()).setMessage(R.string.do_you_want_to_join)
                         .setNegativeButton(android.R.string.no, null)
                         .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                            LoginActivity.connection.makeJoinRequest(g);
+                            if(!LoginActivity.connection.makeJoinRequest(g))
+                                new AlertDialog.Builder(v.getContext()).setMessage(R.string.join_error)
+                                        .setNegativeButton(android.R.string.no, null)
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                        .show();
+
                         })
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
