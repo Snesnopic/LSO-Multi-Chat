@@ -26,4 +26,6 @@
     <string name="old_password">Old Password</string>
     <string name="show">Show</string>
     <string name="new_password">New Password</string>
+    <string name="delete_group_alert">Do you want to permanently delete this group?</string>
+    <string name="leave_group_alert">Do you want to leave this group?</string>
 </resources>
