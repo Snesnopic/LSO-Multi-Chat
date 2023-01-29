@@ -101,11 +101,9 @@ public class Connessione extends Thread {
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+str);
                 while(!ok.equals("-80"));
             }
-            return;
         });
         t.start();
         while(t.isAlive());
-        return;
     }
 
     private void send(int n) {
@@ -115,11 +113,9 @@ public class Connessione extends Thread {
                 while(!recv().equals("-80"));
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+n);
             }
-            return;
         });
         t.start();
         while(t.isAlive());
-        return;
     }
 
     private String recv() {
@@ -127,12 +123,11 @@ public class Connessione extends Thread {
         Thread t = new Thread(() -> {
             if (isConnected) {
                 try {
-
                     result = bf.readLine();
                     System.out.println("++++++++MESSAGGIO LETTO++++++++++\n"+result);
-                    return;
                 }
-                catch (Exception e) { return;}
+                catch (Exception ignored) {
+                }
             }
         });
         t.start();
@@ -414,8 +409,7 @@ public class Connessione extends Thread {
         send(thisUser.userid);
         send(g.id);
         int response = clearResponse(recv());
-        if(response == 1) return true;
-        else return false;
+        return response == 1;
     }
 
     public boolean requestHandler(Group g, int userID, boolean accepted) {
@@ -445,8 +439,7 @@ public class Connessione extends Thread {
                 while(isRunning) {
                     canSend = false;
                     String buff = recv();
-                    if(!buff.equals("-777")) continue;
-                    else if(buff.equals("-777")) {
+                    if(buff.equals("-777")) {
                         Message msg = new Message();
                         msg.senderUsername = recv();
                         msg.time = LocalDateTime.now();
@@ -464,13 +457,11 @@ public class Connessione extends Thread {
                                 }
                             }
                         }
-                    } else continue;
+                    }
                 }
-
                 canSend = true;
             }
             System.out.println("Connessione assente!");
-            return;
         });
         isRunning = true;
         t.start();
