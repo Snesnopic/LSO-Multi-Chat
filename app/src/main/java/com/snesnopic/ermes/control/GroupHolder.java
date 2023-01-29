@@ -71,7 +71,7 @@ public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClick
 
     @Override
     public boolean onLongClick(View v) {
-        if (this.g != null) {
+        if (this.g != null && g.accessPermitted) {
             int alertMessage;
             if(g.userid == Connessione.thisUser.userid) //se l'utente è il creatore del gruppo
                 alertMessage = R.string.delete_group_alert; //messaggio di conferma eliminazione gruppo
