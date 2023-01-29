@@ -17,6 +17,8 @@ import com.snesnopic.ermes.control.Connessione;
 import com.snesnopic.ermes.control.MessageAdapter;
 import com.snesnopic.ermes.datapkg.Group;
 import com.snesnopic.ermes.datapkg.Message;
+
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -64,7 +66,11 @@ public class ChatActivity extends AppCompatActivity {
                 break;
             }
         }
-        connection.chatThread(i);
+        try {
+            connection.chatThread(i);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Group finalActualGroup = actualGroup;
         sendButton.setOnClickListener(v -> {
             connection.sendMessage(chatText.getText().toString(), finalActualGroup);

@@ -8,11 +8,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class Connessione extends Thread {
     static PrintWriter pw = null;
@@ -20,7 +20,6 @@ public class Connessione extends Thread {
     static int staticport;
     private static boolean isConnected = false;
     private BufferedReader bf = null;
-    private Socket s;
     private static Connessione instance;
     private String result = "";
     public static User thisUser = new User("Utente 1","Password");
@@ -31,8 +30,8 @@ public class Connessione extends Thread {
     public static ArrayList<Request> requests;
     static Message messaggio;
     private Thread t;
-    private boolean mutex = true;
-    private String buffer;
+    private boolean isRunning = false;
+    private boolean canSend = true;
 
     public static Connessione getInstance(String hostname, int port) {
         if (instance == null) {
@@ -48,7 +47,8 @@ public class Connessione extends Thread {
     public void run() {
         while (!isConnected) {
             try {
-                s = new Socket(statichostname, staticport);
+                Socket s = new Socket(statichostname, staticport);
+                s.setSoTimeout(250);
                 isConnected = true;
                 pw = new PrintWriter(s.getOutputStream(), true);
                 bf = new BufferedReader(new InputStreamReader(s.getInputStream()));
@@ -111,16 +111,8 @@ public class Connessione extends Thread {
     private void send(int n) {
         Thread t = new Thread(() -> {
             if (isConnected) {
-
                 pw.println(n);
-                try {
-                    String ok = recv();
-                    while(!ok.equals("-80"));
-                } catch(NullPointerException e) {
-                    e.printStackTrace();
-                    return;
-                }
-
+                while(!recv().equals("-80"));
                 System.out.println("++++++++MESSAGGIO INVIATO++++++++++\n"+n);
             }
             return;
@@ -131,14 +123,16 @@ public class Connessione extends Thread {
     }
 
     private String recv() {
+
         Thread t = new Thread(() -> {
             if (isConnected) {
                 try {
+
                     result = bf.readLine();
                     System.out.println("++++++++MESSAGGIO LETTO++++++++++\n"+result);
                     return;
                 }
-                catch (IOException e) {e.printStackTrace(); return;}
+                catch (Exception e) { return;}
             }
         });
         t.start();
@@ -153,7 +147,7 @@ public class Connessione extends Thread {
     }
 
     public ArrayList<Group> getRoomJoined(){
-            myGroups = new ArrayList<>();
+        myGroups = new ArrayList<>();
         try {
             send(2);
             String response = recv();
@@ -229,6 +223,7 @@ public class Connessione extends Thread {
             for(int i = 0; i < j; i++) buff2[i] = buff[i];
 
             String parsing = String.valueOf(buff2);
+            System.out.println("+++++DEBUG: Sono in cleared response, sono parsing: "+parsing+"Sono Integer parsing: "+Integer.parseInt(parsing));
             return Integer.parseInt(parsing);
         }
     }
@@ -398,26 +393,19 @@ public class Connessione extends Thread {
 
         String time = LocalDateTime.now().toString();
 
-        send(6);
-        send(text);
-        send(thisUser.username);
-        send(time.substring(0, 16));
-        send(thisUser.userid);
-        send(actualRoom.id);
-        if(mutex) {
-            mutex = false;
-            for(int i = 0; i < myGroups.size(); i++) {
-                if(myGroups.get(i).id == actualRoom.id) {
-                    Message newmsg = new Message();
-                    newmsg.time = LocalDateTime.now();
-                    newmsg.message = text;
-                    newmsg.senderUsername = thisUser.username;
-                    myGroups.get(i).messages.add(newmsg);
-                    ChatActivity.adapter.notifyDataSetChanged();
-                }
-            }
 
-            mutex = true;
+        if(chatThreadHandler(true)) {
+            send(6);
+            System.out.println(text);
+            send(text);
+            send(thisUser.username);
+            send(time.substring(0, 16));
+            send(thisUser.userid);
+            send(actualRoom.id);
+            chatThreadHandler(false);
+        }
+        else {
+            System.out.println("Impossibile inviare il messaggio. Riprovare.");
         }
     }
 
@@ -425,7 +413,6 @@ public class Connessione extends Thread {
         send(12);
         send(thisUser.userid);
         send(g.id);
-
         int response = clearResponse(recv());
         if(response == 1) return true;
         else return false;
@@ -452,44 +439,70 @@ public class Connessione extends Thread {
         }
     }
 
-    public void chatThread(int index) {
+    public void chatThread(int index) throws IOException {
         t = new Thread(() -> {
             while(isConnected) {
-                buffer = recv();
-                if(!buffer.equals("-777")) continue;
-                else {
-                    if(mutex) {
-                        mutex = false;
+                while(isRunning) {
+                    canSend = false;
+                    String buff = recv();
+                    if(!buff.equals("-777")) continue;
+                    else if(buff.equals("-777")) {
                         Message msg = new Message();
                         msg.senderUsername = recv();
                         msg.time = LocalDateTime.now();
                         msg.message = recv();
-                        myGroups.get(index).messages.add(msg);
-                        mutex = true;
-                        ChatActivity.adapter.notifyDataSetChanged();
-                    }
+                        int groupID = clearResponse(recv());
+                        for(int i = 0; i < myGroups.size(); i++){
+                            if(myGroups.get(i).id == groupID)  {
+                                myGroups.get(i).messages.add(msg);
+                                if(i == index)  {
+                                    try {
+                                        ChatActivity.adapter.notifyDataSetChanged();
+                                    } catch (Exception e) {
+                                        System.out.println("Ignoro le cagate delle exception. Godo");
+                                    }
+                                }
+                            }
+                        }
+                    } else continue;
                 }
+
+                canSend = true;
             }
             System.out.println("Connessione assente!");
             return;
-
         });
-
+        isRunning = true;
         t.start();
     }
 
-    public boolean chatThreadStop() {
-        if(t.isAlive()) {
-            try {
-                t.interrupt();
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("--------ATTENZIONE: Thread chat non chiuso");
+    public boolean chatThreadHandler(boolean kill) {
+        if(kill) {
+            if(isRunning) {
+                try {
+                    isRunning = false;
+                    while(!canSend);
+                    return true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("--------ATTENZIONE: Thread chat non chiuso");
+                    return false;
+                }
+            }
+            else return false;
+        } else {
+            if(isRunning)  {
+                System.out.println("------------ATTENZIONE: Thread chat gia' attivo!");
                 return false;
             }
+            else {
+                isRunning = true;
+                System.out.println("Thread acceso");
+                return true;
+            }
         }
-        else return false;
+
     }
+
 }
 

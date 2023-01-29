@@ -32,9 +32,15 @@ public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClick
     {
         this.g = g;
         groupName.setText(g.name);
-        Message message = g.messages.get(g.messages.size() - 1);
-        lastMessage.setText(message.message);
-        dateTime.setText(message.time.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+        try {
+            Message message = g.messages.get(g.messages.size() - 1);
+            lastMessage.setText(message.message);
+            dateTime.setText(message.time.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+        } catch (Exception e) {
+            lastMessage.setText("Errore query messaggi");
+            dateTime.setText("99:99:99");
+        }
+
     }
     @Override
     public void onClick(View v) {
