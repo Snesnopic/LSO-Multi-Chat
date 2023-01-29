@@ -52,7 +52,6 @@ public class ChatActivity extends AppCompatActivity {
         ChatActivity.this.setTitle(groupName);
         Group actualGroup = new Group();
 
-
         ArrayList<Message> messages = GetMessagesFromGroup(groupName);
         adapter = new MessageAdapter(this, messages.size(),messages);
         list.setLayoutManager(new LinearLayoutManager(this));
@@ -73,8 +72,10 @@ public class ChatActivity extends AppCompatActivity {
         }
         Group finalActualGroup = actualGroup;
         sendButton.setOnClickListener(v -> {
+            sendButton.setEnabled(false);
             connection.sendMessage(chatText.getText().toString(), finalActualGroup);
             System.out.println("Messaggio inviato");
+            sendButton.setEnabled(true);
         });
     }
 
