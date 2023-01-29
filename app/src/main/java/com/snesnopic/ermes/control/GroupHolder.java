@@ -1,5 +1,7 @@
 package com.snesnopic.ermes.control;
 
+import static com.snesnopic.ermes.activitypkg.LoginActivity.connection;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -56,7 +58,7 @@ public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClick
                 new AlertDialog.Builder(v.getContext()).setMessage(R.string.do_you_want_to_join)
                         .setNegativeButton(android.R.string.no, null)
                         .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                            if(!LoginActivity.connection.makeJoinRequest(g))
+                            if(!connection.makeJoinRequest(g))
                                 new AlertDialog.Builder(v.getContext()).setMessage(R.string.join_error)
                                         .setNegativeButton(android.R.string.no, null)
                                         .setIcon(android.R.drawable.ic_dialog_alert)
@@ -81,6 +83,7 @@ public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClick
                     .setNegativeButton(android.R.string.no, null)
                     .setPositiveButton(android.R.string.yes, (dialog, which) -> {
                         //TODO: funzione che lascia/cancella gruppo
+                        connection.removeGroup(g);
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();

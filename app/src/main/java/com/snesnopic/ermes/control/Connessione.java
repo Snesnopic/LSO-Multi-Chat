@@ -434,6 +434,7 @@ public class Connessione extends Thread {
     }
 
     public void chatThread(int index) throws IOException {
+        send(999);
         t = new Thread(() -> {
             while(isConnected) {
                 while(isRunning) {
@@ -490,6 +491,48 @@ public class Connessione extends Thread {
                 isRunning = true;
                 System.out.println("Thread acceso");
                 return true;
+            }
+        }
+    }
+
+    public boolean stopChat() {
+        send(888);
+        t.interrupt();
+        return t.isAlive();
+    }
+
+    public void removeGroup(Group g) {
+        if(g.userid == thisUser.userid) {
+            send(13);
+            send(g.id);
+
+            if(recv().equals("1")) {
+                for(int i = 0; i < myGroups.size(); i++) {
+                    if(myGroups.get(i).id == g.id) {
+                        otherGroups.add(g);
+                        myGroups.remove(i);
+                        break;
+                    }
+                }
+            } else {
+                System.out.println("Gruppo non eliminato.");
+            }
+        }
+        else {
+            send(14);
+            send(thisUser.userid);
+            send(g.id);
+
+            if(recv().equals("1")) {
+                for(int i = 0; i < myGroups.size(); i++) {
+                    if(myGroups.get(i).id == g.id) {
+                        otherGroups.add(g);
+                        myGroups.remove(i);
+                        break;
+                    }
+                }
+            } else {
+                System.out.println("Gruppo non eliminato.");
             }
         }
 
