@@ -4,7 +4,6 @@
     <string name="username">Username</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
-    <string name="app_logo_text">App Logo</string>
     <string name="password">Password</string>
     <string name="fields_error">Check your input and retry!</string>
     <string name="my_groups">My groups</string>
@@ -12,9 +11,6 @@
     <string name="requests">Requests</string>
     <string name="insert_group_name">Group name</string>
     <string name="group_name_hint">Gaming group</string>
-    <string name="title_activity_main2">MainActivity2</string>
-    <string name="todo">TODO</string>
-    <string name="todog">TODO</string>
     <string name="newGroupButton">Create new group</string>
     <string name="logout">Logout</string>
     <string name="sendMessage">Send</string>
@@ -22,27 +18,12 @@
     <string name="login_failed">Login failed, try again</string>
     <string name="settings">Settings</string>
     <string name="edit">Edit</string>
-
+    <string name="join_error">Failed to send request!</string>
     <string name="do_you_want_to_join">Do you want to join this group?</string>
-    <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="create">Create</string>
     <string name="cancel">Cancel</string>
     <string name="old_password">Old Password</string>
     <string name="show">Show</string>
     <string name="new_password">New Password</string>
-    >
-
 </resources>
