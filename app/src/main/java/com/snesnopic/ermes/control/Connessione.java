@@ -168,7 +168,7 @@ public class Connessione extends Thread {
     }
 
     public ArrayList<Group> getOtherGroups() {
-        ArrayList<Group> otherRooms = new ArrayList<>();
+        otherGroups = new ArrayList<>();
         try {
             send(3);
             int j = clearResponse(recv());
@@ -179,20 +179,20 @@ public class Connessione extends Thread {
                 a.userid = clearResponse(recv());
                 a.name = recv();
                 a.accessPermitted = false;
-                otherRooms.add(a);
+                otherGroups.add(a);
             }
-            for(int i = 0; i < otherRooms.size(); i++) {
-                otherRooms.get(i).messages = getAllMessages(otherRooms.get(i).id);
+            for(int i = 0; i < otherGroups.size(); i++) {
+                otherGroups.get(i).messages = getAllMessages(otherGroups.get(i).id);
                 System.out.println("Sono i: "+i);
             }
 
-            return otherRooms;
+            return otherGroups;
         } catch (NumberFormatException e) {
             System.out.println("--------------- Errore lettura gruppi esterni\n");
             e.printStackTrace();
         }
 
-        return otherRooms;
+        return otherGroups;
     }
 
     private int clearResponse(String response) {
