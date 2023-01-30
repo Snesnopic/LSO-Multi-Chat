@@ -39,6 +39,7 @@ int main()
     serverAddr.sin_port = htons(PORTNUMBER);
     // Bind della socket
     int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+    int bindOK = -1;
 
     if(bind(serverSocket,(struct sockaddr*)&serverAddr,sizeof(serverAddr)) == -1)
     {
@@ -480,7 +481,7 @@ int networkMessageHandler(int scelta, PGconn *conn, int sock)
                 return -2;
             }
             
-        case 12:
+        case 12: //manda richiesta gruppo
             client_message = (char*)malloc(10*sizeof(char));
             buff = (char*)malloc(10*sizeof(char));
             buff2 = (char*)malloc(10*sizeof(char));
@@ -495,26 +496,47 @@ int networkMessageHandler(int scelta, PGconn *conn, int sock)
             if(status) return 1;
             else return -1;
             
-        case 13:
+        case 13: //elimina gruppo
         
         client_message = (char*)malloc(sizeof(char)*10);
-        int case13gid = atoi(readSock2(sock, client_message));
+        int case13gid = readSockN(sock, client_message);
         free(client_message);
         
         status = deleteGroup(case13gid, conn);
         if(status) return 1;
         else return -1;
-        
-        case 14:
+         
+        case 14:    //lascia gruppo
         
         client_message = (char*)malloc(sizeof(char)*10);
-        int gid = atoi(readSock2(sock, client_message));
+        int userid = readSockN(sock, client_message);
+        
+        int gid = readSockN(sock, client_message);
         memset(client_message, 0, 10);
-        int userid = atoi(readSock2(sock, client_message));
+        
         
         status = leaveGroup(gid, userid, conn);
         if(status) return 1;
         else return -1;
+        
+        case 15:  //accetta richiesta gruppo
+            client_message = (char*)malloc(10*sizeof(char));
+            userid = readSockN(sock, client_message);
+            memset(client_message, 0, 10);
+            gid = readSockN(sock, client_message);
+            free(client_message);
+            
+            return addUser(userid, gid, conn);
+            
+        case 16:  //rifiuta richiesta gruppo
+            client_message = (char*)malloc(10*sizeof(char));
+            userid = readSockN(sock, client_message);
+            memset(client_message, 0, 10);
+            gid = readSockN(sock, client_message);
+            free(client_message);
+            
+            return refuseUser(userid, gid, conn);
+        
         
         case 999:
             int j;
@@ -615,6 +637,25 @@ char* readSock2(int socket, char *str) {
     fflush(stdout);
     return newstr;
 }
+
+int readSockN(int socket, char *str) {
+
+    int read_size = read(socket, str, 10);
+    read_size = atoi(str);
+
+    /*
+    for(i = 0; str[i] != '\n' && i < strlen(str); i++) {
+        newstr[i] = str[i];
+    }
+    strcat(newstr, "\0"); */
+    printf("Sono la stringa convertita dalla nuova funzione. Valore: %d\n", read_size);
+    
+    writeSock2(socket, "-80");
+    
+    fflush(stdout);
+    return read_size;
+}
+
 
 long writeSock2(int socket, char *str)
 {
