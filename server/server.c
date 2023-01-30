@@ -583,7 +583,7 @@ void *connection_handler(void *socket_desc)
         itoa(msg, mess);
         fflush(stdout);
         printf("messaggio della send: %s\n", mess);
-        if(msg != -2) writeSock(sock, mess);
+        if(msg != -2) writeSock2(sock, mess);
 
         if(read_size == 0)
         {
