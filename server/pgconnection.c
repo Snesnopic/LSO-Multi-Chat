@@ -8,7 +8,7 @@
 PGconn* dbConnection(PGconn *conn)
 {
     //ATTENZIONE: i dati del db sono relativi, modificateli in base al vostro pc
-    conn = PQconnectdb("dbname=ErmesChatDB host=localhost user=postgres password=gheovgos");
+    conn = PQconnectdb("dbname=ermeschatdb host=localhost user=gheovgos password=gheovgos");
     if(PQstatus(conn) == CONNECTION_BAD)
     {
         printf("Connessione al db non riuscita\n");
@@ -154,12 +154,13 @@ int delete(char table_name [], char condition [], PGconn *conn)
     strcpy(sql, "");
     strcat(sql, "DELETE FROM ");
     strcat(sql, table_name);
-    if(strcmp(condition, "") == 0)
+    if(strcmp(condition, "") != 0)
     {
         strcat(sql, " WHERE ");
         strcat(sql, condition);
     }
     strcat(sql, ";");
+    puts(sql);
     printf("COMANDO SQL: %s\n", sql);
     res = PQexec(conn, sql);
     if(PQresultStatus(res) != PGRES_COMMAND_OK)

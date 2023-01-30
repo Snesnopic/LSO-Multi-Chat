@@ -37,7 +37,9 @@ void reverse(char s[]);
 
 GroupMessage* getGroupMessages(int group_id, PGconn *conn, int *row);
 
-int deleteGroup(char groupname[], PGconn* conn);
+int deleteGroup(int groupID, PGconn* conn);
+
+int leaveGroup(int groupID, int userID, PGconn* conn);
 
 GroupRequest* getGroupRequests(int group_id, int user_id, PGconn *conn, int *row);
 

@@ -148,16 +148,20 @@ GroupMessage* getGroupMessages(int group_id, PGconn *conn, int *row)
     return messaggi;
 }
 
-int deleteGroup(char groupname[], PGconn* conn)
+int deleteGroup(int groupID, PGconn* conn)
 {
     if(conn == NULL)
     {
         printf("connessione con DB persa o assente\n");
         exit(0);
     }
-    char where_condition[100];
-    strcpy(where_condition, " roomname = ");
-    strcat(where_condition, groupname);
+    char* where_condition = (char*)malloc(250*sizeof(char));
+    char* roomID = (char*)malloc(10*sizeof(char));
+    itoa(groupID, roomID);
+    memset(where_condition, 0, 250);
+    strcpy(where_condition, " roomid = ");
+    strcat(where_condition, roomID);
+    puts(where_condition);
     if(delete("room", where_condition, conn) == 0)
     {
         printf("Gruppo non esistente\n");
@@ -169,6 +173,41 @@ int deleteGroup(char groupname[], PGconn* conn)
         return 1;
     }
 }
+
+int leaveGroup(int groupID, int userID, PGconn* conn)
+{
+    if(conn == NULL)
+    {
+        printf("connessione con DB persa o assente\n");
+        exit(0);
+    }
+    char* where_condition = (char*)malloc(250*sizeof(char));
+    char* roomID = (char*)malloc(10*sizeof(char));
+    char* userid = (char*)malloc(10*sizeof(char));
+    memset(where_condition, 0, 250);
+    memset(roomID, 0, 10);
+    memset(userid, 0, 10);
+    
+    itoa(userID, userid);
+    itoa(groupID, roomID);
+
+    strcpy(where_condition, " roomid = ");
+    strcat(where_condition, roomID);
+    strcat(where_condition, " AND userid = ");
+    strcat(where_condition, userid);
+    puts(where_condition);
+    if(delete("roomusers", where_condition, conn) == 0)
+    {
+        printf("Gruppo non esistente\n");
+        return 0;
+    }
+    else
+    {
+        printf("Cancellazione avvenuta\n");
+        return 1;
+    }
+}
+
 
 GroupRequest* getGroupRequests(int group_id, int user_id, PGconn *conn, int *row)
 {

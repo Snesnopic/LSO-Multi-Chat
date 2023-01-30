@@ -494,6 +494,27 @@ int networkMessageHandler(int scelta, PGconn *conn, int sock)
             free(buff2);
             if(status) return 1;
             else return -1;
+            
+        case 13:
+        
+        client_message = (char*)malloc(sizeof(char)*10);
+        int case13gid = atoi(readSock2(sock, client_message));
+        free(client_message);
+        
+        status = deleteGroup(case13gid, conn);
+        if(status) return 1;
+        else return -1;
+        
+        case 14:
+        
+        client_message = (char*)malloc(sizeof(char)*10);
+        int gid = atoi(readSock2(sock, client_message));
+        memset(client_message, 0, 10);
+        int userid = atoi(readSock2(sock, client_message));
+        
+        status = leaveGroup(gid, userid, conn);
+        if(status) return 1;
+        else return -1;
         
         case 999:
             int j;
