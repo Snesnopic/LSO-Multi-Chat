@@ -26,7 +26,7 @@ public class Connessione extends Thread {
     public static User thisUser = new User("Utente 1","Password");
     static Group thisRoom;
     public static ArrayList<Group> myGroups;
-    public static ArrayList<Group> otherGroups;
+    public static ArrayList<Group> otherGroups = new ArrayList<>();
     public static ArrayList<Group> requestGroups;
     public static ArrayList<Request> requests;
     static Message messaggio;
