@@ -1,14 +1,15 @@
 package com.snesnopic.ermes.control;
 
 import com.snesnopic.ermes.activitypkg.ChatActivity;
-import com.snesnopic.ermes.datapkg.*;
-
+import com.snesnopic.ermes.datapkg.Group;
+import com.snesnopic.ermes.datapkg.Message;
+import com.snesnopic.ermes.datapkg.Request;
+import com.snesnopic.ermes.datapkg.User;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -502,41 +503,22 @@ public class Connessione extends Thread {
     }
 
     public void removeGroup(Group g) {
-        if(g.userid == thisUser.userid) {
-            send(13);
-            send(g.id);
-
-            if(recv().equals("1")) {
-                for(int i = 0; i < myGroups.size(); i++) {
-                    if(myGroups.get(i).id == g.id) {
-                        otherGroups.add(g);
-                        myGroups.remove(i);
-                        break;
-                    }
-                }
-            } else {
-                System.out.println("Gruppo non eliminato.");
-            }
-        }
-        else {
+        if (g.userid != thisUser.userid) {
             send(14);
             send(thisUser.userid);
-            send(g.id);
-
-            if(recv().equals("1")) {
-                for(int i = 0; i < myGroups.size(); i++) {
-                    if(myGroups.get(i).id == g.id) {
-                        otherGroups.add(g);
-                        myGroups.remove(i);
-                        break;
-                    }
+        } else
+            send(13);
+        send(g.id);
+        if (recv().equals("1")) {
+            for (int i = 0; i < myGroups.size(); i++) {
+                if (myGroups.get(i).id == g.id) {
+                    otherGroups.add(g);
+                    myGroups.remove(i);
+                    break;
                 }
-            } else {
-                System.out.println("Gruppo non eliminato.");
             }
-        }
-
+        } else
+            System.out.println("Gruppo non eliminato.");
     }
 
 }
-
