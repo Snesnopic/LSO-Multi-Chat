@@ -384,3 +384,61 @@ void getRequestGroups(PGconn* conn, char* creatorUserID, int *row, Group** grupp
     fflush(stdout);
 
 }
+
+int addUser(int userid, int groupid, PGconn *conn) {
+    if(conn == NULL)
+    {
+        printf("connessione con DB persa o assente\n");
+        exit(0);
+    }
+    char* usid = (char*)malloc(10*sizeof(char));
+    char* insertData = (char*)malloc(300*sizeof(char));
+    char* groupID = (char*)malloc(10*sizeof(char));
+    memset(usid, 0, 10);
+    memset(insertData, 0, 300);
+    memset(groupID, 0, 10);
+    
+    itoa(userid, usid);
+    itoa(groupid, groupID);
+
+    strcat(insertData, usid);
+    strcat(insertData, ", ");
+    strcat(insertData, groupID);
+
+    return insert("room", insertData, conn);
+}
+
+int refuseUser(int userid, int groupid, PGconn *conn) {
+
+    if(conn == NULL)
+    {
+        printf("connessione con DB persa o assente\n");
+        exit(0);
+    }
+    
+    char* where_condition = (char*)malloc(250*sizeof(char));
+    char* roomID = (char*)malloc(10*sizeof(char));
+    char* userID = (char*)malloc(10*sizeof(char));
+    memset(where_condition, 0, 250);
+    memset(roomID, 0, 10);
+    memset(userID, 0, 10);
+    
+    itoa(userid, userID);
+    itoa(groupid, roomID);
+
+    strcpy(where_condition, " roomid = ");
+    strcat(where_condition, roomID);
+    strcat(where_condition, " AND userid = ");
+    strcat(where_condition, userid);
+    puts(where_condition);
+    if(delete("joinrequest", where_condition, conn) == 0)
+    {
+        printf("Gruppo non esistente\n");
+        return 0;
+    }
+    else
+    {
+        printf("Cancellazione avvenuta\n");
+        return 1;
+    }
+}

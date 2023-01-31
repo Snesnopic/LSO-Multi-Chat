@@ -184,7 +184,6 @@ public class Connessione extends Thread {
             }
             for(int i = 0; i < otherGroups.size(); i++) {
                 otherGroups.get(i).messages = getAllMessages(otherGroups.get(i).id);
-                System.out.println("Sono i: "+i);
             }
 
             return otherGroups;
@@ -415,7 +414,7 @@ public class Connessione extends Thread {
 
     public boolean requestHandler(Group g, int userID, boolean accepted) {
         if(accepted) {
-            send(13);
+            send(15);
             send(userID);
             send(g.id);
 
@@ -424,7 +423,7 @@ public class Connessione extends Thread {
             else return false;
         }
         else {
-            send(14);
+            send(16);
             send(userID);
             send(g.id);
 
@@ -509,10 +508,11 @@ public class Connessione extends Thread {
         } else
             send(13);
         send(g.id);
-        if (recv().equals("1")) {
+        if (clearResponse(recv()) == 1) {
             for (int i = 0; i < myGroups.size(); i++) {
                 if (myGroups.get(i).id == g.id) {
-                    otherGroups.add(g);
+                    if(!otherGroups.isEmpty()) otherGroups.add(g);
+
                     myGroups.remove(i);
                     break;
                 }
@@ -520,5 +520,4 @@ public class Connessione extends Thread {
         } else
             System.out.println("Gruppo non eliminato.");
     }
-
 }

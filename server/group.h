@@ -50,3 +50,7 @@ int messaggioGruppo(char message[], int user_id, int group_id, char *timestamp, 
 int creaGruppo(char group_name[], int creatorUserId, PGconn *conn);
 
 int modificaNomeGruppo(char newGroupName[], int group_id, PGconn *conn);
+
+int addUser(int userid, int groupid, PGconn *conn);
+
+int refuseUser(int userid, int groupid, PGconn *conn);
