@@ -1,19 +1,14 @@
 package com.snesnopic.ermes.activitypkg;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-
 import static com.snesnopic.ermes.activitypkg.LoginActivity.connection;
 import static com.snesnopic.ermes.control.Connessione.myGroups;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.snesnopic.ermes.R;
-import com.snesnopic.ermes.control.Connessione;
 import com.snesnopic.ermes.control.MessageAdapter;
 import com.snesnopic.ermes.datapkg.Group;
 import com.snesnopic.ermes.datapkg.Message;
@@ -56,8 +51,8 @@ public class ChatActivity extends AppCompatActivity {
         adapter = new MessageAdapter(this, messages.size(),messages);
         list.setLayoutManager(new LinearLayoutManager(this));
         list.setAdapter(adapter);
-        chatText = (EditText) findViewById(R.id.edit_gchat_message);
-        sendButton = (Button) findViewById(R.id.button_gchat_send);
+        chatText = findViewById(R.id.edit_gchat_message);
+        sendButton = findViewById(R.id.button_gchat_send);
         int i;
         for(i = 0; i < myGroups.size(); i++) {
             if(myGroups.get(i).name.equals(groupName))  {
@@ -80,6 +75,10 @@ public class ChatActivity extends AppCompatActivity {
     }
 
 
-
-
+    @Override
+    protected void onStop() {
+        connection.stopChat();
+        super.onStop();
+        finish(); //per essere sicuro che l'activity non sia ancora nello stack
+    }
 }
