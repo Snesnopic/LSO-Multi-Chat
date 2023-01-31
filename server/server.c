@@ -214,12 +214,10 @@ int networkMessageHandler(int scelta, PGconn *conn, int sock)
             
         case 4: 
             client_message = (char*)malloc(10*sizeof(char));
-            buff = readSock2(sock, client_message);
-            puts(buff);
-            int groupID = -1;
-            free(client_message);
+            buff = (char*)malloc(10*sizeof(char));
+            int groupID;
 
-            groupID = atoi(buff);
+            groupID = readSockN(sock, client_message);
             printf("group id: %d\n", groupID); 
             messaggi = getGroupMessages(groupID, conn, &row); //ottiene tutti i messaggi del gruppo            
             memset(buff, 0, 10);
@@ -550,13 +548,13 @@ int networkMessageHandler(int scelta, PGconn *conn, int sock)
                 }
             }
             
-            return 1;
+            return -2;
         case 888:
             for(int j = 0; j < 50; j++) {
                 if(socketInChat[j] == sock) socketInChat[j] = 0;
             }
             
-            return 1;
+            return -2;
         default:
             printf("Errore network message hanlder: valore di scelta non valido\n");
             return -2;
