@@ -251,39 +251,38 @@ int networkMessageHandler(int scelta, PGconn *conn, int sock)
             return -2;
         case 5:
             client_message = (char*)malloc(10*sizeof(char));
-            buff = readSock2(sock, client_message);
 
-            int group_ID = -1;
-            group_ID = atoi(buff);
+            int group_ID = readSockN(sock, client_message);
             printf("group id: %d\n", group_ID);
             memset(client_message, 0, 10);
-            free(buff);
             
-            buff = readSock2(sock, client_message);
-            int user_id = 0;
-            user_id = atoi(buff);
+            int user_id = readSockN(sock, client_message);
             printf("user id: %d\n", user_id);
-            free(client_message);
-            memset(buff, 0, 10);
+
 
             richieste = getGroupRequests(group_ID, user_id, conn, &row);
 
-            itoa(row, buff);
+            itoa(row, client_message);
 
-            writeSock2(sock, buff);
-            free(buff);
+            writeSock2(sock, client_message);
+            
+
             if(row > 0)
             {
+              
                 for(int j = 0; j < row; j++) {
+                  
                    writeSock2(sock, richieste[j].username);
-                   writeSock2(sock, richieste[j].userId);
+                   itoa(richieste[j].userId, client_message);
+                   writeSock2(sock, client_message);
                 }
                 
-                    
+                free(client_message);
                 printf("Richieste inviate\n");
                 return -2;
             }
             else {
+                free(client_message);
                 printf("Nessuna richiesta per questo gruppo: %d\n", row);
                 return -2;
             }
@@ -652,16 +651,8 @@ int readSockN(int socket, char *str) {
     int read_size = read(socket, str, 10);
     read_size = atoi(str);
 
-    /*
-    for(i = 0; str[i] != '\n' && i < strlen(str); i++) {
-        newstr[i] = str[i];
-    }
-    strcat(newstr, "\0"); */
-    printf("Sono la stringa convertita dalla nuova funzione. Valore: %d\n", read_size);
-    
     writeSock2(socket, "-80");
     
-    fflush(stdout);
     return read_size;
 }
 

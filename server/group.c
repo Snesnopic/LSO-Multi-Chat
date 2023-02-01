@@ -218,7 +218,7 @@ GroupRequest* getGroupRequests(int group_id, int user_id, PGconn *conn, int *row
     }
     char **queryResult = (char**)malloc(100 * sizeof(char*));
     for(int i = 0; i < 100; i++)
-        queryResult[i] = (char*)malloc(200*sizeof(char));
+    queryResult[i] = (char*)malloc(200*sizeof(char));
     char whereCondition[250] = " j.roomid = ";
     char buffer[33];
     itoa(group_id, buffer);
@@ -227,11 +227,15 @@ GroupRequest* getGroupRequests(int group_id, int user_id, PGconn *conn, int *row
     strcat(whereCondition, " AND j.userid = u.userid");
     queryResult = selectdb("u.username, j.userid, j.roomid", "joinrequest AS j, USERDATA AS u", whereCondition, conn, row, 3);
     GroupRequest *richieste = (GroupRequest*)malloc(*row * sizeof (GroupRequest));
+    for(int i = 0; i < *row; i++) richieste[i].username = (char*)malloc(200*sizeof(char));
+    
     int j = 0;
 
     for(int i = 0; i < *row; i = i + 1)
     {
-        richieste[i].username = queryResult[j];
+      
+        memset(richieste[i].username, 0, 200);
+        strcpy(richieste[i].username, queryResult[j]);
         j++;
         richieste[i].groupId = atoi(queryResult[j]);
         j++;
@@ -405,7 +409,7 @@ int addUser(int userid, int groupid, PGconn *conn) {
     strcat(insertData, ", ");
     strcat(insertData, groupID);
 
-    return insert("room", insertData, conn);
+    return insert("roomusers", insertData, conn);
 }
 
 int refuseUser(int userid, int groupid, PGconn *conn) {
