@@ -10,8 +10,12 @@
 #include "group.h"
 #include "pgconnection.h"
 #include "user.h"
+#include <signal.h>
 #define PORTNUMBER 8989
 #define MAXCLIENTS 50
+
+typedef void (*sighandler_t)(int);
+sighandler_t signal(int signum, sighandler_t handler);
 void *connection_handler(void *);
 
 int networkMessageHandler(int scelta, PGconn *conn, int socket);
@@ -19,13 +23,15 @@ long writeSock(int socket, char *str);
 int readSock(int socket, char *str);
 char* readSock2(int socket, char *str);
 long writeSock2(int socket, char *str);
+int readSockN(int socket, char *str);
+void stopServer(int signal);
 
 PGconn* conn = NULL;
 int userID = -1;
 int utentiConnessi[50] = {0};
 int globalConnection;
-int socketArray[50] = {0};
-int socketInChat[50] = {0};
+int socketArray[MAXCLIENTS] = {0};
+int socketInChat[MAXCLIENTS] = {0};
 
 
 
@@ -52,6 +58,11 @@ int main()
         printf("Errore nell'ascolto\n");
         return 1;
     }
+    
+    //invio dei signal handler
+    signal(SIGTSTP, stopServer);
+    signal(SIGTERM, stopServer);
+    signal(SIGINT, stopServer);
 
     // Array di thread
     pthread_t tid[MAXCLIENTS];
@@ -538,7 +549,7 @@ int networkMessageHandler(int scelta, PGconn *conn, int sock)
         
         case 999:
             int j;
-            for(j = 0; j < 50; j++) {
+            for(j = 0; j < MAXCLIENTS; j++) {
                 if(socketInChat[j] == 0) break;
             }
             for(int i = 0; i < 50; i++) {
@@ -550,7 +561,7 @@ int networkMessageHandler(int scelta, PGconn *conn, int sock)
             
             return -2;
         case 888:
-            for(int j = 0; j < 50; j++) {
+            for(int j = 0; j < MAXCLIENTS; j++) {
                 if(socketInChat[j] == sock) socketInChat[j] = 0;
             }
             
@@ -660,4 +671,14 @@ long writeSock2(int socket, char *str)
     long bytes = write(socket, str, strlen(str));
     write(socket, "\n", 1);
     return bytes;
+}
+
+void stopServer(int signal) {
+      printf("\nHo ricevuto un segnale di terminazione. Chiudo la socket..\n");
+      for(int i = 0; i < MAXCLIENTS; i++) {
+            if(socketArray[i] != 0) close(socketArray[i]);
+      }
+      
+      printf("Tutte le socket chiuse.\n");
+      exit(1);
 }
