@@ -160,7 +160,6 @@ int delete(char table_name [], char condition [], PGconn *conn)
         strcat(sql, condition);
     }
     strcat(sql, ";");
-    puts(sql);
     printf("COMANDO SQL: %s\n", sql);
     res = PQexec(conn, sql);
     if(PQresultStatus(res) != PGRES_COMMAND_OK)

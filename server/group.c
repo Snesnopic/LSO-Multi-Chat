@@ -397,7 +397,9 @@ int addUser(int userid, int groupid, PGconn *conn) {
     }
     char* usid = (char*)malloc(10*sizeof(char));
     char* insertData = (char*)malloc(300*sizeof(char));
+    char* deleteData = (char*)malloc(200*sizeof(char));
     char* groupID = (char*)malloc(10*sizeof(char));
+    memset(deleteData, 0, 200);
     memset(usid, 0, 10);
     memset(insertData, 0, 300);
     memset(groupID, 0, 10);
@@ -405,11 +407,19 @@ int addUser(int userid, int groupid, PGconn *conn) {
     itoa(userid, usid);
     itoa(groupid, groupID);
 
+    strcat(deleteData, " roomid = ");
+    strcat(deleteData, groupID);
+    strcat(deleteData, " AND userid = ");
+    strcat(deleteData, usid);
+    
+    
     strcat(insertData, usid);
     strcat(insertData, ", ");
     strcat(insertData, groupID);
-
+    
+    if(delete("joinrequest", deleteData, conn))
     return insert("roomusers", insertData, conn);
+    else return -1;
 }
 
 int refuseUser(int userid, int groupid, PGconn *conn) {
@@ -434,7 +444,6 @@ int refuseUser(int userid, int groupid, PGconn *conn) {
     strcat(where_condition, roomID);
     strcat(where_condition, " AND userid = ");
     strcat(where_condition, userid);
-    puts(where_condition);
     if(delete("joinrequest", where_condition, conn) == 0)
     {
         printf("Gruppo non esistente\n");

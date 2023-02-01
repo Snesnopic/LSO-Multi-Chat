@@ -529,12 +529,10 @@ int networkMessageHandler(int scelta, PGconn *conn, int sock)
         
         case 15:  //accetta richiesta gruppo
             client_message = (char*)malloc(10*sizeof(char));
-            userid = readSockN(sock, client_message);
+
             memset(client_message, 0, 10);
-            gid = readSockN(sock, client_message);
-            free(client_message);
             
-            return addUser(userid, gid, conn);
+            return addUser(readSockN(sock, client_message), readSockN(sock, client_message), conn);
             
         case 16:  //rifiuta richiesta gruppo
             client_message = (char*)malloc(10*sizeof(char));
