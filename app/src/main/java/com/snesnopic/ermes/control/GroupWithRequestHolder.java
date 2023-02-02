@@ -12,11 +12,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.snesnopic.ermes.R;
+import com.snesnopic.ermes.activitypkg.RequestsFragment;
 import com.snesnopic.ermes.datapkg.Group;
 import com.snesnopic.ermes.datapkg.Request;
-import com.snesnopic.ermes.datapkg.User;
+
 import java.util.ArrayList;
 
 public class GroupWithRequestHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -59,6 +59,7 @@ public class GroupWithRequestHolder extends RecyclerView.ViewHolder implements V
                    }
                 }
             }
+            RequestsFragment.adapter.notifyDataSetChanged();
         });
         refuseAll.setOnClickListener(v -> {
             for(int i = 0; i < requestGroups.size(); i++) {
@@ -69,12 +70,12 @@ public class GroupWithRequestHolder extends RecyclerView.ViewHolder implements V
                     }
                 }
             }
+            RequestsFragment.adapter.notifyDataSetChanged();
         });
     }
     @Override
     public void onClick(View v) {
         if (this.g != null) {
-
             Toast.makeText(this.context, "Clicked on " + this.g.name, Toast.LENGTH_SHORT ).show();
         }
     }
