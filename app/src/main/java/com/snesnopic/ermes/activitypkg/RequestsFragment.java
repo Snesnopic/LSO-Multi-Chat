@@ -1,7 +1,6 @@
 package com.snesnopic.ermes.activitypkg;
 
 import static com.snesnopic.ermes.activitypkg.LoginActivity.connection;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.snesnopic.ermes.R;
+import com.snesnopic.ermes.control.Connessione;
 import com.snesnopic.ermes.control.GroupsWithRequestsAdapter;
 import com.snesnopic.ermes.datapkg.Group;
-import java.util.ArrayList;
 import java.util.List;
 
 public class RequestsFragment extends Fragment {
@@ -23,10 +22,8 @@ public class RequestsFragment extends Fragment {
 
     public List<Group> GetGroupsWithRequests()
     {
-        ArrayList<Group> groups = connection.getRequestOfGroups();
-        for(int i = 0; i < groups.size(); i++) System.out.println("++++++Sono l'elemento "+i+groups.get(i).name);
-
-        return groups;
+        Connessione.requestGroups = connection.getRequestOfGroups();
+        return Connessione.requestGroups;
     }
 
     @Override
