@@ -237,9 +237,9 @@ GroupRequest* getGroupRequests(int group_id, int user_id, PGconn *conn, int *row
         memset(richieste[i].username, 0, 200);
         strcpy(richieste[i].username, queryResult[j]);
         j++;
-        richieste[i].groupId = atoi(queryResult[j]);
-        j++;
         richieste[i].userId = atoi(queryResult[j]);
+        j++;
+        richieste[i].groupId = atoi(queryResult[j]);
         j++;
     }
     return richieste;
@@ -416,7 +416,8 @@ int addUser(int userid, int groupid, PGconn *conn) {
     strcat(insertData, usid);
     strcat(insertData, ", ");
     strcat(insertData, groupID);
-    
+    printf("insert data: %s\n", insertData);
+    printf("delete data: %s\n", insertData);
     if(delete("joinrequest", deleteData, conn))
     return insert("roomusers", insertData, conn);
     else return -1;
@@ -444,6 +445,7 @@ int refuseUser(int userid, int groupid, PGconn *conn) {
     strcat(where_condition, roomID);
     strcat(where_condition, " AND userid = ");
     strcat(where_condition, userid);
+    printf("where condition: %s", where_condition);
     if(delete("joinrequest", where_condition, conn) == 0)
     {
         printf("Gruppo non esistente\n");
