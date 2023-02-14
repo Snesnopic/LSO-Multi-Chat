@@ -16,6 +16,7 @@ import com.snesnopic.ermes.datapkg.Message;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ChatActivity extends AppCompatActivity {
     public static MessageAdapter adapter;
@@ -34,7 +35,7 @@ public class ChatActivity extends AppCompatActivity {
         e.senderUsername = "Odisseo";
 
         msg.add(e);
-
+        Collections.reverse(msg);
         return msg;
 
     }
@@ -43,6 +44,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_activity);
         list = findViewById(R.id.recycler_gchat);
+
         String groupName = getIntent().getExtras().getString("groupName");
         ChatActivity.this.setTitle(groupName);
         Group actualGroup = new Group();
@@ -69,6 +71,7 @@ public class ChatActivity extends AppCompatActivity {
         sendButton.setOnClickListener(v -> {
             sendButton.setEnabled(false);
             connection.sendMessage(chatText.getText().toString(), finalActualGroup);
+            chatText.setText("");
             System.out.println("Messaggio inviato");
             sendButton.setEnabled(true);
         });
