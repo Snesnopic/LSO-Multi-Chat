@@ -102,6 +102,7 @@ int networkMessageHandler(int scelta, PGconn *conn, int sock)
             //read per username
             
             client_message = (char*)malloc(sizeof(char)*200);
+            memset(client_message, 0, 200);
             buff = readSock2(sock, client_message);
             printf("Username da parte del client: %s|\n", buff);
             fflush(stdout);   
