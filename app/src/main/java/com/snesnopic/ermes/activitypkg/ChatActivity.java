@@ -79,6 +79,7 @@ public class ChatActivity extends AppCompatActivity {
     protected void onStop() {
         connection.stopChat();
         super.onStop();
+        MyGroupsFragment.adapter.notifyDataSetChanged();
         finish(); //per essere sicuro che l'activity non sia ancora nello stack
     }
 }
