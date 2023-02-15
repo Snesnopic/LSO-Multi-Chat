@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 public class ChatActivity extends AppCompatActivity {
     public static MessageAdapter adapter;
@@ -35,7 +36,7 @@ public class ChatActivity extends AppCompatActivity {
         e.senderUsername = "Odisseo";
 
         msg.add(e);
-        Collections.reverse(msg);
+        Collections.sort(msg,(Comparator.comparing(o -> o.time)));
         return msg;
 
     }
