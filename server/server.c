@@ -102,6 +102,7 @@ int networkMessageHandler(int scelta, PGconn *conn, int sock)
             //read per username
             
             client_message = (char*)malloc(sizeof(char)*200);
+            memset(client_message, 0, 200);
             buff = readSock2(sock, client_message);
             printf("Username da parte del client: %s|\n", buff);
             fflush(stdout);   
@@ -274,6 +275,7 @@ int networkMessageHandler(int scelta, PGconn *conn, int sock)
                   
                    writeSock2(sock, richieste[j].username);
                    itoa(richieste[j].userId, client_message);
+                   printf("DEBUG PREVETE: %d\n", richieste[j].userId);
                    writeSock2(sock, client_message);
                 }
                 
@@ -529,10 +531,11 @@ int networkMessageHandler(int scelta, PGconn *conn, int sock)
         
         case 15:  //accetta richiesta gruppo
             client_message = (char*)malloc(10*sizeof(char));
-
+            userid = readSockN(sock, client_message);
             memset(client_message, 0, 10);
-            
-            return addUser(readSockN(sock, client_message), readSockN(sock, client_message), conn);
+            gid = readSockN(sock, client_message);
+            free(client_message);
+            return addUser(userid, gid, conn);
             
         case 16:  //rifiuta richiesta gruppo
             client_message = (char*)malloc(10*sizeof(char));

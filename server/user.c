@@ -14,6 +14,8 @@ int usernameAndPasswordCheck(char username[], char password[], PGconn* conn)
     strcat(whereCondition, password);
     strcat(whereCondition, "'");
     queryResult = selectdb("userid", "userdata", whereCondition, conn, &placeholder, 1);
+    if(queryResult == NULL)
+        return -1;
     return atoi(queryResult[0]);
 }
 

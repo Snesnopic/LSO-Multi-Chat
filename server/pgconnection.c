@@ -8,7 +8,7 @@
 PGconn* dbConnection(PGconn *conn)
 {
     //ATTENZIONE: i dati del db sono relativi, modificateli in base al vostro pc
-    conn = PQconnectdb("dbname=ermeschatdb host=localhost user=gheovgos password=gheovgos");
+    conn = PQconnectdb("dbname=Ermes host=localhost user=postgres password=admin");
     if(PQstatus(conn) == CONNECTION_BAD)
     {
         printf("Connessione al db non riuscita\n");
@@ -60,6 +60,10 @@ int update(char table [], char attribute [], char condition [], PGconn *conn)
 
 char ** selectdb(char attributes [], char table [], char condition [], PGconn *conn, int *rowsRet, int numberOfTableColumns)
 {
+    char **selectResult = (char**)malloc(1000 * sizeof(char*));
+
+    for(int i = 0; i < 100; i++)
+        selectResult[i] = (char*)malloc(1000 * sizeof(char));
     if(conn == NULL)
     {
         printf("Tentata SELECT ma connessione con db assente");
@@ -82,18 +86,13 @@ char ** selectdb(char attributes [], char table [], char condition [], PGconn *c
     if(PQresultStatus(res) != PGRES_TUPLES_OK)
     {
         printf("Errore, Nessun dato preso\n");
-        exit(0);
+        return selectResult;
     }
     if(PQresultStatus(res) == PGRES_EMPTY_QUERY)
         return NULL;
     int res_count = PQntuples(res);
     int col;
     printf("Numero di record: %d\n", res_count);
-
-    char **selectResult = (char**)malloc(1000 * sizeof(char*));
-
-    for(int i = 0; i < 100; i++)
-        selectResult[i] = (char*)malloc(1000 * sizeof(char));
 
     int cont = 0;
     for(int row = 0; row < res_count; row++)
